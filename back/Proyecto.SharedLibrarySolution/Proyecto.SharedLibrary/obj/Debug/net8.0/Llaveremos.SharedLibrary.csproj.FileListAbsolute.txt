@@ -1,0 +1,13 @@
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\bin\Debug\net8.0\Llaveremos.SharedLibrary.deps.json
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\bin\Debug\net8.0\Llaveremos.SharedLibrary.dll
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\bin\Debug\net8.0\Llaveremos.SharedLibrary.pdb
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\Llaveremos.SharedLibrary.csproj.AssemblyReference.cache
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\Llaveremos.SharedLibrary.GeneratedMSBuildEditorConfig.editorconfig
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\Llaveremos.SharedLibrary.AssemblyInfoInputs.cache
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\Llaveremos.SharedLibrary.AssemblyInfo.cs
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\Llaveremos.SharedLibrary.csproj.CoreCompileInputs.cache
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\Llaveremos.SharedLibrary.sourcelink.json
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\Llaveremos.SharedLibrary.dll
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\refint\Llaveremos.SharedLibrary.dll
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\Llaveremos.SharedLibrary.pdb
+D:\Code\llaveremos\e-commerce-w-microservices\back\LLaveremos.SharedLibrarySolution\Llaveremos.SharedLibrary\obj\Debug\net8.0\ref\Llaveremos.SharedLibrary.dll
