@@ -1,0 +1,127 @@
+﻿using Llaveremos.SharedLibrary.Logs;
+using Llaveremos.SharedLibrary.Responses;
+using Microsoft.EntityFrameworkCore;
+using SubjectsApi.Application.DTOs;
+using SubjectsApi.Application.Interfaces;
+using SubjectsApi.Application.Mappers;
+using SubjectsApi.Domain.Entities;
+using SubjectsApi.Infrastructure.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+
+namespace SubjectsApi.Infrastructure.Repositories
+{
+    public class SubjectRepository(SubjectsDbContext context) : ISubject
+    {
+        public async Task<Response> CreateAsync(SubjectDTO dto)
+        {
+            try
+            {
+                var entity = SubjectMapper.ToEntity(dto);
+                entity.FechaCreacion = DateTime.UtcNow;
+
+                context.Subjects.Add(entity);
+                await context.SaveChangesAsync();
+
+                return new Response(true, "Materia creada correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al crear la materia");
+            }
+        }
+
+        public async Task<Response> DeleteAsync(SubjectDTO dto)
+        {
+            try
+            {
+                var entity = await context.Subjects.FindAsync(dto.Id);
+                if (entity is null)
+                    return new Response(false, "Materia no encontrada");
+
+                context.Subjects.Remove(entity);
+                await context.SaveChangesAsync();
+
+                return new Response(true, "Materia eliminada correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al eliminar la materia");
+            }
+        }
+
+        public async Task<SubjectDTO> FindByIdAsync(int id)
+        {
+            try
+            {
+                var entity = await context.Subjects.FindAsync(id);
+                if (entity is null) return null!;
+                return SubjectMapper.FromEntity(entity);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al buscar la materia por ID");
+            }
+        }
+
+        public async Task<IEnumerable<SubjectDTO>> GetAllAsync()
+        {
+            try
+            {
+                var entities = await context.Subjects.ToListAsync();
+                return SubjectMapper.FromEntityList(entities);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return Enumerable.Empty<SubjectDTO>();
+            }
+        }
+
+        public async Task<SubjectDTO> GetByAsync(Expression<Func<SubjectDTO, bool>> predicate)
+        {
+            try
+            {
+                var allSubjects = await context.Subjects.ToListAsync();
+                var dtoList = SubjectMapper.FromEntityList(allSubjects);
+                return dtoList.AsQueryable().FirstOrDefault(predicate)!;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al aplicar el filtro de búsqueda");
+            }
+        }
+
+        public async Task<Response> UpdateAsync(SubjectDTO dto)
+        {
+            try
+            {
+                var entity = await context.Subjects.FindAsync(dto.Id);
+                if (entity is null)
+                    return new Response(false, "Materia no encontrada");
+
+                context.Entry(entity).State = EntityState.Detached;
+
+                var updatedEntity = SubjectMapper.ToEntity(dto);
+                updatedEntity.FechaActualizacion = DateTime.UtcNow;
+
+                context.Subjects.Update(updatedEntity);
+                await context.SaveChangesAsync();
+
+                return new Response(true, "Materia actualizada correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al actualizar la materia");
+            }
+        }
+    }
+}
