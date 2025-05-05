@@ -1,0 +1,16 @@
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\bin\Debug\net8.0\AuthenticationApi.Domain.deps.json
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\bin\Debug\net8.0\AuthenticationApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\bin\Debug\net8.0\AuthenticationApi.Domain.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\bin\Debug\net8.0\Proyecto.SharedLibrary.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\bin\Debug\net8.0\Proyecto.SharedLibrary.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\AuthenticationApi.Domain.csproj.AssemblyReference.cache
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\AuthenticationApi.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\AuthenticationApi.Domain.AssemblyInfoInputs.cache
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\AuthenticationApi.Domain.AssemblyInfo.cs
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\AuthenticationApi.Domain.csproj.CoreCompileInputs.cache
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\AuthenticationApi.Domain.sourcelink.json
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\Authenti.50218E98.Up2Date
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\AuthenticationApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\refint\AuthenticationApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\AuthenticationApi.Domain.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Domain\obj\Debug\net8.0\ref\AuthenticationApi.Domain.dll

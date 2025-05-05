@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  authenticationapiservice:
+    build:
+      context: .
+      dockerfile: Proyecto.AuthenticationApi.Solution/AuthenticationApi.Presentation/Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+    networks:
+      - my_network
+    restart: on-failure
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "Lancort20+12"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlvolume:/var/opt/mssql
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  sqlvolume:
