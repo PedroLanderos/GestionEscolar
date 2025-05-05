@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "DwD5r9TiVCYkYnL8xYIpqk1WIe+oXYsa0F+blWSW4BM=",
+  "Source": "SubjectsApi.Presentation",
+  "BasePath": "_content/SubjectsApi.Presentation",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

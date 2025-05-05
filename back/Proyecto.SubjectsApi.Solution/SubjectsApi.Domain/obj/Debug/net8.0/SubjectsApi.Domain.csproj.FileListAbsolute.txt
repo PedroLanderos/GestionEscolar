@@ -1,0 +1,16 @@
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\bin\Debug\net8.0\SubjectsApi.Domain.deps.json
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\bin\Debug\net8.0\SubjectsApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\bin\Debug\net8.0\SubjectsApi.Domain.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\bin\Debug\net8.0\Proyecto.SharedLibrary.dll
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\bin\Debug\net8.0\Proyecto.SharedLibrary.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\SubjectsApi.Domain.csproj.AssemblyReference.cache
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\SubjectsApi.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\SubjectsApi.Domain.AssemblyInfoInputs.cache
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\SubjectsApi.Domain.AssemblyInfo.cs
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\SubjectsApi.Domain.csproj.CoreCompileInputs.cache
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\SubjectsApi.Domain.sourcelink.json
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\Subjects.34845957.Up2Date
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\SubjectsApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\refint\SubjectsApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\SubjectsApi.Domain.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.SubjectsApi.Solution\SubjectsApi.Domain\obj\Debug\net8.0\ref\SubjectsApi.Domain.dll
