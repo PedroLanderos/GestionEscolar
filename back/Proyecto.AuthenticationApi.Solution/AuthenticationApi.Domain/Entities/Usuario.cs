@@ -13,8 +13,8 @@ namespace AuthenticationApi.Domain.Entities
         public string? Correo { get; set; }
         public string? Contrasena { get; set; }
         public string? Curp { get; set; }
-        public bool? EstadoCuenta { get; set; } //para saber si la cuenta esta bloqueada
-        public bool? DadoDeBaja { get; set; } //para saber si el usuario sigue activo en la institucion
+        public bool? CuentaBloqueada { get; set; } = false;//para saber si la cuenta esta bloqueada
+        public bool? DadoDeBaja { get; set; } = true;//para saber si el usuario sigue activo en la institucion
         public DateTime? UltimaSesion { get; set; }
         public string? Rol { get; set; }
     }
