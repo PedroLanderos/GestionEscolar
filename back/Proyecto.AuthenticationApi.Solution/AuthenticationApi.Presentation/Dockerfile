@@ -3,18 +3,18 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copiar los archivos del proyecto
-COPY Proyecto.AuthenticationApi.Solution/AuthenticationApi.Presentation/AuthenticationApi.Presentation.csproj AuthenticationApi.Presentation/
-COPY Proyecto.AuthenticationApi.Solution/AuthenticationApi.Application/AuthenticationApi.Application.csproj AuthenticationApi.Application/
-COPY Proyecto.AuthenticationApi.Solution/AuthenticationApi.Domain/AuthenticationApi.Domain.csproj AuthenticationApi.Domain/
-COPY Proyecto.AuthenticationApi.Solution/AuthenticationApi.Infrastructure/AuthenticationApi.Infrastructure.csproj AuthenticationApi.Infrastructure/
-COPY Proyecto.SharedLibrarySolution/Proyecto.SharedLibrary/Proyecto.SharedLibrary.csproj Proyecto.SharedLibrary/
+COPY back/Proyecto.AuthenticationApi.Solution/AuthenticationApi.Presentation/AuthenticationApi.Presentation.csproj AuthenticationApi.Presentation/
+COPY back/Proyecto.AuthenticationApi.Solution/AuthenticationApi.Application/AuthenticationApi.Application.csproj AuthenticationApi.Application/
+COPY back/Proyecto.AuthenticationApi.Solution/AuthenticationApi.Domain/AuthenticationApi.Domain.csproj AuthenticationApi.Domain/
+COPY back/Proyecto.AuthenticationApi.Solution/AuthenticationApi.Infrastructure/AuthenticationApi.Infrastructure.csproj AuthenticationApi.Infrastructure/
+COPY back/Proyecto.SharedLibrarySolution/Proyecto.SharedLibrary/Proyecto.SharedLibrary.csproj Proyecto.SharedLibrary/
 
 # Restaurar dependencias
 RUN dotnet restore AuthenticationApi.Presentation/AuthenticationApi.Presentation.csproj
 
 # Copiar el código fuente completo
-COPY Proyecto.AuthenticationApi.Solution/ AuthenticationApi.Solution/
-COPY Proyecto.SharedLibrarySolution/ Proyecto.SharedLibrarySolution/
+COPY back/Proyecto.AuthenticationApi.Solution/ AuthenticationApi.Solution/
+COPY back/Proyecto.SharedLibrarySolution/ Proyecto.SharedLibrarySolution/
 
 # Cambiar al directorio del proyecto principal
 WORKDIR /src/AuthenticationApi.Solution/AuthenticationApi.Presentation

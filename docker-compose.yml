@@ -4,7 +4,7 @@ services:
   authenticationapiservice:
     build:
       context: .
-      dockerfile: Proyecto.AuthenticationApi.Solution/AuthenticationApi.Presentation/Dockerfile
+      dockerfile: back/Proyecto.AuthenticationApi.Solution/AuthenticationApi.Presentation/Dockerfile
     ports:
       - "5000:5000"
     depends_on:
