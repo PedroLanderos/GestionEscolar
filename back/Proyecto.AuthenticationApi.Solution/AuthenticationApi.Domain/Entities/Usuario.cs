@@ -1,0 +1,21 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AuthenticationApi.Domain.Entities
+{
+    public class Usuario
+    {
+        public int? Id { get; set; }
+        public string? NombreCompleto { get; set; }
+        public string? Correo { get; set; }
+        public string? Contrasena { get; set; }
+        public string? Curp { get; set; }
+        public bool? EstadoCuenta { get; set; } //para saber si la cuenta esta bloqueada
+        public bool? DadoDeBaja { get; set; } //para saber si el usuario sigue activo en la institucion
+        public DateTime? UltimaSesion { get; set; }
+        public string? Rol { get; set; }
+    }
+}
