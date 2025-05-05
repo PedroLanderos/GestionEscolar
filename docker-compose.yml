@@ -16,6 +16,21 @@ services:
       - my_network
     restart: on-failure
 
+  subjectsapiservice:
+    build:
+      context: .
+      dockerfile: back/Proyecto.SubjectsApi.Solution/SubjectsApi.Presentation/Dockerfile
+    ports:
+      - "5001:5001"
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:5001
+    networks:
+      - my_network
+    restart: on-failure
+
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
