@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ScheduleApi.Application.DTOs
+{
+    public record ScheduleDTO(
+        int Id,
+        [Required] int IdUsuario,
+        [Required] int IdMateria,
+        [Required] string HoraInicio,
+        [Required] string Dia,
+        string Turno
+    );
+}
