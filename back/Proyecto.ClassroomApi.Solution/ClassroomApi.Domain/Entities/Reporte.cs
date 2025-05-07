@@ -12,5 +12,6 @@ namespace ClassroomApi.Domain.Entities
         public DateTime Fecha { get; set; }
         public string? Descripcion { get; set; }
         public string? TipoReporte { get; set; } 
+        public int IdAlumno { get; set; }
     }
 }

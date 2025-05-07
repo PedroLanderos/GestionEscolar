@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35806.99 d17.13
+VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassroomApi.Infrastructure", "ClassroomApi.Infrastructure\ClassroomApi.Infrastructure.csproj", "{4711EF40-AE8D-4742-81E6-C93540232283}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassroomApi.Domain", "ClassroomApi.Domain\ClassroomApi.Domain.csproj", "{4C2D4CD9-52E3-4FA6-BAFB-1F328A7351D6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proyecto.SharedLibrary", "..\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\Proyecto.SharedLibrary.csproj", "{06A57DCD-FA38-2FD1-D68E-4015B8FC6B3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassroomApi.Presentation", "ClassroomApi.Presentation\ClassroomApi.Presentation.csproj", "{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{06A57DCD-FA38-2FD1-D68E-4015B8FC6B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06A57DCD-FA38-2FD1-D68E-4015B8FC6B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06A57DCD-FA38-2FD1-D68E-4015B8FC6B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

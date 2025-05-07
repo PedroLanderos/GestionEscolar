@@ -12,6 +12,7 @@ namespace ClassroomApi.Application.DTOs
         int Id,
         [Required] DateTime Fecha,  
         string Descripcion,  
-        [Required] string TipoReporte  
+        [Required] string TipoReporte,
+        [Required] int IdAlumno
     );
 }

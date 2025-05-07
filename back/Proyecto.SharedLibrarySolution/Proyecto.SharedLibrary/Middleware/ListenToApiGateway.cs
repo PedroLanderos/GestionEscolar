@@ -14,7 +14,7 @@ namespace Llaveremos.SharedLibrary.Middleware
             var header = context.Request.Headers["Api-Gateway"]; 
             
             //si el valor es null significa que no viene del api gateway y la solicitud no es valida si no viene de ahi.
-            if(header.FirstOrDefault() == null)
+            if(header.FirstOrDefault() != null)
             {
                 context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
                 await context.Response.WriteAsync("Service is not available");

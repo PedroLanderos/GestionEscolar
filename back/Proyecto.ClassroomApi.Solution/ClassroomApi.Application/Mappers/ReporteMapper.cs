@@ -14,7 +14,8 @@ namespace ClassroomApi.Application.Mapper
                 Id: entity.Id,
                 Fecha: entity.Fecha,
                 Descripcion: entity.Descripcion!,
-                TipoReporte: entity.TipoReporte!
+                TipoReporte: entity.TipoReporte!, 
+                IdAlumno: entity.IdAlumno
             );
         }
 
