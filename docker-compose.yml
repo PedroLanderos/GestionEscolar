@@ -46,6 +46,21 @@ services:
       - my_network
     restart: on-failure
 
+  classroomapiservice: 
+    build:
+      context: .
+      dockerfile: back/Proyecto.ClassroomApi.Solution/ClassroomApi.Presentation/Dockerfile
+    ports:
+      - "5004:5004"  
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:5004  
+    networks:
+      - my_network
+    restart: on-failure
+
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
