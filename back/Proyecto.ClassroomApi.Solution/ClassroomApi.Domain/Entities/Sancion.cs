@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClassroomApi.Domain.Entities
 {
-    class Sancion
+    public class Sancion
     {
         public int Id { get; set; }
         public string? TipoSancion { get; set; }  
