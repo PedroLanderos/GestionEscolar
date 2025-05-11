@@ -61,6 +61,23 @@ namespace AuthenticationApi.Presentation.Controllers
                 throw new Exception("Error en el controlador al registrar un administrador");
             }
         }
+        [HttpPost("registrarDocente")]
+        public async Task<ActionResult<Response>> RegistrarDocente([FromBody] UsuarioDTO usuarioDTO)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var result = await userService.RegistrarProfesor(usuarioDTO);
+                return result.Flag ? Ok(result) : BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error en el controlador al registrar un docente");
+            }
+        }
 
         [HttpPost("login")]
         public async Task<ActionResult<Response>> Login([FromBody] IniciarSesionDTO loginDTO)
@@ -125,6 +142,22 @@ namespace AuthenticationApi.Presentation.Controllers
             {
                 LogException.LogExceptions(ex);
                 return StatusCode(500, "Error al obtener los administradores");
+            }
+        }
+
+        [HttpGet("obtenerDocentes")]
+        public async Task<ActionResult<ObtenerUsuarioDTO>> ObtenerDocentes()
+        {
+            try
+            {
+                var admins = await userService.GetAllUsers();
+                var filtrados = admins.Where(u => u.Rol == "Docente").ToList();
+                return Ok(filtrados);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, "Error al obtener los docentes");
             }
         }
 

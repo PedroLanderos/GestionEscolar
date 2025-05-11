@@ -278,5 +278,46 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 return new Response(false, "Error al actualizar el usuario");
             }
         }
+
+        public async Task<Response> RegistrarProfesor(UsuarioDTO dto)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(dto.Id) || (dto.Id != "BA" && dto.Id != "BB"))
+                    return new Response(false, "El prefijo del ID debe ser 'BA' o 'BB'.");
+
+                
+                var random = new Random();
+                var randomDigits = random.Next(100000, 999999); 
+
+                string idGenerado = $"{dto.Id}{randomDigits}";
+
+                var result = context.Usuarios.Add(new Usuario()
+                {
+                    Id = idGenerado,
+                    NombreCompleto = dto.NombreCompleto,
+                    Correo = dto.Correo,
+                    Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena),
+                    Curp = dto.Curp.ToUpper(),
+                    CuentaBloqueada = false,
+                    DadoDeBaja = false,
+                    UltimaSesion = null,
+                    Rol = "Docente"
+                });
+
+                await context.SaveChangesAsync();
+
+                if (result is null)
+                    return new Response(false, "Error al registrar el profesor");
+
+                return new Response(true, $"Profesor registrado exitosamente con ID: {idGenerado}");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al registrar un profesor en el repositorio");
+            }
+        }
+
     }
 }

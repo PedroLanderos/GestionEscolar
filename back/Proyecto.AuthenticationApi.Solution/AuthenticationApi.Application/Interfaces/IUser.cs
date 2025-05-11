@@ -14,6 +14,7 @@ namespace AuthenticationApi.Application.Interfaces
     {
         Task<Response> RegistrarAlumno(UsuarioDTO appUserDTO);
         Task<Response> RegistrarAdministrador(UsuarioDTO appUserDTO);
+        Task<Response> RegistrarProfesor(UsuarioDTO appUserDTO);
         Task<Response> Login(IniciarSesionDTO loginDTO);
         Task<IEnumerable<ObtenerUsuarioDTO>> GetAllUsers();
         Task<Usuario> GetByAsync(Expression<Func<Usuario, bool>> predicate);
