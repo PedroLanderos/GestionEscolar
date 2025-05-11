@@ -143,7 +143,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 await context.SaveChangesAsync();
 
                 // Enviar correo al padre con las credenciales
-                string subject = "🎓 Datos de acceso - Sistema Escolar";
+                string subject = "Datos de acceso - Sistema Escolar";
                 string body = $@"
                 <p>Hola <strong>{padre.NombreCompleto}</strong>,</p>
                 <p>Tu solicitud ha sido procesada exitosamente. A continuación, se encuentran los datos de acceso:</p>

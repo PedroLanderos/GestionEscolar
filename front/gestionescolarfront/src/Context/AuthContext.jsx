@@ -18,9 +18,8 @@ export const AuthProvider = ({ children }) => {
     setAuth({ isAuthenticated: false, token: null, user: null });
   }, []);
 
-
   useIdleTimer({
-    timeout: 1000 * 60 * 5, 
+    timeout: 1000 * 60 * 5,
     onIdle: logout,
     debounce: 500,
   });
@@ -55,7 +54,7 @@ export const AuthProvider = ({ children }) => {
       console.log("🔍 Token decodificado:", decodedToken);
 
       const user = {
-        id: decodedToken.UserId ? parseInt(decodedToken.UserId, 10) : null,
+        id: decodedToken.UserId || null,
         name:
           decodedToken["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] ||
           decodedToken.name ||

@@ -3,6 +3,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LoginSignup from "./Pages/LoginSignup";
 import MainPage from './Pages/MainPage';
+import Register from './Pages/Register';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <Route path='/login' element={<LoginSignup/>} />
         <Route path='/' element={<LoginSignup/>} />
         <Route path='/MenuPrincipal' element={< MainPage/>}/>
+        <Route path="/RegistrarAlumno" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

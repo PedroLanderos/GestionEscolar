@@ -41,10 +41,29 @@ const LoginSignup = () => {
     }));
   };
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    console.log("🔐 Login:", loginData);
-    alert("Login simulado.");
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${AUTH_API}/usuario/login`, {
+        identificador: loginData.email,
+        password: loginData.password,
+      });
+
+      if (response.data.flag) {
+        const token = response.data.message;
+        login(token); // usa el contexto para mantener sesión
+        navigate("/MenuPrincipal");
+      } else {
+        alert("❌ " + response.data.message);
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      alert("Ocurrió un error al intentar iniciar sesión.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRequestSubmit = async (e) => {
@@ -54,7 +73,7 @@ const LoginSignup = () => {
     try {
       const response = await axios.post(`${AUTH_API}/solicitud/enviar`, {
         ...requestData,
-        grado: parseInt(requestData.grado), // aseguramos que sea número
+        grado: parseInt(requestData.grado),
       });
 
       alert(response.data.message);
@@ -142,7 +161,7 @@ const LoginSignup = () => {
             <input
               type="email"
               name="email"
-              placeholder="Correo electrónico"
+              placeholder="Correo o ID"
               value={loginData.email}
               onChange={handleLoginChange}
               required
@@ -155,7 +174,9 @@ const LoginSignup = () => {
               onChange={handleLoginChange}
               required
             />
-            <button type="submit">Iniciar sesión</button>
+            <button type="submit" disabled={loading}>
+              {loading ? "Iniciando..." : "Iniciar sesión"}
+            </button>
           </>
         )}
 
