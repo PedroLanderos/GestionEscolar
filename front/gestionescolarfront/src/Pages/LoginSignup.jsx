@@ -2,19 +2,20 @@ import React, { useState, useContext } from "react";
 import "./CSS/LoginSignup.css";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../Context/AuthContext";
+import axios from "axios";
+import { AUTH_API } from "../Config/apiConfig";
 
 const LoginSignup = () => {
   const [isRequesting, setIsRequesting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  // Estado del formulario de login
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
-  // Estado del formulario de solicitud
   const [requestData, setRequestData] = useState({
     nombreAlumno: "",
     curpAlumno: "",
@@ -43,15 +44,34 @@ const LoginSignup = () => {
   const handleLoginSubmit = (e) => {
     e.preventDefault();
     console.log("🔐 Login:", loginData);
-    // Aquí deberías llamar a tu endpoint de login con axios
-    // login(token) si todo sale bien
     alert("Login simulado.");
   };
 
-  const handleRequestSubmit = (e) => {
+  const handleRequestSubmit = async (e) => {
     e.preventDefault();
-    console.log("📨 Solicitud enviada:", requestData);
-    alert("Formulario capturado. (Aquí se conectará al backend)");
+    setLoading(true);
+
+    try {
+      const response = await axios.post(`${AUTH_API}/solicitud/enviar`, {
+        ...requestData,
+        grado: parseInt(requestData.grado), // aseguramos que sea número
+      });
+
+      alert(response.data.message);
+      setRequestData({
+        nombreAlumno: "",
+        curpAlumno: "",
+        grado: "1",
+        nombrePadre: "",
+        telefono: "",
+        correoPadre: "",
+      });
+    } catch (error) {
+      console.error("❌ Error al enviar solicitud:", error);
+      alert("Ocurrió un error al enviar la solicitud.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -113,7 +133,9 @@ const LoginSignup = () => {
               onChange={handleRequestChange}
               required
             />
-            <button type="submit">Solicitar registro</button>
+            <button type="submit" disabled={loading}>
+              {loading ? "Enviando..." : "Solicitar registro"}
+            </button>
           </>
         ) : (
           <>

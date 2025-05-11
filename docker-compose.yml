@@ -72,6 +72,19 @@ services:
       - sqlvolume:/var/opt/mssql
     networks:
       - my_network
+    
+  frontend:
+    container_name: dockerwdb-frontend
+    build:
+      context: ./front/gestionescolarfront
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - authenticationapiservice
+    networks:
+      - my_network
+    restart: always
 
 networks:
   my_network:
