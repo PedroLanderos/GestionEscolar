@@ -6,17 +6,36 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AuthenticationApi.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Usuarios",
+                name: "SolicitudesAltas",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    NombreAlumno = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CurpAlumno = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Grado = table.Column<int>(type: "int", nullable: false),
+                    NombrePadre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Telefono = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CorreoPadre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FechaSolicitud = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Procesado = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SolicitudesAltas", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Usuarios",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NombreCompleto = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Correo = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Contrasena = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -35,6 +54,9 @@ namespace AuthenticationApi.Infrastructure.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "SolicitudesAltas");
+
             migrationBuilder.DropTable(
                 name: "Usuarios");
         }

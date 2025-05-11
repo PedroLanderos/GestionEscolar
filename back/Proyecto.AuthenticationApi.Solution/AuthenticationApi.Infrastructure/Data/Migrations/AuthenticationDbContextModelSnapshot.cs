@@ -66,11 +66,8 @@ namespace AuthenticationApi.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("AuthenticationApi.Domain.Entities.Usuario", b =>
                 {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Contrasena")
                         .HasColumnType("nvarchar(max)");

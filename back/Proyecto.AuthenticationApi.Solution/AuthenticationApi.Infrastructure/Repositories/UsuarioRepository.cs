@@ -16,11 +16,86 @@ using AuthenticationApi.Application.Services;
 
 namespace AuthenticationApi.Infrastructure.Repositories
 {
-    public class UsuarioRepository(AuthenticationDbContext context, IConfiguration config, IRandomService randomService) : IUser
+    public class UsuarioRepository(AuthenticationDbContext context, IEmail emailService, IConfiguration config, IRandomService randomService) : IUser
     {
-        public async Task<Usuario?> GetUsuarioByCorreo(string correo)
+        public async Task<Usuario> GetUser(string identificador)
         {
-            return await context.Usuarios.FirstOrDefaultAsync(x => x.Correo == correo);
+            try
+            {
+                var user = await context.Usuarios
+                    .FirstOrDefaultAsync(u => u.Id == identificador || u.Correo == identificador);
+
+                if (user is null) return null!;
+                return user;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al buscar usuario en el repository");
+            }
+        }
+        public async Task<Response> Login(IniciarSesionDTO loginDTO)
+        {
+            try
+            {
+                //validar al usuario
+                var usuario = await GetUser(loginDTO.Identificador);
+                if (usuario is null) return new Response(false, "Identificador invalido");
+
+                //verificar los datos del usuario
+                var contrasenaUsuario = usuario.Contrasena;
+                bool isValid = false;
+
+                if(contrasenaUsuario!.StartsWith("$2"))
+                    isValid = BCrypt.Net.BCrypt.Verify(loginDTO.Password, contrasenaUsuario);
+                else
+                {
+                    isValid = contrasenaUsuario == loginDTO.Password;
+                    if(isValid)
+                    {
+                        usuario.Contrasena = BCrypt.Net.BCrypt.HashPassword(contrasenaUsuario);
+                        context.Update(usuario);
+                        await context.SaveChangesAsync();
+                    }
+                }
+                
+                if(!isValid) return new Response(false, "Credenciales invalidas");
+                //generar token
+                string token = GenerateToken(usuario);
+                return new Response(true, token);
+
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al iniciar sesion desde repository");
+            }
+        }
+
+        private string GenerateToken(Usuario user)
+        {
+            var key = Encoding.UTF8.GetBytes(config.GetSection("Authentication:Key").Value!);
+            var securityKey = new SymmetricSecurityKey(key);
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.Name, user.NombreCompleto!),
+                new(ClaimTypes.Email, user.Correo!),
+                new("UserId", user.Id!)
+            };
+
+            if (!string.IsNullOrEmpty(user.Rol) && !Equals("string", user.Rol))
+                claims.Add(new(ClaimTypes.Role, user.Rol!));
+
+            var token = new JwtSecurityToken(
+                issuer: config["Authentication:Issuer"],
+                audience: config["Authentication:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(1), 
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         public async Task<Response> RegistrarAlumno(UsuarioDTO dto)
@@ -31,7 +106,6 @@ namespace AuthenticationApi.Infrastructure.Repositories
                     return new Response(false, "CURP inválida");
 
                 string baseCurp = dto.Curp.Substring(0, 10).ToUpper();
-
                 string alumnoId = $"C{baseCurp}";
                 string homoclave = randomService.GenerateHomoclave();
                 string padreId = $"{baseCurp}{homoclave}";
@@ -56,7 +130,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 {
                     Id = padreId,
                     NombreCompleto = $"Padre de {dto.NombreCompleto}",
-                    Correo = $"padre.{baseCurp.ToLower()}@mail.com", // puedes ajustar esto si lo pasas por el DTO
+                    Correo = dto.Correo,
                     Contrasena = BCrypt.Net.BCrypt.HashPassword(padrePass),
                     Curp = dto.Curp.ToUpper(),
                     CuentaBloqueada = false,
@@ -68,13 +142,69 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 context.Usuarios.AddRange(alumno, padre);
                 await context.SaveChangesAsync();
 
+                // Enviar correo al padre con las credenciales
+                string subject = "🎓 Datos de acceso - Sistema Escolar";
+                string body = $@"
+                <p>Hola <strong>{padre.NombreCompleto}</strong>,</p>
+                <p>Tu solicitud ha sido procesada exitosamente. A continuación, se encuentran los datos de acceso:</p>
+                <hr/>
+                <p><strong>Alumno:</strong><br/>
+                Usuario: {alumno.Id}<br/>
+                Contraseña: {alumnoPass}</p>
 
-                return new Response(true, "Usuarios registrados exitosamente");
+                <p><strong>Padre/Tutor:</strong><br/>
+                Usuario: {padre.Id}<br/>
+                Contraseña: {padrePass}</p>
+
+                <p>⚠️ Por seguridad, te recomendamos iniciar sesión y cambiar la contraseña en cuanto sea posible.</p>
+                <br/>
+                <p>Atentamente,<br/>Sistema Escolar</p>";
+
+                try
+                {
+                    await emailService.EnviarCorreoAsync(padre.Correo!, subject, body);
+                }
+                catch (Exception ex)
+                {
+                    LogException.LogExceptions(ex);
+                    return new Response(true, "Usuarios registrados, pero no se pudo enviar el correo.");
+                }
+
+                return new Response(true, "Usuarios registrados exitosamente y correo enviado.");
             }
             catch (Exception ex)
             {
                 LogException.LogExceptions(ex);
                 return new Response(false, "Error mientras se creaba el usuario en el repositorio");
+            }
+        }
+
+        public async Task<Response> RegistrarAdministrador(UsuarioDTO dto)
+        {
+            try
+            {
+                var result = context.Usuarios.Add(new Usuario()
+                {
+                    Id = dto.Id,
+                    NombreCompleto = dto.NombreCompleto,
+                    Correo = dto.Correo,
+                    Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena),
+                    Curp = dto.Curp.ToUpper(),
+                    CuentaBloqueada = false,
+                    DadoDeBaja = false,
+                    UltimaSesion = null,
+                    Rol = "Administrador"
+                });
+
+                await context.SaveChangesAsync();
+
+                if (result is null) return new Response(false, "Error al registrar adminstrador");
+                return new Response(true, "Administrador registrado exitosamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al registrar adminstrador");
             }
         }
     }

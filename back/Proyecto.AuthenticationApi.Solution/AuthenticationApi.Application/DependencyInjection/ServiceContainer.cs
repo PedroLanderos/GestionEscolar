@@ -17,6 +17,7 @@ namespace AuthenticationApi.Application.DependencyInjection
         public static IServiceCollection AddApplicationService(this IServiceCollection services, IConfiguration config)
         {
             services.AddScoped<IEmail, Email>();
+            services.AddScoped<IRandomService, RandomService>();
 
             return services;
         }

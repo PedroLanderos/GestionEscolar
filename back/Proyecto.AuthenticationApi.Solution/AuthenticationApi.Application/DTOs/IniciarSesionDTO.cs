@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace AuthenticationApi.Application.DTOs
 {
-    public record IniciarSesionDTO(string Email, string Password);
+    public record IniciarSesionDTO(string Identificador, string Password);
 }

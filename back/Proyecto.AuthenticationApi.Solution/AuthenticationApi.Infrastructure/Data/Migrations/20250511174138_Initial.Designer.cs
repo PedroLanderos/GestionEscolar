@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthenticationApi.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AuthenticationDbContext))]
-    [Migration("20250511031223_EmailMigration")]
-    partial class EmailMigration
+    [Migration("20250511174138_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,11 +69,8 @@ namespace AuthenticationApi.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("AuthenticationApi.Domain.Entities.Usuario", b =>
                 {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Contrasena")
                         .HasColumnType("nvarchar(max)");

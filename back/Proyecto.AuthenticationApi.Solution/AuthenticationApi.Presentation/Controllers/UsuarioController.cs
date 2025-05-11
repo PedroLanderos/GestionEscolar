@@ -1,5 +1,6 @@
 ﻿using AuthenticationApi.Application.DTOs;
 using AuthenticationApi.Application.Interfaces;
+using Llaveremos.SharedLibrary.Logs;
 using Llaveremos.SharedLibrary.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,57 +12,58 @@ namespace AuthenticationApi.Presentation.Controllers
     [AllowAnonymous]
     public class UsuarioController(IUser userService) : ControllerBase
     {
-        [HttpPost("register")]
-        public async Task<ActionResult<Response>> Register([FromBody] UsuarioDTO usuarioDTO)
+        [HttpPost("registrarAlumno")]
+        public async Task<ActionResult<Response>> RegistrarAlumno([FromBody] UsuarioDTO usuarioDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var result = await userService.Register(usuarioDTO);
-            return result.Flag ? Ok(result) : BadRequest(result);
+                var result = await userService.RegistrarAlumno(usuarioDTO);
+                return result.Flag ? Ok(result) : BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al registrar un alumno desde el endpoint");
+            }
+        }
+
+        [HttpPost("registrarAdministrador")]
+        public async Task<ActionResult<Response>> RegistrarAdministrador([FromBody] UsuarioDTO usuarioDTO)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                var result = await userService.RegistrarAdministrador(usuarioDTO);
+                return result.Flag ? Ok(result) : BadRequest(result);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error en el controlador al registrar un administrador");
+            }
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<Response>> Login([FromBody] IniciarSesionDTO loginDTO)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            var result = await userService.Login(loginDTO);
-            return result.Flag ? Ok(result) : BadRequest(result);
-        }
-
-        [HttpGet("{id:int}")]
-        [Authorize]
-        public async Task<ActionResult<ObtenerUsuarioDTO>> GetUser(int id)
-        {
-            if (id <= 0)
-                return BadRequest("ID invalido");
-
-            var user = await userService.GetUser(id);
-            return user is not null ? Ok(user) : NotFound("Usuario no encontrado");
-        }
-
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<IEnumerable<ObtenerUsuarioDTO>>> GetAllUsers()
-        {
-            var users = await userService.GetAllUsers();
-            return users.Any() ? Ok(users) : NotFound("No se encontraron usuarios");
-        }
-
-        [HttpPut]
-        [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<Response>> EditUser([FromBody] EditarUsuarioDTO dto)
-        {
-            if (dto.Id <= 0)
-                return BadRequest("ID invalido");
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = await userService.EditUserById(dto);
-            return result.Flag ? Ok(result) : BadRequest(result);
+                var result = await userService.Login(loginDTO);
+                return result.Flag ? Ok(result) : Unauthorized(result);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, new Response(false, "Error al iniciar sesión desde el controlador"));
+            }
         }
     }
 }

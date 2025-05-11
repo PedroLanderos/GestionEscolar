@@ -11,5 +11,8 @@ namespace AuthenticationApi.Application.Interfaces
     public interface IUser
     {
         Task<Response> RegistrarAlumno(UsuarioDTO appUserDTO);
+        Task<Response> RegistrarAdministrador(UsuarioDTO appUserDTO);
+        Task<Response> Login(IniciarSesionDTO loginDTO);
+        
     }
 }
