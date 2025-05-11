@@ -18,9 +18,9 @@ export const AuthProvider = ({ children }) => {
     setAuth({ isAuthenticated: false, token: null, user: null });
   }, []);
 
-  // 💤 Detecta inactividad
+
   useIdleTimer({
-    timeout: 1000 * 60 * 5, // 5 minutos
+    timeout: 1000 * 60 * 5, 
     onIdle: logout,
     debounce: 500,
   });
