@@ -145,7 +145,7 @@ const LoginSignup = () => {
               required
             />
             <input
-              type="email"
+              type="text"
               name="correoPadre"
               placeholder="Correo electrónico del padre"
               value={requestData.correoPadre}
@@ -159,7 +159,7 @@ const LoginSignup = () => {
         ) : (
           <>
             <input
-              type="email"
+              type="text"
               name="email"
               placeholder="Correo o ID"
               value={loginData.email}
