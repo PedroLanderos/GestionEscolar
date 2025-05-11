@@ -164,3 +164,8 @@ D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\Authentic
 D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\obj\Debug\net8.0\AuthenticationApi.Presentation.pdb
 D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\obj\Debug\net8.0\AuthenticationApi.Presentation.genruntimeconfig.cache
 D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\obj\Debug\net8.0\ref\AuthenticationApi.Presentation.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\MailKit.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\MimeKit.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll

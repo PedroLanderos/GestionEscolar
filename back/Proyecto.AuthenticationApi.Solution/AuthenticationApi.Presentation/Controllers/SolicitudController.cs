@@ -1,0 +1,45 @@
+﻿using AuthenticationApi.Application.DTOs;
+using AuthenticationApi.Application.Interfaces;
+using AuthenticationApi.Application.Services;
+using Llaveremos.SharedLibrary.Responses;
+using Llaveremos.SharedLibrary.Logs; // <-- Este también
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace AuthenticationApi.Presentation.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [AllowAnonymous]
+    public class SolicitudController(ISolicitudRepository repo, IEmail emailService) : ControllerBase
+    {
+        [HttpPost("enviar")]
+        public async Task<ActionResult<Response>> EnviarSolicitud([FromBody] SolicitudAltaDTO dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var response = await repo.CrearSolicitud(dto);
+
+            string subject = "📥 Solicitud de registro recibida";
+            string body = $@"
+                <p>Hola <strong>{dto.NombrePadre}</strong>,</p>
+                <p>Tu solicitud para registrar al alumno <strong>{dto.NombreAlumno}</strong> (CURP: {dto.CurpAlumno}) en <strong>{dto.Grado}° grado</strong> ha sido recibida exitosamente.</p>
+                <p>Nos pondremos en contacto contigo en breve.</p>
+                <br/>
+                <p>Atentamente,<br/>Sistema Escolar</p>";
+
+            try
+            {
+                await emailService.EnviarCorreoAsync(dto.CorreoPadre, subject, body);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex); // Aquí se guarda el error
+                return Ok(new Response(true, "Solicitud enviada, pero el correo no pudo enviarse."));
+            }
+
+            return Ok(response);
+        }
+    }
+}

@@ -20,6 +20,7 @@ namespace AuthenticationApi.Infrastructure.DependencyInjection
             SharedServiceContainer.AddSharedServices<AuthenticationDbContext>(services, config, config["MySerilog:FileName"]!);
 
             services.AddScoped<IUser, UsuarioRepository>();
+            services.AddScoped<ISolicitudRepository, SolicitudRepository>();
 
             return services;
         }

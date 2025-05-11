@@ -1,6 +1,7 @@
 using AuthenticationApi.Infrastructure.Data;
 using AuthenticationApi.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using AuthenticationApi.Application.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddInfrastructureService(builder.Configuration);
+builder.Services.AddApplicationService(builder.Configuration);
 
 builder.Services.AddCors(options =>
 {
@@ -35,7 +37,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 
-app.UseHttpsRedirection();
+///app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
