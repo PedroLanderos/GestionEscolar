@@ -1,4 +1,5 @@
 ﻿using AuthenticationApi.Application.DTOs;
+using AuthenticationApi.Domain.Entities;
 using Llaveremos.SharedLibrary.Responses;
 using System;
 using System.Collections.Generic;
@@ -11,5 +12,6 @@ namespace AuthenticationApi.Application.Interfaces
     public interface ISolicitudRepository
     {
         Task<Response> CrearSolicitud(SolicitudAltaDTO dto);
+        Task<IEnumerable<SolicitudAltaDTO>> ObtenerSolicitudes();
     }
 }

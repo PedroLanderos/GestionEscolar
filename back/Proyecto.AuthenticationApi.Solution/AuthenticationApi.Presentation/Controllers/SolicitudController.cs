@@ -2,7 +2,7 @@
 using AuthenticationApi.Application.Interfaces;
 using AuthenticationApi.Application.Services;
 using Llaveremos.SharedLibrary.Responses;
-using Llaveremos.SharedLibrary.Logs; // <-- Este también
+using Llaveremos.SharedLibrary.Logs; 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,6 +40,24 @@ namespace AuthenticationApi.Presentation.Controllers
             }
 
             return Ok(response);
+        }
+
+        [HttpGet("obtenerSolicitudes")]
+        public async Task<ActionResult<IEnumerable<SolicitudAltaDTO>>> ObtenerSolicitudes()
+        {
+            try
+            {
+                var solicitudes = await repo.ObtenerSolicitudes();
+
+                if (!solicitudes.Any() || solicitudes is null) return NotFound("No hay solicitudes registradas.");
+
+                return Ok(solicitudes);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, $"Error desde el endpoint para obtener las solicitudes: {ex.Message}");
+            }
         }
     }
 }

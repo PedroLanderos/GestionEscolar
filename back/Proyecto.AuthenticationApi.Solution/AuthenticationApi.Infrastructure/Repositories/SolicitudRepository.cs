@@ -3,7 +3,9 @@ using AuthenticationApi.Application.Interfaces;
 using AuthenticationApi.Domain.Entities;
 using AuthenticationApi.Infrastructure.Data;
 using Llaveremos.SharedLibrary.Responses;
-using Llaveremos.SharedLibrary.Logs; // <-- Asegúrate de tener este using
+using Llaveremos.SharedLibrary.Logs;
+using Microsoft.EntityFrameworkCore;
+using AuthenticationApi.Application.Mappers;
 
 namespace AuthenticationApi.Infrastructure.Repositories
 {
@@ -34,5 +36,25 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 return new Response(false, "Error al guardar la solicitud");
             }
         }
+
+        public async Task<IEnumerable<SolicitudAltaDTO>> ObtenerSolicitudes()
+        {
+            try
+            {
+                var solicitudes = await context.SolicitudesAltas.ToListAsync();
+                if (!solicitudes.Any()) return null!;
+
+                var mapper = SolicitudAltaMapper.ToDTO(solicitudes);
+
+                return mapper;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener las solicitudes");
+            }
+        }
     }
+
+    
 }
