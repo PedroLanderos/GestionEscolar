@@ -1,0 +1,158 @@
+* {
+  box-sizing: border-box;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  background-color: #a0a0a0; /* fondo gris del layout */
+}
+
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #dcdcdc;
+  padding: 0;
+}
+
+/* Sidebar Izquierdo */
+.sidebar-left {
+  width: 220px;
+  background-color: #f0f0f0;
+  padding: 1rem;
+  border-right: 1px solid #b0b0b0;
+}
+
+.sidebar-left ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.sidebar-left li {
+  padding: 0.35rem 0;
+  font-size: 13px;
+  color: #000;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.sidebar-left .submenu {
+  padding-left: 1rem;
+  font-size: 12px;
+  color: #333;
+}
+
+/* Contenido Principal */
+.main-content {
+  flex: 1;
+  background-color: white;
+  padding: 2rem;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+}
+
+.main-content h2 {
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 1rem;
+}
+
+.main-content h3 {
+  text-align: center;
+  color: #a50027;
+  margin: 0.5rem 0;
+}
+
+.notice {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #fff0f5;
+  color: #800040;
+  font-size: 13px;
+  border-left: 5px solid #800040;
+  margin-bottom: 1.5rem;
+}
+
+.notice strong {
+  font-size: 16px;
+  display: inline-block;
+  color: #800040;
+  text-shadow: 2px 2px 2px #ccc;
+}
+
+.alert {
+  background-color: #f4faff;
+  border-left: 4px solid #007acc;
+  padding: 1rem;
+  font-size: 13px;
+  color: #333;
+}
+
+/* Sidebar Derecho */
+.sidebar-right {
+  width: 200px;
+  background-color: #f3f3f3;
+  padding: 1rem;
+  font-size: 13px;
+  color: #000;
+}
+
+.sidebar-right h4 {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.sidebar-right ul {
+  padding-left: 0;
+  list-style: none;
+}
+
+.sidebar-right li {
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-right a {
+  color: #a50027;
+  text-decoration: none;
+}
+
+.sidebar-right a:hover {
+  text-decoration: underline;
+}
+.top-nav {
+  background-color: #e5e5e5;
+  border-bottom: 2px solid #900;
+  padding-left: 230px; /* para alinear con el sidebar izquierdo */
+}
+
+.top-nav ul {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+  background-color: #e5e5e5;
+  border-right: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  background-color: #ddd;
+}
+
+.nav-item.active {
+  background-color: #ff9900;
+  color: white;
+  font-weight: bold;
+}
