@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +10,8 @@ namespace AuthenticationApi.Domain.Entities
 {
     public class Usuario
     {
-        public int? Id { get; set; }
+        [Key]
+        public string? Id { get; set; }
         public string? NombreCompleto { get; set; }
         public string? Correo { get; set; }
         public string? Contrasena { get; set; }
