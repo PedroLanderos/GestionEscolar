@@ -6,7 +6,7 @@ namespace AuthenticationApi.Application.DTOs
     public class EditarUsuarioDTO
     {
         [Required]
-        public int Id { get; set; }
+        public string? Id { get; set; }
 
         [Required]
         public string NombreCompleto { get; set; } = null!;

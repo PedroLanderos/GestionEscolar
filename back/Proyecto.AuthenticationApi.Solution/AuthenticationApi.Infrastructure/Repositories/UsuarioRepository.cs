@@ -13,11 +13,36 @@ using System.Text;
 using Serilog;
 using Llaveremos.SharedLibrary.Logs;
 using AuthenticationApi.Application.Services;
+using System.Linq.Expressions;
 
 namespace AuthenticationApi.Infrastructure.Repositories
 {
     public class UsuarioRepository(AuthenticationDbContext context, IEmail emailService, IConfiguration config, IRandomService randomService) : IUser
     {
+        public async Task<IEnumerable<ObtenerUsuarioDTO>> GetAllUsers()
+        {
+            try
+            {
+                var users = await context.Usuarios.ToListAsync();
+                return users.Select(user => new ObtenerUsuarioDTO
+                {
+                    Id = user.Id,
+                    NombreCompleto = user.NombreCompleto!,
+                    Correo = user.Correo!,
+                    Curp = user.Curp!,
+                    CuentaBloqueada = user.CuentaBloqueada ?? false,
+                    DadoDeBaja = user.DadoDeBaja ?? false,
+                    UltimaSesion = user.UltimaSesion ?? DateTime.MinValue,
+                    Rol = user.Rol!
+                });
+
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener todos los usuarios en el repositorio");
+            }
+        }
         public async Task<Usuario> GetUser(string identificador)
         {
             try
@@ -205,6 +230,52 @@ namespace AuthenticationApi.Infrastructure.Repositories
             {
                 LogException.LogExceptions(ex);
                 return new Response(false, "Error al registrar adminstrador");
+            }
+        }
+
+        public async Task<Usuario> GetByAsync(Expression<Func<Usuario, bool>> predicate)
+        {
+            try
+            {
+                var usuario = await context.Usuarios.Where(predicate).FirstOrDefaultAsync()!;
+                return usuario is not null ? usuario : null!;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error en metodo GetBy en repository");
+            }
+        }
+
+        public async Task<Response> EditarUsuario(EditarUsuarioDTO dto)
+        {
+            try
+            {
+                var usuario = await context.Usuarios.FirstOrDefaultAsync(u => u.Id == dto.Id);
+                if (usuario is null)
+                    return new Response(false, "Usuario no encontrado");
+
+                usuario.NombreCompleto = dto.NombreCompleto;
+                usuario.Correo = dto.Correo;
+                usuario.Curp = dto.Curp;
+                usuario.CuentaBloqueada = dto.CuentaBloqueada;
+                usuario.DadoDeBaja = dto.DadoDeBaja;
+                usuario.UltimaSesion = dto.UltimaSesion;
+                usuario.Rol = dto.Rol;
+
+                
+                if (!string.IsNullOrWhiteSpace(dto.Contrasena))
+                    usuario.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
+
+                context.Usuarios.Update(usuario);
+                await context.SaveChangesAsync();
+
+                return new Response(true, "Usuario actualizado exitosamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al actualizar el usuario");
             }
         }
     }
