@@ -1,20 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./CSS/Register.css"; 
+import "./CSS/Register.css";
 import { SUBJ_API } from "../Config/apiConfig";
 
-const AddSubject = () => {
+const AddSubject = ({ subject = null, onSuccess }) => {
   const [formData, setFormData] = useState({
+    id: 0,
     nombre: "",
     codigo: "",
     tipo: "Teórica",
     grado: 1,
     esObligatoria: true,
     estaActiva: true,
+    fechaCreacion: new Date().toISOString(),
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (subject) {
+      setFormData({
+        id: subject.id,
+        nombre: subject.nombre,
+        codigo: subject.codigo,
+        tipo: subject.tipo,
+        grado: subject.grado,
+        esObligatoria: subject.esObligatoria,
+        estaActiva: subject.estaActiva,
+        fechaCreacion: subject.fechaCreacion,
+      });
+    }
+  }, [subject]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -32,28 +49,36 @@ const AddSubject = () => {
     const payload = {
       ...formData,
       grado: parseInt(formData.grado),
-      fechaCreacion: new Date().toISOString(),
     };
 
-    try {
-      const res = await axios.post(`${SUBJ_API}/Subject/crearMateria`, payload);
+    const isEdit = payload.id && payload.id > 0;
+    const endpoint = `${SUBJ_API}/Subject/${isEdit ? "editarMateria" : "crearMateria"}`;
+    const method = isEdit ? axios.put : axios.post;
 
-      if (res.data.success) {
-        setMessage("✅ Materia registrada exitosamente.");
-        setFormData({
-          nombre: "",
-          codigo: "",
-          tipo: "Teórica",
-          grado: 1,
-          esObligatoria: true,
-          estaActiva: true,
-        });
+    try {
+      const res = await method(endpoint, payload);
+
+      if (res.data.flag || res.data.success) {
+        setMessage(isEdit ? "✅ Materia actualizada exitosamente." : "✅ Materia registrada exitosamente.");
+        if (!isEdit) {
+          setFormData({
+            id: 0,
+            nombre: "",
+            codigo: "",
+            tipo: "Teórica",
+            grado: 1,
+            esObligatoria: true,
+            estaActiva: true,
+            fechaCreacion: new Date().toISOString(),
+          });
+        }
+        if (onSuccess) onSuccess();
       } else {
-        setMessage(`❌ ${res.data.message || "Error al registrar la materia."}`);
+        setMessage(`❌ ${res.data.message || "Error al guardar la materia."}`);
       }
     } catch (err) {
-      console.error("❌ Error al registrar materia:", err);
-      setMessage("❌ Error al registrar materia. Revisa el servidor.");
+      console.error("❌ Error:", err);
+      setMessage("❌ Error al guardar materia. Revisa el servidor.");
     } finally {
       setLoading(false);
     }
@@ -62,7 +87,7 @@ const AddSubject = () => {
   return (
     <div className="register-container">
       <div className="register-content">
-        <h2>Registro de Materia</h2>
+        <h2>{formData.id ? "Editar Materia" : "Registro de Materia"}</h2>
         <form onSubmit={handleSubmit}>
           <label>Nombre</label>
           <input
@@ -121,7 +146,7 @@ const AddSubject = () => {
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? "Registrando..." : "Registrar"}
+            {loading ? "Guardando..." : formData.id ? "Actualizar" : "Registrar"}
           </button>
 
           {message && (
