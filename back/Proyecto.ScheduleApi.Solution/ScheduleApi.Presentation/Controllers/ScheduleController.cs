@@ -2,8 +2,6 @@
 using ScheduleApi.Application.DTOs;
 using ScheduleApi.Application.Interfaces;
 using Llaveremos.SharedLibrary.Responses;
-using System;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace ScheduleApi.Presentation.Controllers
@@ -12,28 +10,60 @@ namespace ScheduleApi.Presentation.Controllers
     [ApiController]
     public class ScheduleController(ISchedule scheduleService) : ControllerBase
     {
-        [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] ScheduleDTO dto)
+        [HttpPost("crearHorario")]
+        public async Task<IActionResult> CreateSchedule([FromBody] ScheduleDTO schedule)
         {
-            Response response = await scheduleService.Create(dto);
-            if (!response.Flag) return BadRequest(response);
-            return Ok(response);
+            var result = await scheduleService.CreateSchedule(schedule);
+            return result.Flag ? Ok(result) : BadRequest(result);
         }
 
-        [HttpPut("update")]
-        public async Task<IActionResult> Update([FromBody] ScheduleDTO dto)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSchedule(int id)
         {
-            Response response = await scheduleService.Update(dto);
-            if (!response.Flag) return BadRequest(response);
-            return Ok(response);
+            var result = await scheduleService.GetSchedule(id);
+            return result is not null ? Ok(result) : NotFound("Horario no encontrado");
         }
 
-        [HttpGet("getByUser/{userId}")]
-        public async Task<IActionResult> GetByUser(int userId)
+        [HttpPut("actualizarHorario")]
+        public async Task<IActionResult> UpdateSchedule([FromBody] ScheduleDTO schedule)
         {
-            Expression<Func<ScheduleDTO, bool>> predicate = s => s.IdUsuario == userId;
-            var results = await scheduleService.GetBy(predicate);
-            return Ok(results);
+            var result = await scheduleService.UpdateScheduleAsync(schedule);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteSchedule(int id)
+        {
+            var result = await scheduleService.DeleteScheduleAsync(id);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPost("asginarMateriaHorario")]
+        public async Task<IActionResult> AssignSubject([FromBody] SubjectToScheduleDTO dto)
+        {
+            var result = await scheduleService.AsignSubjectToScheduleAsync(dto);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPut("actualizarAsignacion")]
+        public async Task<IActionResult> UpdateAssignment([FromBody] SubjectToScheduleDTO dto)
+        {
+            var result = await scheduleService.UpdateAsignmentAsync(dto);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpDelete("eliminarAsignacion/{id}")]
+        public async Task<IActionResult> DeleteAssignment(int id)
+        {
+            var result = await scheduleService.DeleteAsignSubjectToScheduleAsync(id);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet("obtenerHorarioCompleto/{scheduleId}")]
+        public async Task<IActionResult> GetFullSchedule(int scheduleId)
+        {
+            var result = await scheduleService.GetFullSchedule(scheduleId);
+            return Ok(result);
         }
     }
 }

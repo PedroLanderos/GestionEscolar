@@ -16,35 +16,166 @@ namespace ScheduleApi.Infrastructure.Repositories
 {
     public class ScheduleRepository(ScheduleDbContext context) : ISchedule
     {
-        public async Task<Response> Create(ScheduleDTO dto)
+        public async Task<Response> AsignSubjectToScheduleAsync(SubjectToScheduleDTO subjectToScheduleDTO)
         {
             try
             {
-                var entity = ScheduleMapper.ToEntity(dto);
-                context.Schedules.Add(entity);
+                var entity = SubjectToScheduleMapper.ToEntity(subjectToScheduleDTO);
+                var response = context.SubjectToSchedules.Add(entity);
                 await context.SaveChangesAsync();
 
-                return new Response(true, "Horario creado correctamente");
+                if(response is null) return new Response(false, "Error al asignar la materia al horario");
+                return new Response(true, "Materia asignada al horario exitosamente");
             }
             catch (Exception ex)
             {
                 LogException.LogExceptions(ex);
-                return new Response(false, "Error al crear el horario");
+                return new Response(false, "Error al asignar materia a horario en el repositorio");
             }
         }
 
-        public async Task<Response> Update(ScheduleDTO dto)
+        public async Task<Response> CreateSchedule(ScheduleDTO schedule)
         {
             try
             {
-                var entity = await context.Schedules.FindAsync(dto.Id);
-                if (entity is null)
+                var entity = ScheduleMapper.ToEntity(schedule);
+                var response = context.Schedules.Add(entity);
+                await context.SaveChangesAsync();
+
+                if(response is null) return new Response(false, "Error al crear horario");
+                return new Response(true, "Horario creado exitosamente");
+
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al crear horario desde el repositorio");
+            }
+        }
+
+        public async Task<Response> DeleteAsignSubjectToScheduleAsync(int id)
+        {
+            try
+            {
+                var subjectToSchedule = await context.SubjectToSchedules.FindAsync(id);
+                if(subjectToSchedule == null)
+                    return new Response(false, "Asignacion no encontrada");
+
+                context.SubjectToSchedules.Remove(subjectToSchedule);
+                await context.SaveChangesAsync();
+                return new Response(true, "Asignacion eliminada correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al eliminar la asignacion al horario en el repositorio");
+            }
+        }
+
+        public async Task<Response> DeleteScheduleAsync(int id)
+        {
+            try
+            {
+                var schedule = await context.Schedules.FindAsync(id);
+                if (schedule == null)
                     return new Response(false, "Horario no encontrado");
 
-                context.Entry(entity).State = EntityState.Detached;
+                context.Schedules.Remove(schedule);
+                await context.SaveChangesAsync();
 
-                var updatedEntity = ScheduleMapper.ToEntity(dto);
-                context.Schedules.Update(updatedEntity);
+                return new Response(true, "Horario eliminado correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al eliminar el horario");
+            }
+        }
+
+        public async Task<IEnumerable<SubjectToSchedule>> GetBy(Expression<Func<SubjectToSchedule, bool>> predicate)
+        {
+            try
+            {
+                var results = await context.SubjectToSchedules.Where(predicate).ToListAsync();
+                if (results is null) return null!;
+                return results;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error en metodo GetBy en el repositorio");
+            }
+        }
+
+        public async Task<IEnumerable<SubjectToSchedule>> GetFullSchedule(int id)
+        {
+            try
+            {
+                var results = await context.SubjectToSchedules
+                .Where(s => s.IdHorario == id)
+                .ToListAsync();
+
+                return results!;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener el horario completo en el repositorio");
+            }
+        }
+
+        public async Task<ScheduleDTO> GetSchedule(int id)
+        {
+            try
+            {
+                var schedule = await context.Schedules.FindAsync(id);
+                if (schedule is null) return null!;
+                return ScheduleMapper.FromEntity(schedule);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Erro en get schedule en el repositorio");
+            }
+        }
+
+        public async Task<Response> UpdateAsignmentAsync(SubjectToScheduleDTO subjectToScheduleDTO)
+        {
+            try
+            {
+                var existing = await context.SubjectToSchedules.FindAsync(subjectToScheduleDTO.Id);
+                if (existing == null)
+                    return new Response(false, "Asignación no encontrada");
+
+                existing.IdMateria = subjectToScheduleDTO.IdMateria;
+                existing.IdHorario = subjectToScheduleDTO.IdHorario;
+                existing.HoraInicio = subjectToScheduleDTO.HoraInicio;
+                existing.Dia = subjectToScheduleDTO.Dia;
+
+                context.SubjectToSchedules.Update(existing);
+                await context.SaveChangesAsync();
+
+                return new Response(true, "Asignación actualizada correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al actualizar la asignación");
+            }
+        }
+
+        public async Task<Response> UpdateScheduleAsync(ScheduleDTO schedule)
+        {
+            try
+            {
+                var existing = await context.Schedules.FindAsync(schedule.Id);
+                if (existing == null)
+                    return new Response(false, "Horario no encontrado");
+
+                existing.Grado = schedule.Grado;
+                existing.Grupo = schedule.Grupo;
+
+                context.Schedules.Update(existing);
                 await context.SaveChangesAsync();
 
                 return new Response(true, "Horario actualizado correctamente");
@@ -56,20 +187,5 @@ namespace ScheduleApi.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<Schedule>> GetBy(Expression<Func<ScheduleDTO, bool>> predicate)
-        {
-            try
-            {
-                var allSchedules = await context.Schedules.ToListAsync();
-                var dtoList = ScheduleMapper.FromEntityList(allSchedules);
-                var filtered = dtoList.AsQueryable().Where(predicate).ToList();
-                return ScheduleMapper.ToEntityList(filtered);
-            }
-            catch (Exception ex)
-            {
-                LogException.LogExceptions(ex);
-                return Enumerable.Empty<Schedule>();
-            }
-        }
     }
 }

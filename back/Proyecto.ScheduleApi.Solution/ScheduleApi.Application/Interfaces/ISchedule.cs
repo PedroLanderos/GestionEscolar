@@ -12,8 +12,14 @@ namespace ScheduleApi.Application.Interfaces
 {
     public interface ISchedule
     {
-        Task<Response> Create(ScheduleDTO schedule);
-        Task<Response> Update(ScheduleDTO schedule);
-        Task<IEnumerable<Schedule>> GetBy(Expression<Func<ScheduleDTO, bool>> predicate); 
+        Task<Response> CreateSchedule(ScheduleDTO schedule);
+        Task<Response> UpdateScheduleAsync(ScheduleDTO schedule);
+        Task<Response> AsignSubjectToScheduleAsync(SubjectToScheduleDTO subjectToScheduleDTO);
+        Task<Response> UpdateAsignmentAsync(SubjectToScheduleDTO subjectToScheduleDTO);
+        Task<Response> DeleteScheduleAsync(int id);
+        Task<Response> DeleteAsignSubjectToScheduleAsync(int id);
+        Task<ScheduleDTO> GetSchedule(int id);
+        Task<IEnumerable<SubjectToSchedule>> GetFullSchedule(int id);
+        Task<IEnumerable<SubjectToSchedule>> GetBy(Expression<Func<SubjectToSchedule, bool>> predicate);
     }
 }

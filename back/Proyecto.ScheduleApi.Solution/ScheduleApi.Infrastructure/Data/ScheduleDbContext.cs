@@ -11,5 +11,6 @@ namespace ScheduleApi.Infrastructure.Data
     public class ScheduleDbContext(DbContextOptions<ScheduleDbContext> options) : DbContext(options)
     {
         public DbSet<Schedule> Schedules { get; set; } 
+        public DbSet<SubjectToSchedule> SubjectToSchedules { get; set; }
     }
 }

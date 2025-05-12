@@ -10,16 +10,10 @@ namespace ScheduleApi.Application.Mapper
     {
         public static ScheduleDTO FromEntity(Schedule entity)
         {
-            var hora = TimeSpan.TryParse(entity.HoraInicio, out var parsedHora) ? parsedHora : TimeSpan.Zero;
-            var turno = hora < new TimeSpan(12, 0, 0) ? "Matutino" : "Vespertino";
-
             return new ScheduleDTO(
                 Id: entity.Id,
-                IdUsuario: entity.IdUsuario,
-                IdMateria: entity.IdMateria,
-                HoraInicio: entity.HoraInicio ?? "",
-                Dia: entity.Dia ?? "",
-                Turno: turno
+                Grado: entity.Grado ?? 0,
+                Grupo: entity.Grupo!
             );
         }
 
@@ -28,11 +22,8 @@ namespace ScheduleApi.Application.Mapper
             return new Schedule
             {
                 Id = dto.Id,
-                IdUsuario = dto.IdUsuario,
-                IdMateria = dto.IdMateria,
-                HoraInicio = dto.HoraInicio,
-                Dia = dto.Dia
-                // Turno no se incluye porque no existe en la entidad
+                Grado = dto.Grado,
+                Grupo = dto.Grupo
             };
         }
 

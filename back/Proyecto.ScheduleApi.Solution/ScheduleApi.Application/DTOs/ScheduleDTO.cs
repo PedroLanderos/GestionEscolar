@@ -9,10 +9,7 @@ namespace ScheduleApi.Application.DTOs
 {
     public record ScheduleDTO(
         int Id,
-        [Required] int IdUsuario,
-        [Required] int IdMateria,
-        [Required] string HoraInicio,
-        [Required] string Dia,
-        string Turno
+        [Required] int Grado,
+        [Required] string Grupo
     );
 }
