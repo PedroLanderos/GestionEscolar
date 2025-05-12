@@ -1,25 +1,36 @@
+// MainPage.jsx
 import React, { useState } from "react";
 import "./CSS/MainPage.css";
 import RegisterRequest from "./RegisterRequest";
 import Register from "./Register";
+import AddTeacher from "./AddTeacher";
+import UsersTable from "./UsersTable";
 
 const MainPage = () => {
   const [activeSection, setActiveSection] = useState("Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
-  const [registerData, setRegisterData] = useState(null); // ✅ nuevo estado
+  const [registerData, setRegisterData] = useState(null);
+  const [userType, setUserType] = useState(null);
+
+  const handleUserView = (type) => {
+    setActiveSubOption("VerUsuarios");
+    setRegisterData(null);
+    setUserType(type);
+  };
 
   const renderSidebarContent = () => {
     if (activeSection === "Administrador") {
       return (
         <ul>
-          <li onClick={() => { setActiveSubOption("Solicitudes"); setRegisterData(null); }}>
-            Solicitudes de registro
-          </li>
-          <li onClick={() => { setActiveSubOption("AgregarAlumno"); setRegisterData(null); }}>
-            Agregar alumno
-          </li>
+          <li onClick={() => { setActiveSubOption("Solicitudes"); setRegisterData(null); }}>Solicitudes de registro</li>
+          <li onClick={() => { setActiveSubOption("AgregarAlumno"); setRegisterData(null); }}>Agregar alumno</li>
+          <li onClick={() => { setActiveSubOption("AgregarProfesor"); setRegisterData(null); }}>Agregar profesor</li>
           <li>Agregar materia</li>
           <li>Agregar horario</li>
+          <li onClick={() => handleUserView("alumnos")}>Alumnos</li>
+          <li onClick={() => handleUserView("docentes")}>Docentes</li>
+          <li onClick={() => handleUserView("tutores")}>Tutores</li>
+          <li onClick={() => handleUserView("administradores")}>Administradores</li>
         </ul>
       );
     }
@@ -46,9 +57,11 @@ const MainPage = () => {
 
   const renderMainContent = () => {
     if (activeSection === "Administrador") {
-      if (registerData) return <Register data={registerData} />; // ✅ muestra registro con datos
+      if (registerData) return <Register data={registerData} />;
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
       if (activeSubOption === "AgregarAlumno") return <Register />;
+      if (activeSubOption === "AgregarProfesor") return <AddTeacher />;
+      if (activeSubOption === "VerUsuarios" && userType) return <UsersTable userType={userType} />;
     }
 
     return (
@@ -77,16 +90,19 @@ const MainPage = () => {
             setActiveSection("Inicio");
             setActiveSubOption(null);
             setRegisterData(null);
+            setUserType(null);
           }}>Inicio</li>
           <li className={`nav-item ${activeSection === "Alumnos" ? "active-orange" : ""}`} onClick={() => {
             setActiveSection("Alumnos");
             setActiveSubOption(null);
             setRegisterData(null);
+            setUserType(null);
           }}>Alumnos</li>
           <li className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`} onClick={() => {
             setActiveSection("Administrador");
             setActiveSubOption(null);
             setRegisterData(null);
+            setUserType(null);
           }}>Administrador</li>
         </ul>
       </div>

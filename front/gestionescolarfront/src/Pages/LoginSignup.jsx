@@ -8,6 +8,7 @@ import { AUTH_API } from "../Config/apiConfig";
 const LoginSignup = () => {
   const [isRequesting, setIsRequesting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorCount, setErrorCount] = useState(0);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
@@ -41,6 +42,28 @@ const LoginSignup = () => {
     }));
   };
 
+  const bloquearUsuario = async () => {
+    try {
+      // Obtenemos el usuario por ID o correo (usamos GetUser reutilizando loginData.email)
+      const response = await axios.get(`${AUTH_API}/usuario/obtenerUsuarios`);
+      const usuario = response.data.find(
+        (u) => u.id === loginData.email || u.correo === loginData.email
+      );
+
+      if (usuario) {
+        const updateDto = {
+          ...usuario,
+          cuentaBloqueada: true,
+        };
+
+        await axios.put(`${AUTH_API}/usuario/editarUsuario`, updateDto);
+        alert("🚫 Cuenta bloqueada por intentos fallidos.");
+      }
+    } catch (error) {
+      console.error("Error al bloquear usuario:", error);
+    }
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -52,11 +75,16 @@ const LoginSignup = () => {
       });
 
       if (response.data.flag) {
-        const token = response.data.message;
-        login(token); // usa el contexto para mantener sesión
+        login(response.data.message);
         navigate("/MenuPrincipal");
       } else {
+        const nuevosIntentos = errorCount + 1;
+        setErrorCount(nuevosIntentos);
         alert("❌ " + response.data.message);
+
+        if (nuevosIntentos >= 3) {
+          await bloquearUsuario();
+        }
       }
     } catch (error) {
       console.error("Error al iniciar sesión:", error);

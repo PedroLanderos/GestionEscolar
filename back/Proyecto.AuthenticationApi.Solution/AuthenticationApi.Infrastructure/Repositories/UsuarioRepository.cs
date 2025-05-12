@@ -85,6 +85,8 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 }
                 
                 if(!isValid) return new Response(false, "Credenciales invalidas");
+                if(usuario.CuentaBloqueada == true) return new Response(false, "Usuario bloqueado");
+
                 //generar token
                 string token = GenerateToken(usuario);
                 return new Response(true, token);
