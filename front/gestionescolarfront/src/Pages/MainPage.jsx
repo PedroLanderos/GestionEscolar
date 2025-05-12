@@ -5,6 +5,7 @@ import RegisterRequest from "./RegisterRequest";
 import Register from "./Register";
 import AddTeacher from "./AddTeacher";
 import UsersTable from "./UsersTable";
+import AddSubject from "./AddSubject";
 
 const MainPage = () => {
   const [activeSection, setActiveSection] = useState("Alumnos");
@@ -25,7 +26,7 @@ const MainPage = () => {
           <li onClick={() => { setActiveSubOption("Solicitudes"); setRegisterData(null); }}>Solicitudes de registro</li>
           <li onClick={() => { setActiveSubOption("AgregarAlumno"); setRegisterData(null); }}>Agregar alumno</li>
           <li onClick={() => { setActiveSubOption("AgregarProfesor"); setRegisterData(null); }}>Agregar profesor</li>
-          <li>Agregar materia</li>
+          <li onClick={() => { setActiveSubOption("AgregarMateria"); setRegisterData(null); }}>Agregar materia</li>
           <li>Agregar horario</li>
           <li onClick={() => handleUserView("alumnos")}>Alumnos</li>
           <li onClick={() => handleUserView("docentes")}>Docentes</li>
@@ -62,6 +63,7 @@ const MainPage = () => {
       if (activeSubOption === "AgregarAlumno") return <Register />;
       if (activeSubOption === "AgregarProfesor") return <AddTeacher />;
       if (activeSubOption === "VerUsuarios" && userType) return <UsersTable userType={userType} />;
+      if (activeSubOption === "AgregarMateria") return <AddSubject />;
     }
 
     return (

@@ -99,6 +99,21 @@ namespace SubjectsApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<SubjectDTO>> GetManyByAsync(Expression<Func<SubjectDTO, bool>> predicate)
+        {
+            try
+            {
+                var allSubjects = await context.Subjects.ToListAsync();
+                var dtoList = SubjectMapper.FromEntityList(allSubjects);
+                return dtoList.AsQueryable().Where(predicate).ToList();
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error en metodo get many by async en el repositorio");
+            }
+        }
+
         public async Task<Response> UpdateAsync(SubjectDTO dto)
         {
             try

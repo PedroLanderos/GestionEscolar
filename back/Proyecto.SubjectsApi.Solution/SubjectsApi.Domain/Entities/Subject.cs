@@ -13,9 +13,9 @@ namespace SubjectsApi.Domain.Entities
         public string? Codigo { get; set; }
         public string? Tipo { get; set; }
         public int Grado { get; set; }
-        public bool EsObligatoria { get; set; }
+        public bool EsObligatoria { get; set; } = true;
         public bool EstaActiva { get; set; } = true;
-        public DateTime FechaCreacion { get; set; }
+        public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
         public DateTime? FechaActualizacion { get; set; }
     }
 }
