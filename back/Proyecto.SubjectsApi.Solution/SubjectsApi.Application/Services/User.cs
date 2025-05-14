@@ -17,16 +17,16 @@ namespace SubjectsApi.Application.Services
         {
             _httpClient = client;
         }
-        public async Task<UserDTO> ObtenerDocente(int id)
+        public async Task<UserDTO> ObtenerDocente(string id)
         {
 			try
 			{
-				var user = await _httpClient.GetAsync($"/api/authentication/{id}");
+                var response = await _httpClient.GetAsync($"obtenerUsuarioPorId/{id}");
 
-                if (!user.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                     return null!;
 
-                var userDto = await user.Content.ReadFromJsonAsync<UserDTO>();
+                var userDto = await response.Content.ReadFromJsonAsync<UserDTO>();
 
                 if(userDto!.Rol != "Docente")
                     throw new Exception("El usuario no es un docente");

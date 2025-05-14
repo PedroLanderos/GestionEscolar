@@ -9,6 +9,6 @@ namespace SubjectsApi.Application.Services
 {
     public interface IUser
     {
-        Task<UserDTO> ObtenerDocente(int id);
+        Task<UserDTO> ObtenerDocente(string id);
     }
 }

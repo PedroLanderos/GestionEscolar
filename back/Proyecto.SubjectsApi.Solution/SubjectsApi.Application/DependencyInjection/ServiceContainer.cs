@@ -15,7 +15,8 @@ namespace SubjectsApi.Application.DependencyInjection
         {
             services.AddHttpClient<IUser, User>(client =>
             {
-                client.BaseAddress = new Uri("http://apigateway:5000/api/user/");
+                client.BaseAddress = new Uri("http://authenticationapiservice:5000/api/usuario/");
+
             });
 
             return services;
