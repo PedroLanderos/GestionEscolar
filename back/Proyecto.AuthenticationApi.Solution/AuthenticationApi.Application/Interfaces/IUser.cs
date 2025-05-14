@@ -16,6 +16,7 @@ namespace AuthenticationApi.Application.Interfaces
         Task<Response> RegistrarAdministrador(UsuarioDTO appUserDTO);
         Task<Response> RegistrarProfesor(UsuarioDTO appUserDTO);
         Task<Response> Login(IniciarSesionDTO loginDTO);
+        Task<ObtenerUsuarioDTO> ObtenerUsuarioPorId(string id);
         Task<IEnumerable<ObtenerUsuarioDTO>> GetAllUsers();
         Task<Usuario> GetByAsync(Expression<Func<Usuario, bool>> predicate);
         Task<Response> EditarUsuario(EditarUsuarioDTO dto);

@@ -24,6 +24,13 @@ namespace ScheduleApi.Presentation.Controllers
             return result is not null ? Ok(result) : NotFound("Horario no encontrado");
         }
 
+        [HttpGet("obtenerHorarios")]
+        public async Task<IActionResult> GetSchedules()
+        {
+            var result = await scheduleService.GetSchedules();
+            return Ok(result);
+        }
+
         [HttpPut("actualizarHorario")]
         public async Task<IActionResult> UpdateSchedule([FromBody] ScheduleDTO schedule)
         {

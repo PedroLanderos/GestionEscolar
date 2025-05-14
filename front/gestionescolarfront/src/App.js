@@ -5,6 +5,7 @@ import LoginSignup from "./Pages/LoginSignup";
 import MainPage from './Pages/MainPage';
 import Register from './Pages/Register';
 import Subjects from './Pages/Subjects';
+import Schedule from './Pages/Schedule';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path='/MenuPrincipal' element={< MainPage/>}/>
         <Route path="/RegistrarAlumno" element={<Register />} />
         <Route path="/Materias" element={<Subjects />} />
+        <Route path="/Horario" element={<Schedule />} />
       </Routes>
     </BrowserRouter>
   );

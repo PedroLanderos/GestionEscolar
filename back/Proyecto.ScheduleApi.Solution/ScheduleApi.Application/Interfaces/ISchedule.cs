@@ -19,6 +19,7 @@ namespace ScheduleApi.Application.Interfaces
         Task<Response> DeleteScheduleAsync(int id);
         Task<Response> DeleteAsignSubjectToScheduleAsync(int id);
         Task<ScheduleDTO> GetSchedule(int id);
+        Task<IEnumerable<ScheduleDTO>> GetSchedules();
         Task<IEnumerable<SubjectToSchedule>> GetFullSchedule(int id);
         Task<IEnumerable<SubjectToSchedule>> GetBy(Expression<Func<SubjectToSchedule, bool>> predicate);
     }

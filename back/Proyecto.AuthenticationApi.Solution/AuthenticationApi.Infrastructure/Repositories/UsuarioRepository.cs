@@ -321,5 +321,31 @@ namespace AuthenticationApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<ObtenerUsuarioDTO> ObtenerUsuarioPorId(string id)
+        {
+            try
+            {
+                var usuario = await context.Usuarios.FindAsync(id);
+                if (usuario is null)
+                    return null!;
+
+                return new ObtenerUsuarioDTO
+                {
+                    Id = usuario.Id,
+                    NombreCompleto = usuario.NombreCompleto!,
+                    Correo = usuario.Correo!,
+                    Curp = usuario.Curp!,
+                    CuentaBloqueada = usuario.CuentaBloqueada ?? false,
+                    DadoDeBaja = usuario.DadoDeBaja ?? false,
+                    UltimaSesion = usuario.UltimaSesion ?? DateTime.MinValue,
+                    Rol = usuario.Rol!
+                };
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener el usuario desde el repositorio");
+            }
+        }
     }
 }

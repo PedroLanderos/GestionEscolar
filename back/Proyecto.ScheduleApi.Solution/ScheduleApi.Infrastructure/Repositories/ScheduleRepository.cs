@@ -139,6 +139,22 @@ namespace ScheduleApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<ScheduleDTO>> GetSchedules()
+        {
+            try
+            {
+                var schedules = await context.Schedules.ToListAsync();
+                if (schedules is null) return null!;
+                var scheduleDTOs = ScheduleMapper.FromEntityList(schedules);
+                return scheduleDTOs;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener los horarios en repository");
+            }
+        }
+
         public async Task<Response> UpdateAsignmentAsync(SubjectToScheduleDTO subjectToScheduleDTO)
         {
             try

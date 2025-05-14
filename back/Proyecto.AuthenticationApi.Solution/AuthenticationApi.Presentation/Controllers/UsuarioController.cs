@@ -12,6 +12,26 @@ namespace AuthenticationApi.Presentation.Controllers
     [AllowAnonymous]
     public class UsuarioController(IUser userService) : ControllerBase
     {
+
+        [HttpGet("obtenerUsuarioPorId/{id}")]
+        public async Task<ActionResult<ObtenerUsuarioDTO>> ObtenerUsuarioPorId(string id)
+        {
+            try
+            {
+                var usuario = await userService.ObtenerUsuarioPorId(id);
+
+                if (usuario == null)
+                    return NotFound($"No se encontró un usuario con el ID: {id}");
+
+                return Ok(usuario);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, "Error al obtener el usuario por ID desde el controlador");
+            }
+        }
+
         [HttpGet("obtenerUsuarios")]
         public async Task<ActionResult<IEnumerable<ObtenerUsuarioDTO>>> ObtenerUsuarios()
         {
