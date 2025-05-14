@@ -1,4 +1,3 @@
-// MainPage.jsx
 import React, { useState } from "react";
 import "./CSS/MainPage.css";
 import RegisterRequest from "./RegisterRequest";
@@ -8,12 +7,16 @@ import UsersTable from "./UsersTable";
 import AddSubject from "./AddSubject";
 import Subjects from "./Subjects";
 import AssignSubject from "./AssignSubject";
+import AddSchedule from "./AddSchedule";
+import Schedules from "./Schedules";
+import Schedule from "./Schedule";
 
 const MainPage = () => {
   const [activeSection, setActiveSection] = useState("Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
   const [registerData, setRegisterData] = useState(null);
   const [userType, setUserType] = useState(null);
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
 
   const handleUserView = (type) => {
     setActiveSubOption("VerUsuarios");
@@ -25,13 +28,14 @@ const MainPage = () => {
     if (activeSection === "Administrador") {
       return (
         <ul>
-          <li onClick={() => { setActiveSubOption("Solicitudes"); setRegisterData(null); }}>Solicitudes de registro</li>
-          <li onClick={() => { setActiveSubOption("AgregarAlumno"); setRegisterData(null); }}>Agregar alumno</li>
-          <li onClick={() => { setActiveSubOption("AgregarProfesor"); setRegisterData(null); }}>Agregar profesor</li>
-          <li onClick={() => { setActiveSubOption("AgregarMateria"); setRegisterData(null); }}>Agregar materia</li>
-          <li onClick={() => { setActiveSubOption("AsignarMateria"); setRegisterData(null); }}>Asignar materia a docente</li>
-          <li onClick={() => { setActiveSubOption("Materias"); setRegisterData(null); }}>Materias</li>
-          <li>Agregar horario</li>
+          <li onClick={() => { setActiveSubOption("Solicitudes"); resetState(); }}>Solicitudes de registro</li>
+          <li onClick={() => { setActiveSubOption("AgregarAlumno"); resetState(); }}>Agregar alumno</li>
+          <li onClick={() => { setActiveSubOption("AgregarProfesor"); resetState(); }}>Agregar profesor</li>
+          <li onClick={() => { setActiveSubOption("AgregarMateria"); resetState(); }}>Agregar materia</li>
+          <li onClick={() => { setActiveSubOption("AsignarMateria"); resetState(); }}>Asignar materia a docente</li>
+          <li onClick={() => { setActiveSubOption("Materias"); resetState(); }}>Materias</li>
+          <li onClick={() => { setActiveSubOption("AgregarHorario"); resetState(); }}>Agregar horario</li>
+          <li onClick={() => { setActiveSubOption("VerHorarios"); resetState(); }}>Ver horarios</li>
           <li onClick={() => handleUserView("alumnos")}>Alumnos</li>
           <li onClick={() => handleUserView("docentes")}>Docentes</li>
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
@@ -60,8 +64,15 @@ const MainPage = () => {
     );
   };
 
+  const resetState = () => {
+    setRegisterData(null);
+    setSelectedSchedule(null);
+    setUserType(null);
+  };
+
   const renderMainContent = () => {
     if (activeSection === "Administrador") {
+      if (selectedSchedule) return <Schedule schedule={selectedSchedule} onBack={() => setSelectedSchedule(null)} />;
       if (registerData) return <Register data={registerData} />;
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
       if (activeSubOption === "AgregarAlumno") return <Register />;
@@ -70,6 +81,8 @@ const MainPage = () => {
       if (activeSubOption === "AgregarMateria") return <AddSubject />;
       if (activeSubOption === "Materias") return <Subjects />;
       if (activeSubOption === "AsignarMateria") return <AssignSubject />;
+      if (activeSubOption === "AgregarHorario") return <AddSchedule />;
+      if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} />;
     }
 
     return (
@@ -97,20 +110,17 @@ const MainPage = () => {
           <li className={`nav-item ${activeSection === "Inicio" ? "active-orange" : ""}`} onClick={() => {
             setActiveSection("Inicio");
             setActiveSubOption(null);
-            setRegisterData(null);
-            setUserType(null);
+            resetState();
           }}>Inicio</li>
           <li className={`nav-item ${activeSection === "Alumnos" ? "active-orange" : ""}`} onClick={() => {
             setActiveSection("Alumnos");
             setActiveSubOption(null);
-            setRegisterData(null);
-            setUserType(null);
+            resetState();
           }}>Alumnos</li>
           <li className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`} onClick={() => {
             setActiveSection("Administrador");
             setActiveSubOption(null);
-            setRegisterData(null);
-            setUserType(null);
+            resetState();
           }}>Administrador</li>
         </ul>
       </div>
