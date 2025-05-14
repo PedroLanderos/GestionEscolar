@@ -30,7 +30,14 @@ namespace SubjectsApi.Infrastructure.Repositories
                     .CountAsync(a => a.UserId == dto.UserId);
 
                 if (asignacionesDocente >= 4)
-                    return new Response(false, "El docente ya tiene el numero maximo de materias asignadas (4)");
+                    return new Response(false, "El docente ya tiene el número máximo de materias asignadas (4)");
+
+                var idGenerado = $"{dto.SubjectId}-{dto.UserId}";
+                dto.Id = idGenerado;
+
+                var existe = await context.SubjectAssignments.AnyAsync(a => a.Id == idGenerado);
+                if (existe)
+                    return new Response(false, "Ya existe una asignación para esa materia con ese docente");
 
                 var entity = SubjectAssignmentMapper.ToEntity(dto);
                 entity.FechaCreacion = DateTime.UtcNow;
@@ -46,6 +53,7 @@ namespace SubjectsApi.Infrastructure.Repositories
                 return new Response(false, "Error al crear la asignación");
             }
         }
+
 
         public async Task<Response> DeleteAsignmnet(string id)
         {

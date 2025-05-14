@@ -20,6 +20,7 @@ namespace SubjectsApi.Infrastructure.DependencyInjection
             SharedServiceContainer.AddSharedServices<SubjectsDbContext>(services, config, config["MySerilog:FileName"]!);
 
             services.AddScoped<ISubject, SubjectRepository>();
+            services.AddScoped<ISubjectAssignment, SubjectAssignmentRepository>();
 
             return services;
         }
