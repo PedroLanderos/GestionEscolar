@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "./CSS/MainPage.css";
 import RegisterRequest from "./RegisterRequest";
 import Register from "./Register";
@@ -10,9 +10,21 @@ import AssignSubject from "./AssignSubject";
 import AddSchedule from "./AddSchedule";
 import Schedules from "./Schedules";
 import Schedule from "./Schedule";
+import { AuthContext } from "../Context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const MainPage = () => {
-  const [activeSection, setActiveSection] = useState("Alumnos");
+  const { auth } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!auth.isAuthenticated) {
+      navigate("/login");
+    }
+  }, [auth.isAuthenticated, navigate]);
+
+  const isAdmin = auth.user?.role === "Administrador";
+  const [activeSection, setActiveSection] = useState(isAdmin ? "Administrador" : "Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
   const [registerData, setRegisterData] = useState(null);
   const [userType, setUserType] = useState(null);
@@ -24,8 +36,21 @@ const MainPage = () => {
     setUserType(type);
   };
 
+  const resetState = () => {
+    setRegisterData(null);
+    setSelectedSchedule(null);
+    setUserType(null);
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "BUENOS DÍAS";
+    if (hour < 19) return "BUENAS TARDES";
+    return "BUENAS NOCHES";
+  };
+
   const renderSidebarContent = () => {
-    if (activeSection === "Administrador") {
+    if (activeSection === "Administrador" && isAdmin) {
       return (
         <ul>
           <li onClick={() => { setActiveSubOption("Solicitudes"); resetState(); }}>Solicitudes de registro</li>
@@ -64,14 +89,8 @@ const MainPage = () => {
     );
   };
 
-  const resetState = () => {
-    setRegisterData(null);
-    setSelectedSchedule(null);
-    setUserType(null);
-  };
-
   const renderMainContent = () => {
-    if (activeSection === "Administrador") {
+    if (activeSection === "Administrador" && isAdmin) {
       if (selectedSchedule) return <Schedule schedule={selectedSchedule} onBack={() => setSelectedSchedule(null)} />;
       if (registerData) return <Register data={registerData} />;
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
@@ -88,8 +107,8 @@ const MainPage = () => {
     return (
       <>
         <h2>MENÚ PRINCIPAL DE {activeSection.toUpperCase()}</h2>
-        <h3>BUENOS DÍAS</h3>
-        <h3>PEDRO JONAS LANDEROS CORTES</h3>
+        <h3>{getGreeting()}</h3>
+        <h3>{auth.user?.name?.toUpperCase()}</h3>
         <p className="notice">
           <strong>AVISO:</strong> Recuerda que la credencial del IPN te reconoce como alumno y es la forma de identificarte dentro del Instituto.
         </p>
@@ -112,16 +131,20 @@ const MainPage = () => {
             setActiveSubOption(null);
             resetState();
           }}>Inicio</li>
+
           <li className={`nav-item ${activeSection === "Alumnos" ? "active-orange" : ""}`} onClick={() => {
             setActiveSection("Alumnos");
             setActiveSubOption(null);
             resetState();
           }}>Alumnos</li>
-          <li className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`} onClick={() => {
-            setActiveSection("Administrador");
-            setActiveSubOption(null);
-            resetState();
-          }}>Administrador</li>
+
+          {isAdmin && (
+            <li className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`} onClick={() => {
+              setActiveSection("Administrador");
+              setActiveSubOption(null);
+              resetState();
+            }}>Administrador</li>
+          )}
         </ul>
       </div>
 

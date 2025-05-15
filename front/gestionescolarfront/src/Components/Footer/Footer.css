@@ -1,0 +1,44 @@
+.custom-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-top: 2px solid #6e1530;
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  color: #333;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+  flex: 1;
+}
+
+.footer-center {
+  text-align: center;
+  color: #6e1530;
+  font-weight: bold;
+}
+
+.footer-right {
+  text-align: right;
+  color: #555;
+  font-style: italic;
+}
+
+.logout-button {
+  background-color: #6e1530;
+  border: none;
+  color: white;
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #8b203f;
+}

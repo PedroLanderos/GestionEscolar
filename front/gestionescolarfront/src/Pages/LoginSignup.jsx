@@ -13,7 +13,7 @@ const LoginSignup = () => {
   const { login } = useContext(AuthContext);
 
   const [loginData, setLoginData] = useState({
-    email: "",
+    identificador: "",
     password: "",
   });
 
@@ -44,10 +44,10 @@ const LoginSignup = () => {
 
   const bloquearUsuario = async () => {
     try {
-      // Obtenemos el usuario por ID o correo (usamos GetUser reutilizando loginData.email)
       const response = await axios.get(`${AUTH_API}/usuario/obtenerUsuarios`);
       const usuario = response.data.find(
-        (u) => u.id === loginData.email || u.correo === loginData.email
+        (u) =>
+          u.id === loginData.identificador || u.correo === loginData.identificador
       );
 
       if (usuario) {
@@ -70,7 +70,7 @@ const LoginSignup = () => {
 
     try {
       const response = await axios.post(`${AUTH_API}/usuario/login`, {
-        identificador: loginData.email,
+        identificador: loginData.identificador,
         password: loginData.password,
       });
 
@@ -188,9 +188,9 @@ const LoginSignup = () => {
           <>
             <input
               type="text"
-              name="email"
+              name="identificador"
               placeholder="Correo o ID"
-              value={loginData.email}
+              value={loginData.identificador}
               onChange={handleLoginChange}
               required
             />

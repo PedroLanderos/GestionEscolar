@@ -97,7 +97,7 @@ namespace ClassroomApi.Infrastructure.Repositories
             try
             {
                 var reports = await _context.Reportes
-                    .Where(r => r.IdAlumno == studentId) // Filtrar por estudiante
+                    .Where(r => r.IdAlumno == studentId) 
                     .ToListAsync();
 
                 return ReporteMapper.FromEntityList(reports);

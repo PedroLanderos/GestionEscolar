@@ -24,16 +24,3 @@ D:\Code\ingProyecto\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\o
 D:\Code\ingProyecto\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\refint\Proyecto.SharedLibrary.dll
 D:\Code\ingProyecto\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.pdb
 D:\Code\ingProyecto\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\ref\Proyecto.SharedLibrary.dll
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\bin\Debug\net8.0\Proyecto.SharedLibrary.deps.json
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\bin\Debug\net8.0\Proyecto.SharedLibrary.dll
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\bin\Debug\net8.0\Proyecto.SharedLibrary.pdb
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.csproj.AssemblyReference.cache
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.GeneratedMSBuildEditorConfig.editorconfig
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.AssemblyInfoInputs.cache
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.AssemblyInfo.cs
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.csproj.CoreCompileInputs.cache
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.sourcelink.json
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.dll
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\refint\Proyecto.SharedLibrary.dll
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\Proyecto.SharedLibrary.pdb
-D:\Code\sistemagestionescolar\back\Proyecto.SharedLibrarySolution\Proyecto.SharedLibrary\obj\Debug\net8.0\ref\Proyecto.SharedLibrary.dll

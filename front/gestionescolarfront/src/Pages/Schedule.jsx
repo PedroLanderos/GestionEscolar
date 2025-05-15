@@ -4,10 +4,10 @@ import "./CSS/Schedule.css";
 
 const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"];
 const periods = [
-  { label: "Clase 1", horaInicio: "08:00" },
-  { label: "Clase 2", horaInicio: "09:30" },
-  { label: "Clase 3", horaInicio: "11:00" },
-  { label: "Clase 4", horaInicio: "12:30" },
+  { horaInicio: "08:00", horaFin: "09:30" },
+  { horaInicio: "09:30", horaFin: "11:00" },
+  { horaInicio: "11:00", horaFin: "12:30" },
+  { horaInicio: "12:30", horaFin: "14:00" },
 ];
 
 const Schedule = ({ schedule, onBack }) => {
@@ -86,68 +86,67 @@ const Schedule = ({ schedule, onBack }) => {
   };
 
   return (
-  <div className="schedule-container">
-    <div className="schedule-content">
-      <h2 style={{ textAlign: "center", color: "#6e1530" }}>
-        Horario de {schedule?.grado}° {schedule?.grupo}
-      </h2>
+    <div className="schedule-container">
+      <div className="schedule-content">
+        <h2 style={{ textAlign: "center", color: "#6e1530" }}>
+          Horario de {schedule?.grado}° {schedule?.grupo}
+        </h2>
 
-      <button onClick={onBack} className="back-button">
-        ⬅ Volver a la lista de horarios
-      </button>
+        <button onClick={onBack} className="back-button">
+          ⬅ Volver a la lista de horarios
+        </button>
 
-      <div className="schedule-table">
-        <table>
-          <thead>
-            <tr>
-              <th>Horario</th>
-              {days.map((day) => (
-                <th key={day}>{day}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {periods.map(({ label, horaInicio }, periodIndex) => (
-              <tr key={periodIndex}>
-                <td>{label}</td>
-                {days.map((day) => {
-                  const key = `${day}-${horaInicio}`;
-                  const asignacion = asignaciones[key];
-
-                  return (
-                    <td
-                      key={key}
-                      onDrop={(e) => handleDrop(e, day, horaInicio)}
-                      onDragOver={handleDragOver}
-                      className="droppable-cell"
-                    >
-                      {asignacion?.idMateria || ""}
-                    </td>
-                  );
-                })}
+        <div className="schedule-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Hora</th>
+                {days.map((day) => (
+                  <th key={day}>{day}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {periods.map(({ horaInicio, horaFin }, index) => (
+                <tr key={index}>
+                  <td>{horaInicio} - {horaFin}</td>
+                  {days.map((day) => {
+                    const key = `${day}-${horaInicio}`;
+                    const asignacion = asignaciones[key];
+
+                    return (
+                      <td
+                        key={key}
+                        onDrop={(e) => handleDrop(e, day, horaInicio)}
+                        onDragOver={handleDragOver}
+                        className="droppable-cell"
+                      >
+                        {asignacion?.idMateria || ""}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="subject-list">
+        <h3>Materias</h3>
+        {subjects.map((subjectId, index) => (
+          <div
+            key={index}
+            className="subject-item"
+            draggable
+            onDragStart={(e) => handleDragStart(e, subjectId)}
+          >
+            {subjectId}
+          </div>
+        ))}
       </div>
     </div>
-
-    <div className="subject-list">
-      <h3>Materias</h3>
-      {subjects.map((subjectId, index) => (
-        <div
-          key={index}
-          className="subject-item"
-          draggable
-          onDragStart={(e) => handleDragStart(e, subjectId)}
-        >
-          {subjectId}
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
+  );
 };
 
 export default Schedule;
