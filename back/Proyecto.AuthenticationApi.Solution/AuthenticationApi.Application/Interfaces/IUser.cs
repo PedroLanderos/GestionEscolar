@@ -20,6 +20,7 @@ namespace AuthenticationApi.Application.Interfaces
         Task<IEnumerable<ObtenerUsuarioDTO>> GetAllUsers();
         Task<Usuario> GetByAsync(Expression<Func<Usuario, bool>> predicate);
         Task<Response> EditarUsuario(EditarUsuarioDTO dto);
+        Task<Response> EliminarUsuario(string id);
         
     }
 }

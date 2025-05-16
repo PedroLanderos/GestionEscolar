@@ -10,6 +10,7 @@ import AssignSubject from "./AssignSubject";
 import AddSchedule from "./AddSchedule";
 import Schedules from "./Schedules";
 import Schedule from "./Schedule";
+import User from "./User"; // ✅ nuevo import
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -30,16 +31,32 @@ const MainPage = () => {
   const [userType, setUserType] = useState(null);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
 
+  // ✅ Nuevo estado para ver/editar usuario
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [userMode, setUserMode] = useState(null);
+
   const handleUserView = (type) => {
     setActiveSubOption("VerUsuarios");
     setRegisterData(null);
     setUserType(type);
   };
 
+  const handleUserSelect = (id, mode) => {
+    setSelectedUserId(id);
+    setUserMode(mode);
+  };
+
+  const handleBackToUserList = () => {
+    setSelectedUserId(null);
+    setUserMode(null);
+  };
+
   const resetState = () => {
     setRegisterData(null);
     setSelectedSchedule(null);
     setUserType(null);
+    setSelectedUserId(null);
+    setUserMode(null);
   };
 
   const getGreeting = () => {
@@ -96,7 +113,23 @@ const MainPage = () => {
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
       if (activeSubOption === "AgregarAlumno") return <Register />;
       if (activeSubOption === "AgregarProfesor") return <AddTeacher />;
-      if (activeSubOption === "VerUsuarios" && userType) return <UsersTable userType={userType} />;
+      if (activeSubOption === "VerUsuarios" && userType) {
+        if (selectedUserId) {
+          return (
+            <User
+              id={selectedUserId}
+              mode={userMode}
+              onBack={handleBackToUserList}
+            />
+          );
+        }
+        return (
+          <UsersTable
+            userType={userType}
+            onSelectUser={handleUserSelect}
+          />
+        );
+      }
       if (activeSubOption === "AgregarMateria") return <AddSubject />;
       if (activeSubOption === "Materias") return <Subjects />;
       if (activeSubOption === "AsignarMateria") return <AssignSubject />;

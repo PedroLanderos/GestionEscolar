@@ -9,6 +9,8 @@ import { useContext } from 'react';
 import { AuthContext } from './Context/AuthContext';
 import Navbar from './Components/Navbar/Navbar';
 import Footer from './Components/Footer/Footer';
+import UsersTable from './Pages/UsersTable'; 
+import User from './Pages/User'; 
 
 const PrivateRoute = ({ children, allowedRoles }) => {
   const { auth } = useContext(AuthContext);
@@ -16,7 +18,6 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   if (!auth.isAuthenticated) {
     return <Navigate to="/login" />;
   }
-
   if (allowedRoles && !allowedRoles.includes(auth.user.role)) {
     return <Navigate to="/MenuPrincipal" />;
   }
@@ -29,9 +30,8 @@ function App() {
 
   return (
     <BrowserRouter>
-    <Navbar />
+      <Navbar />
 
-    
       <Routes>
         <Route path="/login" element={auth.isAuthenticated ? <Navigate to="/MenuPrincipal" /> : <LoginSignup />} />
         <Route path="/" element={<Navigate to="/login" />} />
@@ -71,8 +71,28 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        {/* ✅ Rutas nuevas */}
+        <Route
+          path="/usuarios/:userType"
+          element={
+            <PrivateRoute allowedRoles={["Administrador"]}>
+              <UsersTable />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/usuario/:id"
+          element={
+            <PrivateRoute allowedRoles={["Administrador"]}>
+              <User />
+            </PrivateRoute>
+          }
+        />
       </Routes>
-    <Footer />
+
+      <Footer />
     </BrowserRouter>
   );
 }

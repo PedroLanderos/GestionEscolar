@@ -347,5 +347,26 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 throw new Exception("Error al obtener el usuario desde el repositorio");
             }
         }
+
+        public async Task<Response> EliminarUsuario(string id)
+        {
+            try
+            {
+                var usuario = await context.Usuarios.FindAsync(id);
+
+                if (usuario is null)
+                    return new Response(false, "Usuario no encontrado");
+
+                context.Usuarios.Remove(usuario);
+                await context.SaveChangesAsync();
+
+                return new Response(true, "Usuario eliminado exitosamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw;
+            }
+        }
     }
 }

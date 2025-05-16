@@ -198,5 +198,20 @@ namespace AuthenticationApi.Presentation.Controllers
                 return StatusCode(500, new Response(false, "Error al editar el usuario desde el controlador"));
             }
         }
+
+        [HttpDelete("eliminarUsuario/{id}")]
+        public async Task<ActionResult<Response>> EliminarUsuario(string id)
+        {
+            try
+            {
+                var result = await userService.EliminarUsuario(id);
+                return result.Flag ? Ok(result) : NotFound(result);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, new Response(false, "Error al eliminar el usuario desde el controlador"));
+            }
+        }
     }
 }

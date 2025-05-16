@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./CSS/UsersTable.css";
 import { AUTH_API } from "../Config/apiConfig";
+import "./CSS/UsersTable.css";
 
 const endpointMap = {
   alumnos: `${AUTH_API}/usuario/obtenerAlumnos`,
@@ -17,7 +17,7 @@ const titleMap = {
   administradores: "Administradores",
 };
 
-const UsersTable = ({ userType }) => {
+const UsersTable = ({ userType, onSelectUser }) => {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,6 +39,17 @@ const UsersTable = ({ userType }) => {
     }
   }, [userType]);
 
+  const handleDelete = async (id) => {
+    const confirm = window.confirm("¿Estás seguro que quieres eliminar a este usuario?");
+    if (!confirm) return;
+    try {
+      await axios.delete(`${AUTH_API}/usuario/eliminarUsuario/${id}`);
+      setUsuarios(usuarios.filter((u) => u.id !== id));
+    } catch (error) {
+      console.error("❌ Error al eliminar usuario:", error);
+    }
+  };
+
   return (
     <div className="users-table-container">
       <h2>Usuarios - {titleMap[userType] || "Sin tipo"}</h2>
@@ -56,6 +67,7 @@ const UsersTable = ({ userType }) => {
               <th>Dado de Baja</th>
               <th>Última Sesión</th>
               <th>Rol</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -69,6 +81,11 @@ const UsersTable = ({ userType }) => {
                 <td>{u.dadoDeBaja ? "Sí" : "No"}</td>
                 <td>{new Date(u.ultimaSesion).toLocaleDateString()}</td>
                 <td>{u.rol}</td>
+                <td>
+                  <button onClick={() => onSelectUser(u.id, "view")}>Ver</button>
+                  <button onClick={() => onSelectUser(u.id, "edit")}>Editar</button>
+                  <button onClick={() => handleDelete(u.id)}>Eliminar</button>
+                </td>
               </tr>
             ))}
           </tbody>
