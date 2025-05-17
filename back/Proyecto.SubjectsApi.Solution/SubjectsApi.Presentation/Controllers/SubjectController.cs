@@ -1,5 +1,4 @@
 ﻿using Llaveremos.SharedLibrary.Responses;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SubjectsApi.Application.DTOs;
 using SubjectsApi.Application.Interfaces;
@@ -69,6 +68,16 @@ namespace SubjectsApi.Presentation.Controllers
             var materias = await subjectService.GetManyByAsync(s => s.Grado == grado);
 
             return materias.Any() ? Ok(materias) : NotFound($"No se encontraron materias para el grado {grado}");
+        }
+
+        [HttpGet("obtenerPorCodigo/{codigo}")]
+        public async Task<ActionResult<SubjectDTO>> GetByCode(string codigo)
+        {
+            if (string.IsNullOrWhiteSpace(codigo))
+                return BadRequest("Código inválido");
+
+            var subject = await subjectService.GetByCode(codigo);
+            return subject is not null ? Ok(subject) : NotFound("Materia no encontrada con el código proporcionado");
         }
     }
 }

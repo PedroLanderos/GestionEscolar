@@ -58,5 +58,15 @@ namespace SubjectsApi.Presentation.Controllers
             var result = await service.DeleteAsignmnet(id);
             return result.Flag ? Ok(result) : BadRequest(result);
         }
+
+        [HttpGet("obtenerAsignacionesPorGrado/{grado}")]
+        public async Task<ActionResult<IEnumerable<SubjectAssignmentDTO>>> GetByGrado(int grado)
+        {
+            if (grado < 1 || grado > 3)
+                return BadRequest("El grado debe estar entre 1 y 3");
+
+            var asignaciones = await service.GetAssignmentByGrade(grado);
+            return asignaciones.Any() ? Ok(asignaciones) : NotFound($"No se encontraron asignaciones para el grado {grado}");
+        }
     }
 }

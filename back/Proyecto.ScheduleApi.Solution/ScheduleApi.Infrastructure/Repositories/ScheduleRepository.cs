@@ -20,19 +20,19 @@ namespace ScheduleApi.Infrastructure.Repositories
         {
             try
             {
-                var entity = ScheduleToUserMapper.ToEntity(dto);
-                var response = context.ScheduleToUsers.Add(entity);
+                var entity = ScheduleToUserMapper.ToEntity(dto); 
+                context.ScheduleToUsers.Add(entity);
                 await context.SaveChangesAsync();
 
-                if (response is null) return new Response(false, "Error al asignar el horario al alumno");
                 return new Response(true, "Horario asignado al alumno exitosamente");
             }
             catch (Exception ex)
             {
                 LogException.LogExceptions(ex);
-                throw;
+                return new Response(false, "Error al asignar el horario al alumno");
             }
         }
+
 
         public async Task<Response> AsignSubjectToScheduleAsync(SubjectToScheduleDTO subjectToScheduleDTO)
         {

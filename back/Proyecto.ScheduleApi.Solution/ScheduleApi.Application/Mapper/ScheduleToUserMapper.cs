@@ -21,6 +21,15 @@ namespace ScheduleApi.Application.Mapper
         {
             return new ScheduleToUser
             {
+                IdSchedule = dto.IdSchedule ?? 0,
+                IdUser = dto.IdUser
+            };
+        }
+
+        public static ScheduleToUser ToEntityWithId(ScheduleToUserDTO dto)
+        {
+            return new ScheduleToUser
+            {
                 Id = dto.Id,
                 IdSchedule = dto.IdSchedule ?? 0,
                 IdUser = dto.IdUser

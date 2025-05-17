@@ -12,5 +12,6 @@ namespace SubjectsApi.Application.Interfaces
     public interface ISubject : IGenericInterface<SubjectDTO>
     {
         Task<IEnumerable<SubjectDTO>> GetManyByAsync(Expression<Func<SubjectDTO, bool>> predicate);
+        Task<SubjectDTO> GetByCode(string code);
     }
 }

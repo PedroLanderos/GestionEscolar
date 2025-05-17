@@ -97,3 +97,17 @@
 .back-button:hover {
   background-color: #e68100;
 }
+
+/* Tooltip */
+.tooltip {
+  position: fixed;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 4px;
+  white-space: pre-line;
+  pointer-events: none;
+  z-index: 1000;
+  font-size: 0.85rem;
+  max-width: 250px;
+}

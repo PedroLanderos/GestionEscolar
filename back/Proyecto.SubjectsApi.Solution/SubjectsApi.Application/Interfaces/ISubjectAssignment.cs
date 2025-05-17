@@ -19,6 +19,7 @@ namespace SubjectsApi.Application.Interfaces
         Task<SubjectAssignmentDTO> GetById(string id);
         Task<IEnumerable<SubjectAssignmentDTO>> GetAsignmnets();
         Task<IEnumerable<SubjectAssignment>> GetBy(Expression<Func<SubjectAssignment, bool>> predicate);
+        Task<IEnumerable<SubjectAssignmentDTO>> GetAssignmentByGrade(int grado);
 
     }
 }

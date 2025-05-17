@@ -99,6 +99,24 @@ namespace SubjectsApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<SubjectDTO> GetByCode(string code)
+        {
+            try
+            {
+                var entity = await context.Subjects.FirstOrDefaultAsync(s => s.Codigo == code);
+
+                if (entity is null)
+                    return null!;
+
+                return SubjectMapper.FromEntity(entity);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al buscar la materia por código");
+            }
+        }
+
         public async Task<IEnumerable<SubjectDTO>> GetManyByAsync(Expression<Func<SubjectDTO, bool>> predicate)
         {
             try

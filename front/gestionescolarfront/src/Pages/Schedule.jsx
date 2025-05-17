@@ -16,14 +16,16 @@ const Schedule = ({ schedule, onBack }) => {
   const [subjects, setSubjects] = useState([]);
   const [asignaciones, setAsignaciones] = useState({});
   const [draggedSubjectId, setDraggedSubjectId] = useState("");
+  const [tooltip, setTooltip] = useState({ visible: false, content: "", x: 0, y: 0 });
 
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
-        const res = await axios.get("http://localhost:5001/api/subjectassignment/obtenerAsignaciones");
-        setSubjects(res.data.map((s) => s.id)); // Mostrar ID completo
+        if (!schedule?.grado) return;
+        const res = await axios.get(`http://localhost:5001/api/subjectassignment/obtenerAsignacionesPorGrado/${schedule.grado}`);
+        setSubjects(res.data);
       } catch (error) {
-        console.error("❌ Error al obtener materias asignadas:", error);
+        console.error("❌ Error al obtener materias asignadas por grado:", error);
       }
     };
 
@@ -42,7 +44,7 @@ const Schedule = ({ schedule, onBack }) => {
 
     fetchSubjects();
     if (horarioId) fetchSchedule();
-  }, [horarioId]);
+  }, [horarioId, schedule?.grado]);
 
   const handleDragStart = (e, subjectId) => {
     setDraggedSubjectId(subjectId);
@@ -83,6 +85,33 @@ const Schedule = ({ schedule, onBack }) => {
 
   const handleDragOver = (e) => {
     e.preventDefault();
+  };
+
+  const showTooltip = async (subjectId, event) => {
+    const [subjectCode, userId] = subjectId.split("-");
+
+    try {
+      const [subjectRes, userRes] = await Promise.all([
+        axios.get(`http://localhost:5001/api/Subject/obtenerPorCodigo/${subjectCode}`),
+        axios.get(`http://localhost:5000/api/usuario/obtenerUsuarioPorId/${userId}`),
+      ]);
+
+      const nombreMateria = subjectRes.data?.nombre || "Materia desconocida";
+      const nombreDocente = userRes.data?.nombreCompleto || "Docente desconocido";
+
+      setTooltip({
+        visible: true,
+        content: `Materia: ${nombreMateria}\nDocente: ${nombreDocente}`,
+        x: event.clientX + 10,
+        y: event.clientY + 10,
+      });
+    } catch (error) {
+      console.error("❌ Error al cargar datos del tooltip:", error);
+    }
+  };
+
+  const hideTooltip = () => {
+    setTooltip({ visible: false, content: "", x: 0, y: 0 });
   };
 
   return (
@@ -134,17 +163,29 @@ const Schedule = ({ schedule, onBack }) => {
 
       <div className="subject-list">
         <h3>Materias</h3>
-        {subjects.map((subjectId, index) => (
+        {subjects.map((subject, index) => (
           <div
             key={index}
             className="subject-item"
             draggable
-            onDragStart={(e) => handleDragStart(e, subjectId)}
+            onDragStart={(e) => handleDragStart(e, subject.id)}
+            onMouseEnter={(e) => showTooltip(subject.id, e)}
+            onMouseMove={(e) => tooltip.visible && setTooltip(prev => ({ ...prev, x: e.clientX + 10, y: e.clientY + 10 }))}
+            onMouseLeave={hideTooltip}
           >
-            {subjectId}
+            {subject.id}
           </div>
         ))}
       </div>
+
+      {tooltip.visible && (
+        <div
+          className="tooltip"
+          style={{ top: tooltip.y, left: tooltip.x }}
+        >
+          {tooltip.content}
+        </div>
+      )}
     </div>
   );
 };

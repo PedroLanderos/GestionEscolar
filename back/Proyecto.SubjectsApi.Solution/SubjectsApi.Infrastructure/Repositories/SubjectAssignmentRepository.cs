@@ -89,6 +89,24 @@ namespace SubjectsApi.Infrastructure.Repositories
             }
         }
 
+       
+        public async Task<IEnumerable<SubjectAssignmentDTO>> GetAssignmentByGrade(int grado)
+        {
+            try
+            {
+                var subjectsIds = await context.Subjects.Where(s => s.Grado == grado).Select(s => s.Codigo).ToListAsync();
+
+                var assingments = await context.SubjectAssignments.Where(a => subjectsIds.Contains(a.SubjectId!)).ToListAsync();
+
+                return SubjectAssignmentMapper.FromEntityList(assingments);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error en get assingment by id en repositorio");
+            }
+        }
+
         public async Task<IEnumerable<SubjectAssignment>> GetBy(Expression<Func<SubjectAssignment, bool>> predicate)
         {
             try
