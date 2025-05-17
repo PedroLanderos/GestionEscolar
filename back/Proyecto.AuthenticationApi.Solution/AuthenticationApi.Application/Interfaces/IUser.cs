@@ -18,9 +18,9 @@ namespace AuthenticationApi.Application.Interfaces
         Task<Response> Login(IniciarSesionDTO loginDTO);
         Task<ObtenerUsuarioDTO> ObtenerUsuarioPorId(string id);
         Task<IEnumerable<ObtenerUsuarioDTO>> GetAllUsers();
-        Task<Usuario> GetByAsync(Expression<Func<Usuario, bool>> predicate);
+        Task<IEnumerable<Usuario>> GetByAsync(Expression<Func<Usuario, bool>> predicate);
         Task<Response> EditarUsuario(EditarUsuarioDTO dto);
         Task<Response> EliminarUsuario(string id);
-        
+        Task<IEnumerable<UsuarioDTO>> FiltrarPorGrado(int grado);
     }
 }

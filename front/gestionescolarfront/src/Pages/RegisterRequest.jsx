@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CSS/RegisterRequest.css";
+import { AUTH_API } from "../Config/apiConfig";
 
 const RegisterRequest = ({ onRegisterClick }) => {
   const [requests, setRequests] = useState([]);
@@ -9,7 +10,7 @@ const RegisterRequest = ({ onRegisterClick }) => {
 
   const fetchRequests = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/solicitud/obtenerSolicitudes");
+      const response = await axios.get(`${AUTH_API}/solicitud/obtenerSolicitudesSinProcesar`);
       setRequests(response.data); 
     } catch (err) {
       console.error("❌ Error al obtener solicitudes:", err);

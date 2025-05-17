@@ -72,5 +72,26 @@ namespace ScheduleApi.Presentation.Controllers
             var result = await scheduleService.GetFullSchedule(scheduleId);
             return Ok(result);
         }
+
+        [HttpPost("asignarAlumnoHorario")]
+        public async Task<IActionResult> AssignStudentToSchedule([FromBody] ScheduleToUserDTO dto)
+        {
+            var result = await scheduleService.AsignStudentToScheduleAsync(dto);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPut("actualizarAsignacionAlumno")]
+        public async Task<IActionResult> UpdateStudentAssignment([FromBody] ScheduleToUserDTO dto)
+        {
+            var result = await scheduleService.UpdateAsignStudentToScheduleAsync(dto);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpDelete("eliminarAsignacionAlumno/{id}")]
+        public async Task<IActionResult> DeleteStudentAssignment(int id)
+        {
+            var result = await scheduleService.DeleteAsignStudentToScheduleAsync(id);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
     }
 }

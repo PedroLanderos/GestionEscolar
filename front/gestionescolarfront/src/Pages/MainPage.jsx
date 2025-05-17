@@ -82,6 +82,8 @@ const MainPage = () => {
           <li onClick={() => handleUserView("docentes")}>Docentes</li>
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
+          <li onClick={() => { setActiveSubOption("AsignarHorario"); resetState(); }}>Asignar horario a alumnos</li>
+
         </ul>
       );
     }

@@ -16,6 +16,24 @@ namespace ScheduleApi.Infrastructure.Repositories
 {
     public class ScheduleRepository(ScheduleDbContext context) : ISchedule
     {
+        public async Task<Response> AsignStudentToScheduleAsync(ScheduleToUserDTO dto)
+        {
+            try
+            {
+                var entity = ScheduleToUserMapper.ToEntity(dto);
+                var response = context.ScheduleToUsers.Add(entity);
+                await context.SaveChangesAsync();
+
+                if (response is null) return new Response(false, "Error al asignar el horario al alumno");
+                return new Response(true, "Horario asignado al alumno exitosamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw;
+            }
+        }
+
         public async Task<Response> AsignSubjectToScheduleAsync(SubjectToScheduleDTO subjectToScheduleDTO)
         {
             try
@@ -50,6 +68,24 @@ namespace ScheduleApi.Infrastructure.Repositories
             {
                 LogException.LogExceptions(ex);
                 return new Response(false, "Error al crear horario desde el repositorio");
+            }
+        }
+
+        public async Task<Response> DeleteAsignStudentToScheduleAsync(int id)
+        {
+            try
+            {
+                var assingment = await context.ScheduleToUsers.FindAsync(id);
+                if(assingment == null)
+                    return new Response(false, "Asignacion no encontrada");
+                context.ScheduleToUsers.Remove(assingment);
+                await context.SaveChangesAsync();
+                return new Response(true, "Asignacion eliminada correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al eliminar una asignacion de horario desde el repositorio");
             }
         }
 
@@ -177,6 +213,27 @@ namespace ScheduleApi.Infrastructure.Repositories
             {
                 LogException.LogExceptions(ex);
                 return new Response(false, "Error al actualizar la asignación");
+            }
+        }
+
+        public async Task<Response> UpdateAsignStudentToScheduleAsync(ScheduleToUserDTO dto)
+        {
+            try
+            {
+                var existing = await context.ScheduleToUsers.FindAsync(dto.Id);
+                if (existing == null)
+                    return new Response(false, "Asignación no encontrada");
+
+                existing.IdSchedule = dto.IdSchedule ?? 0;
+                existing.IdUser = dto.IdUser;
+                context.ScheduleToUsers.Update(existing);
+                await context.SaveChangesAsync();
+                return new Response(true, "Asignación actualizada correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al actualizar la asignacion de horario en repositorio");
             }
         }
 

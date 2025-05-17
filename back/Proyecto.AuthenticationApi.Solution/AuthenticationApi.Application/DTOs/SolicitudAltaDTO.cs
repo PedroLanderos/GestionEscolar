@@ -9,6 +9,7 @@ namespace AuthenticationApi.Application.DTOs
 {
     public class SolicitudAltaDTO
     {
+        public int Id { get; set; }
         [Required]
         public string NombreAlumno { get; set; } = null!;
         [Required]

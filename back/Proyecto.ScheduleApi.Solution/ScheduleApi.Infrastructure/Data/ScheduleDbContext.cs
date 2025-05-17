@@ -12,5 +12,6 @@ namespace ScheduleApi.Infrastructure.Data
     {
         public DbSet<Schedule> Schedules { get; set; } 
         public DbSet<SubjectToSchedule> SubjectToSchedules { get; set; }
+        public DbSet<ScheduleToUser> ScheduleToUsers { get; set; } 
     }
 }

@@ -213,5 +213,24 @@ namespace AuthenticationApi.Presentation.Controllers
                 return StatusCode(500, new Response(false, "Error al eliminar el usuario desde el controlador"));
             }
         }
+
+        [HttpGet("filtrarPorGrado/{grado}")]
+        public async Task<ActionResult<IEnumerable<UsuarioDTO>>> FiltrarPorGrado(int grado)
+        {
+            try
+            {
+                var alumnos = await userService.FiltrarPorGrado(grado);
+
+                if (!alumnos.Any())
+                    return NotFound($"No se encontraron alumnos para el grado {grado}");
+
+                return Ok(alumnos);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, $"Error al filtrar los alumnos por grado {grado}");
+            }
+        }
     }
 }

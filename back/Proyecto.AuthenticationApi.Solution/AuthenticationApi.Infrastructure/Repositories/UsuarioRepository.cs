@@ -6,7 +6,6 @@ using Llaveremos.SharedLibrary.Responses;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -17,7 +16,7 @@ using System.Linq.Expressions;
 
 namespace AuthenticationApi.Infrastructure.Repositories
 {
-    public class UsuarioRepository(AuthenticationDbContext context, IEmail emailService, IConfiguration config, IRandomService randomService) : IUser
+    public class UsuarioRepository(AuthenticationDbContext context, IEmail emailService, IConfiguration config, IRandomService randomService, ISolicitudRepository solicitudes) : IUser
     {
         public async Task<IEnumerable<ObtenerUsuarioDTO>> GetAllUsers()
         {
@@ -43,6 +42,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 throw new Exception("Error al obtener todos los usuarios en el repositorio");
             }
         }
+
         public async Task<Usuario> GetUser(string identificador)
         {
             try
@@ -59,38 +59,35 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 throw new Exception("Error al buscar usuario en el repository");
             }
         }
+
         public async Task<Response> Login(IniciarSesionDTO loginDTO)
         {
             try
             {
-                //validar al usuario
                 var usuario = await GetUser(loginDTO.Identificador);
                 if (usuario is null) return new Response(false, "Identificador invalido");
 
-                //verificar los datos del usuario
                 var contrasenaUsuario = usuario.Contrasena;
                 bool isValid = false;
 
-                if(contrasenaUsuario!.StartsWith("$2"))
+                if (contrasenaUsuario!.StartsWith("$2"))
                     isValid = BCrypt.Net.BCrypt.Verify(loginDTO.Password, contrasenaUsuario);
                 else
                 {
                     isValid = contrasenaUsuario == loginDTO.Password;
-                    if(isValid)
+                    if (isValid)
                     {
                         usuario.Contrasena = BCrypt.Net.BCrypt.HashPassword(contrasenaUsuario);
                         context.Update(usuario);
                         await context.SaveChangesAsync();
                     }
                 }
-                
-                if(!isValid) return new Response(false, "Credenciales invalidas");
-                if(usuario.CuentaBloqueada == true) return new Response(false, "Usuario bloqueado");
 
-                //generar token
+                if (!isValid) return new Response(false, "Credenciales invalidas");
+                if (usuario.CuentaBloqueada == true) return new Response(false, "Usuario bloqueado");
+
                 string token = GenerateToken(usuario);
                 return new Response(true, token);
-
             }
             catch (Exception ex)
             {
@@ -118,7 +115,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 issuer: config["Authentication:Issuer"],
                 audience: config["Authentication:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1), 
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: credentials
             );
 
@@ -169,7 +166,6 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 context.Usuarios.AddRange(alumno, padre);
                 await context.SaveChangesAsync();
 
-                // Enviar correo al padre con las credenciales
                 string subject = "Datos de acceso - Sistema Escolar";
                 string body = $@"
                 <p>Hola <strong>{padre.NombreCompleto}</strong>,</p>
@@ -195,6 +191,15 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 {
                     LogException.LogExceptions(ex);
                     return new Response(true, "Usuarios registrados, pero no se pudo enviar el correo.");
+                }
+
+                try
+                {
+                    await solicitudes.MarcarSolicitudComoProcesada(dto.Curp);
+                }
+                catch (Exception ex)
+                {
+                    LogException.LogExceptions(ex);
                 }
 
                 return new Response(true, "Usuarios registrados exitosamente y correo enviado.");
@@ -235,11 +240,47 @@ namespace AuthenticationApi.Infrastructure.Repositories
             }
         }
 
-        public async Task<Usuario> GetByAsync(Expression<Func<Usuario, bool>> predicate)
+        public async Task<IEnumerable<UsuarioDTO>> FiltrarPorGrado(int grado)
         {
             try
             {
-                var usuario = await context.Usuarios.Where(predicate).FirstOrDefaultAsync()!;
+                var alumnos = await GetByAsync(x => x.Rol == "Alumno");
+                var curpsAlumnos = alumnos.Select(a => a.Curp!.ToUpper()).ToList();
+
+                var solicitudesFiltradas = await context.SolicitudesAltas
+                   .Where(s => curpsAlumnos.Contains(s.CurpAlumno.ToUpper()) && s.Grado == grado)
+                   .ToListAsync();
+
+                var curpsFiltrados = solicitudesFiltradas.Select(s => s.CurpAlumno.ToUpper()).ToHashSet();
+
+                var alumnosFiltrados = alumnos
+                .Where(a => curpsFiltrados.Contains(a.Curp!.ToUpper()))
+                .Select(a => new UsuarioDTO(
+                    a.Id!,
+                    a.NombreCompleto!,
+                    a.Correo!,
+                    a.Contrasena!,
+                    a.Curp!,
+                    a.CuentaBloqueada ?? false,
+                    a.DadoDeBaja ?? false,
+                    a.UltimaSesion ?? DateTime.MinValue,
+                    a.Rol!
+                ));
+
+                return alumnosFiltrados;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<Usuario>> GetByAsync(Expression<Func<Usuario, bool>> predicate)
+        {
+            try
+            {
+                var usuario = await context.Usuarios.Where(predicate).ToListAsync()!;
                 return usuario is not null ? usuario : null!;
             }
             catch (Exception ex)
@@ -265,7 +306,6 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 usuario.UltimaSesion = dto.UltimaSesion;
                 usuario.Rol = dto.Rol;
 
-                
                 if (!string.IsNullOrWhiteSpace(dto.Contrasena))
                     usuario.Contrasena = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena);
 
@@ -288,9 +328,8 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 if (string.IsNullOrWhiteSpace(dto.Id) || (dto.Id != "BA" && dto.Id != "BB"))
                     return new Response(false, "El prefijo del ID debe ser 'BA' o 'BB'.");
 
-                
                 var random = new Random();
-                var randomDigits = random.Next(100000, 999999); 
+                var randomDigits = random.Next(100000, 999999);
 
                 string idGenerado = $"{dto.Id}{randomDigits}";
 

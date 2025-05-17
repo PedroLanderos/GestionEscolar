@@ -15,6 +15,7 @@ namespace ScheduleApi.Application.Interfaces
         Task<Response> CreateSchedule(ScheduleDTO schedule);
         Task<Response> UpdateScheduleAsync(ScheduleDTO schedule);
         Task<Response> AsignSubjectToScheduleAsync(SubjectToScheduleDTO subjectToScheduleDTO);
+
         Task<Response> UpdateAsignmentAsync(SubjectToScheduleDTO subjectToScheduleDTO);
         Task<Response> DeleteScheduleAsync(int id);
         Task<Response> DeleteAsignSubjectToScheduleAsync(int id);
@@ -22,5 +23,10 @@ namespace ScheduleApi.Application.Interfaces
         Task<IEnumerable<ScheduleDTO>> GetSchedules();
         Task<IEnumerable<SubjectToSchedule>> GetFullSchedule(int id);
         Task<IEnumerable<SubjectToSchedule>> GetBy(Expression<Func<SubjectToSchedule, bool>> predicate);
+
+        //apartado para asignar horarios a alumnos
+        Task<Response> AsignStudentToScheduleAsync(ScheduleToUserDTO dto);
+        Task<Response> UpdateAsignStudentToScheduleAsync(ScheduleToUserDTO dto);
+        Task<Response> DeleteAsignStudentToScheduleAsync(int id);
     }
 }
