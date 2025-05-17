@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CSS/RegisterRequest.css";
 import { SUBJ_API } from "../Config/apiConfig";
-import AddSubject from "./AddSubject";
 
-const Subjects = () => {
+const Subjects = ({ onEdit }) => {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingSubject, setEditingSubject] = useState(null);
 
   const fetchSubjects = async () => {
     try {
@@ -29,16 +27,6 @@ const Subjects = () => {
   return (
     <div className="register-request-container">
       <h2>Materias registradas</h2>
-
-      {editingSubject && (
-        <AddSubject
-          subject={editingSubject}
-          onSuccess={() => {
-            setEditingSubject(null);
-            fetchSubjects();
-          }}
-        />
-      )}
 
       {loading && <p>Cargando materias...</p>}
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -64,7 +52,7 @@ const Subjects = () => {
                 <td>{subject.grado}</td>
                 <td>{new Date(subject.fechaCreacion).toLocaleDateString()}</td>
                 <td>
-                  <button onClick={() => setEditingSubject(subject)}>Editar materia</button>
+                  <button onClick={() => onEdit(subject)}>Editar materia</button>
                 </td>
               </tr>
             ))}

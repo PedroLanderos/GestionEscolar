@@ -32,6 +32,7 @@ const MainPage = () => {
   const [userType, setUserType] = useState(null);
   const [selectedSchedule, setSelectedSchedule] = useState(null); // Consultar horario
   const [assignSchedule, setAssignSchedule] = useState(null);     // Asignar alumnos
+  const [editingSubject, setEditingSubject] = useState(null);     // Editar materia
 
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [userMode, setUserMode] = useState(null);
@@ -56,6 +57,7 @@ const MainPage = () => {
     setRegisterData(null);
     setSelectedSchedule(null);
     setAssignSchedule(null);
+    setEditingSubject(null);
     setUserType(null);
     setSelectedUserId(null);
     setUserMode(null);
@@ -118,6 +120,18 @@ const MainPage = () => {
         return <AssignSchedule schedule={assignSchedule} onClose={() => setAssignSchedule(null)} />;
       }
 
+      if (editingSubject) {
+        return (
+          <AddSubject
+            subject={editingSubject}
+            onSuccess={() => {
+              setEditingSubject(null);
+              setActiveSubOption("Materias");
+            }}
+          />
+        );
+      }
+
       if (registerData) return <Register data={registerData} />;
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
       if (activeSubOption === "AgregarAlumno") return <Register />;
@@ -142,11 +156,18 @@ const MainPage = () => {
       }
 
       if (activeSubOption === "AgregarMateria") return <AddSubject />;
-      if (activeSubOption === "Materias") return <Subjects />;
+      if (activeSubOption === "Materias") {
+        return (
+          <Subjects
+            onEdit={(subject) => {
+              setEditingSubject(subject);
+            }}
+          />
+        );
+      }
       if (activeSubOption === "AsignarMateria") return <AssignSubject />;
       if (activeSubOption === "AgregarHorario") return <AddSchedule />;
 
-      // ✅ Todo lo de horarios en una sola opción
       if (activeSubOption === "VerHorarios") {
         return (
           <Schedules
