@@ -35,3 +35,23 @@
 .register-request-container tr:hover {
   background-color: #fafafa;
 }
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-buttons button {
+  flex: 1;
+  background-color: #f90;
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.action-buttons button:hover {
+  background-color: #e68100;
+}

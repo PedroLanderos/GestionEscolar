@@ -1,15 +1,12 @@
-// Schedules.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CSS/RegisterRequest.css";
 import { SCHEDULE_API } from "../Config/apiConfig";
-import AsignSchedule from "./AsignSchedule"; // IMPORTANTE
 
-const Schedules = ({ onViewSchedule }) => {
+const Schedules = ({ onViewSchedule, onAssignSchedule }) => {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedSchedule, setSelectedSchedule] = useState(null); // para Asignar
 
   const fetchSchedules = async () => {
     try {
@@ -49,10 +46,10 @@ const Schedules = ({ onViewSchedule }) => {
                 <td>{schedule.grado}</td>
                 <td>{schedule.grupo}</td>
                 <td>
-                  <button onClick={() => onViewSchedule(schedule)}>Consultar horario</button>
-                  <button onClick={() => setSelectedSchedule(schedule)} style={{ marginLeft: "10px" }}>
-                    Asignar horario
-                  </button>
+                  <div className="action-buttons">
+                    <button onClick={() => onViewSchedule(schedule)}>Consultar horario</button>
+                    <button onClick={() => onAssignSchedule(schedule)}>Asignar horario</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -62,10 +59,6 @@ const Schedules = ({ onViewSchedule }) => {
 
       {!loading && !error && schedules.length === 0 && (
         <p>No hay horarios registrados.</p>
-      )}
-
-      {selectedSchedule && (
-        <AsignSchedule schedule={selectedSchedule} onClose={() => setSelectedSchedule(null)} />
       )}
     </div>
   );

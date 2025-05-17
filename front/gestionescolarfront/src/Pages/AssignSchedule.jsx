@@ -86,9 +86,9 @@ const AssignSchedule = ({ schedule, onClose }) => {
         </div>
       </div>
 
-      <button onClick={handleAssign} disabled={loading}>
+      <button onClick={handleAssign} disabled={loading || students.length === 0}>
         {loading ? "Asignando..." : "Asignar Horario"}
-      </button>
+        </button>
       <button onClick={onClose} style={{ marginTop: "10px", backgroundColor: "#999" }}>
         Cancelar
       </button>

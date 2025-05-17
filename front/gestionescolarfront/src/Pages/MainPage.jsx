@@ -10,7 +10,8 @@ import AssignSubject from "./AssignSubject";
 import AddSchedule from "./AddSchedule";
 import Schedules from "./Schedules";
 import Schedule from "./Schedule";
-import User from "./User"; // ✅ nuevo import
+import AssignSchedule from "./AssignSchedule";
+import User from "./User";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -29,9 +30,9 @@ const MainPage = () => {
   const [activeSubOption, setActiveSubOption] = useState(null);
   const [registerData, setRegisterData] = useState(null);
   const [userType, setUserType] = useState(null);
-  const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const [selectedSchedule, setSelectedSchedule] = useState(null); // Consultar horario
+  const [assignSchedule, setAssignSchedule] = useState(null);     // Asignar alumnos
 
-  // ✅ Nuevo estado para ver/editar usuario
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [userMode, setUserMode] = useState(null);
 
@@ -54,6 +55,7 @@ const MainPage = () => {
   const resetState = () => {
     setRegisterData(null);
     setSelectedSchedule(null);
+    setAssignSchedule(null);
     setUserType(null);
     setSelectedUserId(null);
     setUserMode(null);
@@ -82,8 +84,6 @@ const MainPage = () => {
           <li onClick={() => handleUserView("docentes")}>Docentes</li>
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
-          <li onClick={() => { setActiveSubOption("AsignarHorario"); resetState(); }}>Asignar horario a alumnos</li>
-
         </ul>
       );
     }
@@ -110,11 +110,19 @@ const MainPage = () => {
 
   const renderMainContent = () => {
     if (activeSection === "Administrador" && isAdmin) {
-      if (selectedSchedule) return <Schedule schedule={selectedSchedule} onBack={() => setSelectedSchedule(null)} />;
+      if (selectedSchedule) {
+        return <Schedule schedule={selectedSchedule} onBack={() => setSelectedSchedule(null)} />;
+      }
+
+      if (assignSchedule) {
+        return <AssignSchedule schedule={assignSchedule} onClose={() => setAssignSchedule(null)} />;
+      }
+
       if (registerData) return <Register data={registerData} />;
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
       if (activeSubOption === "AgregarAlumno") return <Register />;
       if (activeSubOption === "AgregarProfesor") return <AddTeacher />;
+
       if (activeSubOption === "VerUsuarios" && userType) {
         if (selectedUserId) {
           return (
@@ -132,11 +140,27 @@ const MainPage = () => {
           />
         );
       }
+
       if (activeSubOption === "AgregarMateria") return <AddSubject />;
       if (activeSubOption === "Materias") return <Subjects />;
       if (activeSubOption === "AsignarMateria") return <AssignSubject />;
       if (activeSubOption === "AgregarHorario") return <AddSchedule />;
-      if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} />;
+
+      // ✅ Todo lo de horarios en una sola opción
+      if (activeSubOption === "VerHorarios") {
+        return (
+          <Schedules
+            onViewSchedule={(schedule) => {
+              setAssignSchedule(null);
+              setSelectedSchedule(schedule);
+            }}
+            onAssignSchedule={(schedule) => {
+              setSelectedSchedule(null);
+              setAssignSchedule(schedule);
+            }}
+          />
+        );
+      }
     }
 
     return (
