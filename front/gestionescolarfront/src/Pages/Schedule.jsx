@@ -87,6 +87,26 @@ const Schedule = ({ schedule, onBack }) => {
     e.preventDefault();
   };
 
+  const handleDoubleClick = async (asignacion) => {
+    if (!asignacion?.id) return;
+
+    const confirmacion = window.confirm("¿Estás seguro de que deseas eliminar esta asignación?");
+    if (!confirmacion) return;
+
+    try {
+      await axios.delete(`http://localhost:5002/api/Schedule/eliminarAsignacion/${asignacion.id}`);
+
+      const res = await axios.get(`http://localhost:5002/api/Schedule/obtenerHorarioCompleto/${horarioId}`);
+      const updatedMap = {};
+      res.data.forEach((a) => {
+        updatedMap[`${a.dia}-${a.horaInicio}`] = a;
+      });
+      setAsignaciones(updatedMap);
+    } catch (error) {
+      console.error("❌ Error al eliminar asignación:", error);
+    }
+  };
+
   const showTooltip = async (subjectId, event) => {
     const [subjectCode, userId] = subjectId.split("-");
 
@@ -148,6 +168,7 @@ const Schedule = ({ schedule, onBack }) => {
                         key={key}
                         onDrop={(e) => handleDrop(e, day, horaInicio)}
                         onDragOver={handleDragOver}
+                        onDoubleClick={() => handleDoubleClick(asignacion)}
                         className="droppable-cell"
                       >
                         {asignacion?.idMateria || ""}
