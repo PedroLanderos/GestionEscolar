@@ -13,9 +13,11 @@ namespace ClassroomApi.Application.Mapper
             return new ReporteDTO(
                 Id: entity.Id,
                 Fecha: entity.Fecha,
-                Descripcion: entity.Descripcion!,
-                TipoReporte: entity.TipoReporte!, 
-                IdAlumno: entity.IdAlumno
+                IdAlumno: entity.IdAlumno,
+                Grupo: entity.Grupo,
+                CicloEscolar: entity.CicloEscolar,
+                IdHorario: entity.idHorario,
+                Tipo: entity.Tipo!
             );
         }
 
@@ -25,8 +27,11 @@ namespace ClassroomApi.Application.Mapper
             {
                 Id = dto.Id,
                 Fecha = dto.Fecha,
-                Descripcion = dto.Descripcion,
-                TipoReporte = dto.TipoReporte
+                IdAlumno = dto.IdAlumno,
+                Grupo = dto.Grupo,
+                CicloEscolar = dto.CicloEscolar,
+                idHorario = dto.IdHorario,
+                Tipo = dto.Tipo
             };
         }
 
