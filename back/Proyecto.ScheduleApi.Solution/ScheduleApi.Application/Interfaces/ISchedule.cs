@@ -28,6 +28,8 @@ namespace ScheduleApi.Application.Interfaces
         Task<Response> AsignStudentToScheduleAsync(ScheduleToUserDTO dto);
         Task<Response> UpdateAsignStudentToScheduleAsync(ScheduleToUserDTO dto);
         Task<Response> DeleteAsignStudentToScheduleAsync(int id);
+        //apartado para obtener los horarios de los profesores y de los alumnos
         Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForTeacherAsync(string idUsuario);
+        Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForStudentAsync(string idUsuario);
     }
 }

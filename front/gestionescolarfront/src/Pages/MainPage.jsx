@@ -12,6 +12,7 @@ import Schedules from "./Schedules";
 import Schedule from "./Schedule";
 import AssignSchedule from "./AssignSchedule";
 import User from "./User";
+import ShowSchedule from "./ShowSchedule"; 
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -30,10 +31,9 @@ const MainPage = () => {
   const [activeSubOption, setActiveSubOption] = useState(null);
   const [registerData, setRegisterData] = useState(null);
   const [userType, setUserType] = useState(null);
-  const [selectedSchedule, setSelectedSchedule] = useState(null); // Consultar horario
-  const [assignSchedule, setAssignSchedule] = useState(null);     // Asignar alumnos
-  const [editingSubject, setEditingSubject] = useState(null);     // Editar materia
-
+  const [selectedSchedule, setSelectedSchedule] = useState(null);
+  const [assignSchedule, setAssignSchedule] = useState(null);
+  const [editingSubject, setEditingSubject] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [userMode, setUserMode] = useState(null);
 
@@ -61,6 +61,7 @@ const MainPage = () => {
     setUserType(null);
     setSelectedUserId(null);
     setUserMode(null);
+    setActiveSubOption(null);
   };
 
   const getGreeting = () => {
@@ -92,20 +93,16 @@ const MainPage = () => {
 
     return (
       <ul>
-        <li>Datos Personales</li>
-        <li>Datos Médicos</li>
-        <li>Datos Extracurricular</li>
-        <li>Pase Digital</li>
-        <li>Expediente DAE</li>
-        <li>Cambios de Carrera</li>
-        <li>Trámites</li>
-        <li className="submenu">- Solicitud</li>
-        <li className="submenu">- Seguimiento</li>
-        <li className="submenu">- Citas</li>
+        <li onClick={() => { setActiveSubOption("DatosPersonales"); resetState(); }}>Datos Personales</li>
+        {["Docente", "Alumno"].includes(auth.user?.role) && (
+          <li onClick={() => { setActiveSubOption("Horario"); resetState(); }}>Horario</li>
+        )}
+        <li>Talleres</li>
+        <li>Asistencias</li>
+        <li>Reportes</li>
+        <li>Sanciones</li>
         <li>Datos Académicos</li>
         <li className="submenu">- Kárdex</li>
-        <li className="submenu">- Estado General</li>
-        <li className="submenu">- Calificaciones</li>
       </ul>
     );
   };
@@ -184,6 +181,14 @@ const MainPage = () => {
       }
     }
 
+    if (activeSubOption === "DatosPersonales") {
+      return <User id={auth.user?.id} mode="view" onBack={resetState} />;
+    }
+
+    if (activeSubOption === "Horario") {
+      return <ShowSchedule />;
+    }
+
     return (
       <>
         <h2>MENÚ PRINCIPAL DE {activeSection.toUpperCase()}</h2>
@@ -208,20 +213,17 @@ const MainPage = () => {
         <ul>
           <li className={`nav-item ${activeSection === "Inicio" ? "active-orange" : ""}`} onClick={() => {
             setActiveSection("Inicio");
-            setActiveSubOption(null);
             resetState();
           }}>Inicio</li>
 
           <li className={`nav-item ${activeSection === "Alumnos" ? "active-orange" : ""}`} onClick={() => {
             setActiveSection("Alumnos");
-            setActiveSubOption(null);
             resetState();
           }}>Alumnos</li>
 
           {isAdmin && (
             <li className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`} onClick={() => {
               setActiveSection("Administrador");
-              setActiveSubOption(null);
               resetState();
             }}>Administrador</li>
           )}

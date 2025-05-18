@@ -100,5 +100,11 @@ namespace ScheduleApi.Presentation.Controllers
             var result = await scheduleService.GetScheduleForTeacherAsync(idUsuario);
             return Ok(result);
         }
+        [HttpGet("horarioAlumno/{idUsuario}")]
+        public async Task<IActionResult> GetStudentSchedule(string idUsuario)
+        {
+            var result = await scheduleService.GetScheduleForStudentAsync(idUsuario);
+            return Ok(result);
+        }
     }
 }

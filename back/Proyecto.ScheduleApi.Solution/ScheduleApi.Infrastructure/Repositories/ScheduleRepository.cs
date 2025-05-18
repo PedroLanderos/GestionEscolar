@@ -305,5 +305,25 @@ namespace ScheduleApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForStudentAsync(string idUsuario)
+        {
+            try
+            {
+                var asignacion = await context.ScheduleToUsers
+                    .FirstOrDefaultAsync(a => a.IdUser == idUsuario);
+
+                if (asignacion == null)
+                    return new List<SubjectToScheduleDTO>();
+
+                // Usar método existente para obtener las materias
+                var materias = await GetFullSchedule(asignacion.IdSchedule);
+                return SubjectToScheduleMapper.FromEntityList(materias.ToList());
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener el horario del alumno en el repositorio");
+            }
+        }
     }
 }
