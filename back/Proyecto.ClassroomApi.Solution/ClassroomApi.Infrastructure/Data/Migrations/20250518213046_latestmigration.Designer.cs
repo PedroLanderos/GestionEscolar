@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassroomApi.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ClassroomDbContext))]
-    [Migration("20250507194513_Initial")]
-    partial class Initial
+    [Migration("20250518213046_latestmigration")]
+    partial class latestmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.15")
+                .HasAnnotation("ProductVersion", "8.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -39,37 +39,18 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("IdAlumno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdProfesor")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Justificacion")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Asistencias");
-                });
-
-            modelBuilder.Entity("ClassroomApi.Domain.Entities.Calificacion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("CalificacionFinal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Comentarios")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("FechaRegistro")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("IdMateria")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Calificaciones");
                 });
 
             modelBuilder.Entity("ClassroomApi.Domain.Entities.Reporte", b =>
@@ -80,16 +61,22 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Descripcion")
+                    b.Property<string>("CicloEscolar")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Grupo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("IdAlumno")
                         .HasColumnType("int");
 
-                    b.Property<string>("TipoReporte")
+                    b.Property<string>("Tipo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("idHorario")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -111,11 +98,11 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("IdAlumno")
-                        .HasColumnType("int");
+                    b.Property<string>("IdAlumno")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IdProfesor")
-                        .HasColumnType("int");
+                    b.Property<string>("IdProfesor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TipoSancion")
                         .HasColumnType("nvarchar(max)");

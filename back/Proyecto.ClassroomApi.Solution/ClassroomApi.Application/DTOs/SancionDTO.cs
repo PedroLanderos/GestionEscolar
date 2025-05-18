@@ -12,7 +12,7 @@ namespace ClassroomApi.Application.DTOs
         [Required] string TipoSancion,   
         string Descripcion,  
         [Required] DateTime Fecha,  
-        [Required] int IdProfesor,  
-        [Required] int IdAlumno   
+        [Required] string IdProfesor,  
+        [Required] string IdAlumno   
     );
 }

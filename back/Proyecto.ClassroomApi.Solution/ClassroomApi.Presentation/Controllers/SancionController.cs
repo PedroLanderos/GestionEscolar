@@ -80,7 +80,7 @@ namespace ClassroomApi.Presentation.Controllers
         }
 
         [HttpGet("alumno/{idAlumno}")]
-        public async Task<IActionResult> ObtenerPorAlumno(int idAlumno)
+        public async Task<IActionResult> ObtenerPorAlumno(string idAlumno)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace ClassroomApi.Presentation.Controllers
         }
 
         [HttpGet("profesor/{idProfesor}")]
-        public async Task<IActionResult> ObtenerPorProfesor(int idProfesor)
+        public async Task<IActionResult> ObtenerPorProfesor(string idProfesor)
         {
             try
             {

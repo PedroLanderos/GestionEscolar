@@ -14,7 +14,7 @@ namespace ClassroomApi.Domain.Entities
         public string? TipoSancion { get; set; }  
         public string? Descripcion { get; set; }
         public DateTime Fecha { get; set; }
-        public int IdProfesor { get; set; }  
-        public int IdAlumno { get; set; }   
+        public string? IdProfesor { get; set; }  
+        public string? IdAlumno { get; set; }   
     }
 }

@@ -12,7 +12,9 @@ namespace ClassroomApi.Domain.Entities
         [Key]
         public int Id { get; set; }
         public DateTime Fecha { get; set; }
-        public bool Asistio { get; set; }
+        public bool Asistio { get; set; }   
+        public string? IdAlumno { get; set; }
+        public string? IdProfesor { get; set; }
         public string? Justificacion { get; set; }  
     }
 }

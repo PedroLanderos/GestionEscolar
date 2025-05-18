@@ -18,3 +18,5 @@ D:\Code\sistemagestionescolar\back\Proyecto.ClassroomApi.Solution\ClassroomApi.I
 D:\Code\sistemagestionescolar\back\Proyecto.ClassroomApi.Solution\ClassroomApi.Infrastructure\obj\Debug\net8.0\refint\ClassroomApi.Infrastructure.dll
 D:\Code\sistemagestionescolar\back\Proyecto.ClassroomApi.Solution\ClassroomApi.Infrastructure\obj\Debug\net8.0\ClassroomApi.Infrastructure.pdb
 D:\Code\sistemagestionescolar\back\Proyecto.ClassroomApi.Solution\ClassroomApi.Infrastructure\obj\Debug\net8.0\ref\ClassroomApi.Infrastructure.dll
+D:\Code\sistemagestionescolar\back\Proyecto.ClassroomApi.Solution\ClassroomApi.Infrastructure\bin\Debug\net8.0\ClassroomApi.Infrastructure.runtimeconfig.json
+D:\Code\sistemagestionescolar\back\Proyecto.ClassroomApi.Solution\ClassroomApi.Infrastructure\obj\Debug\net8.0\ClassroomApi.Infrastructure.genruntimeconfig.cache

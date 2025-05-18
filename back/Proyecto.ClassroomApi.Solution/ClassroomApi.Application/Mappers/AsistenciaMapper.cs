@@ -1,6 +1,5 @@
 ﻿using ClassroomApi.Application.DTOs;
 using ClassroomApi.Domain.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +13,9 @@ namespace ClassroomApi.Application.Mapper
                 Id: entity.Id,
                 Fecha: entity.Fecha,
                 Asistio: entity.Asistio,
-                Justificacion: entity.Justificacion!
+                Justificacion: entity.Justificacion,
+                IdAlumno: entity.IdAlumno,
+                IdProfesor: entity.IdProfesor
             );
         }
 
@@ -25,7 +26,9 @@ namespace ClassroomApi.Application.Mapper
                 Id = dto.Id,
                 Fecha = dto.Fecha,
                 Asistio = dto.Asistio,
-                Justificacion = dto.Justificacion
+                Justificacion = dto.Justificacion,
+                IdAlumno = dto.IdAlumno,
+                IdProfesor = dto.IdProfesor
             };
         }
 

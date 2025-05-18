@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClassroomApi.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class latestmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,27 +19,13 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Asistio = table.Column<bool>(type: "bit", nullable: false),
+                    IdAlumno = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdProfesor = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Justificacion = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Asistencias", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Calificaciones",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdMateria = table.Column<int>(type: "int", nullable: false),
-                    CalificacionFinal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Comentarios = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaRegistro = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Calificaciones", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,9 +35,11 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TipoReporte = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IdAlumno = table.Column<int>(type: "int", nullable: false)
+                    IdAlumno = table.Column<int>(type: "int", nullable: false),
+                    Grupo = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CicloEscolar = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    idHorario = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Tipo = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -67,8 +55,8 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
                     TipoSancion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Descripcion = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IdProfesor = table.Column<int>(type: "int", nullable: false),
-                    IdAlumno = table.Column<int>(type: "int", nullable: false)
+                    IdProfesor = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdAlumno = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -81,9 +69,6 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Asistencias");
-
-            migrationBuilder.DropTable(
-                name: "Calificaciones");
 
             migrationBuilder.DropTable(
                 name: "Reportes");
