@@ -12,7 +12,8 @@ import Schedules from "./Schedules";
 import Schedule from "./Schedule";
 import AssignSchedule from "./AssignSchedule";
 import User from "./User";
-import ShowSchedule from "./ShowSchedule"; 
+import ShowSchedule from "./ShowSchedule";
+import CreateReport from "./CreateReport";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +28,9 @@ const MainPage = () => {
   }, [auth.isAuthenticated, navigate]);
 
   const isAdmin = auth.user?.role === "Administrador";
+  const isTeacher = auth.user?.role === "Docente";
+  const isStudent = auth.user?.role === "Alumno";
+
   const [activeSection, setActiveSection] = useState(isAdmin ? "Administrador" : "Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
   const [registerData, setRegisterData] = useState(null);
@@ -38,8 +42,8 @@ const MainPage = () => {
   const [userMode, setUserMode] = useState(null);
 
   const handleUserView = (type) => {
+    resetState();
     setActiveSubOption("VerUsuarios");
-    setRegisterData(null);
     setUserType(type);
   };
 
@@ -75,14 +79,14 @@ const MainPage = () => {
     if (activeSection === "Administrador" && isAdmin) {
       return (
         <ul>
-          <li onClick={() => { setActiveSubOption("Solicitudes"); resetState(); }}>Solicitudes de registro</li>
-          <li onClick={() => { setActiveSubOption("AgregarAlumno"); resetState(); }}>Agregar alumno</li>
-          <li onClick={() => { setActiveSubOption("AgregarProfesor"); resetState(); }}>Agregar profesor</li>
-          <li onClick={() => { setActiveSubOption("AgregarMateria"); resetState(); }}>Agregar materia</li>
-          <li onClick={() => { setActiveSubOption("AsignarMateria"); resetState(); }}>Asignar materia a docente</li>
-          <li onClick={() => { setActiveSubOption("Materias"); resetState(); }}>Materias</li>
-          <li onClick={() => { setActiveSubOption("AgregarHorario"); resetState(); }}>Agregar horario</li>
-          <li onClick={() => { setActiveSubOption("VerHorarios"); resetState(); }}>Ver horarios</li>
+          <li onClick={() => { resetState(); setActiveSubOption("Solicitudes"); }}>Solicitudes de registro</li>
+          <li onClick={() => { resetState(); setActiveSubOption("AgregarAlumno"); }}>Agregar alumno</li>
+          <li onClick={() => { resetState(); setActiveSubOption("AgregarProfesor"); }}>Agregar profesor</li>
+          <li onClick={() => { resetState(); setActiveSubOption("AgregarMateria"); }}>Agregar materia</li>
+          <li onClick={() => { resetState(); setActiveSubOption("AsignarMateria"); }}>Asignar materia a docente</li>
+          <li onClick={() => { resetState(); setActiveSubOption("Materias"); }}>Materias</li>
+          <li onClick={() => { resetState(); setActiveSubOption("AgregarHorario"); }}>Agregar horario</li>
+          <li onClick={() => { resetState(); setActiveSubOption("VerHorarios"); }}>Ver horarios</li>
           <li onClick={() => handleUserView("alumnos")}>Alumnos</li>
           <li onClick={() => handleUserView("docentes")}>Docentes</li>
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
@@ -93,9 +97,12 @@ const MainPage = () => {
 
     return (
       <ul>
-        <li onClick={() => { setActiveSubOption("DatosPersonales"); resetState(); }}>Datos Personales</li>
-        {["Docente", "Alumno"].includes(auth.user?.role) && (
-          <li onClick={() => { setActiveSubOption("Horario"); resetState(); }}>Horario</li>
+        <li onClick={() => { resetState(); setActiveSubOption("DatosPersonales"); }}>Datos Personales</li>
+        {(isTeacher || isStudent) && (
+          <li onClick={() => { resetState(); setActiveSubOption("Horario"); }}>Horario</li>
+        )}
+        {isTeacher && (
+          <li onClick={() => { resetState(); setActiveSubOption("CrearReporte"); }}>Crear Reporte</li>
         )}
         <li>Talleres</li>
         <li>Asistencias</li>
@@ -109,85 +116,27 @@ const MainPage = () => {
 
   const renderMainContent = () => {
     if (activeSection === "Administrador" && isAdmin) {
-      if (selectedSchedule) {
-        return <Schedule schedule={selectedSchedule} onBack={() => setSelectedSchedule(null)} />;
-      }
-
-      if (assignSchedule) {
-        return <AssignSchedule schedule={assignSchedule} onClose={() => setAssignSchedule(null)} />;
-      }
-
-      if (editingSubject) {
-        return (
-          <AddSubject
-            subject={editingSubject}
-            onSuccess={() => {
-              setEditingSubject(null);
-              setActiveSubOption("Materias");
-            }}
-          />
-        );
-      }
-
+      if (selectedSchedule) return <Schedule schedule={selectedSchedule} onBack={() => setSelectedSchedule(null)} />;
+      if (assignSchedule) return <AssignSchedule schedule={assignSchedule} onClose={() => setAssignSchedule(null)} />;
+      if (editingSubject) return <AddSubject subject={editingSubject} onSuccess={() => { setEditingSubject(null); setActiveSubOption("Materias"); }} />;
       if (registerData) return <Register data={registerData} />;
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
       if (activeSubOption === "AgregarAlumno") return <Register />;
       if (activeSubOption === "AgregarProfesor") return <AddTeacher />;
-
       if (activeSubOption === "VerUsuarios" && userType) {
-        if (selectedUserId) {
-          return (
-            <User
-              id={selectedUserId}
-              mode={userMode}
-              onBack={handleBackToUserList}
-            />
-          );
-        }
-        return (
-          <UsersTable
-            userType={userType}
-            onSelectUser={handleUserSelect}
-          />
-        );
+        if (selectedUserId) return <User id={selectedUserId} mode={userMode} onBack={handleBackToUserList} />;
+        return <UsersTable userType={userType} onSelectUser={handleUserSelect} />;
       }
-
       if (activeSubOption === "AgregarMateria") return <AddSubject />;
-      if (activeSubOption === "Materias") {
-        return (
-          <Subjects
-            onEdit={(subject) => {
-              setEditingSubject(subject);
-            }}
-          />
-        );
-      }
+      if (activeSubOption === "Materias") return <Subjects onEdit={setEditingSubject} />;
       if (activeSubOption === "AsignarMateria") return <AssignSubject />;
       if (activeSubOption === "AgregarHorario") return <AddSchedule />;
-
-      if (activeSubOption === "VerHorarios") {
-        return (
-          <Schedules
-            onViewSchedule={(schedule) => {
-              setAssignSchedule(null);
-              setSelectedSchedule(schedule);
-            }}
-            onAssignSchedule={(schedule) => {
-              setSelectedSchedule(null);
-              setAssignSchedule(schedule);
-            }}
-          />
-        );
-      }
+      if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} onAssignSchedule={setAssignSchedule} />;
     }
 
-    if (activeSubOption === "DatosPersonales") {
-      return <User id={auth.user?.id} mode="view" onBack={resetState} />;
-    }
-
-    if (activeSubOption === "Horario") {
-      return <ShowSchedule />;
-    }
+    if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;
+    if (activeSubOption === "Horario") return <ShowSchedule />;
+    if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
 
     return (
       <>
@@ -199,9 +148,7 @@ const MainPage = () => {
         </p>
         <div className="alert">
           <h4>ALERTA</h4>
-          <p>
-            Ningún empleado del Instituto está facultado para solicitar datos personales por redes sociales. <strong>¡DENUNCIA!</strong>
-          </p>
+          <p>Ningún empleado del Instituto está facultado para solicitar datos personales por redes sociales. <strong>¡DENUNCIA!</strong></p>
         </div>
       </>
     );
@@ -211,21 +158,10 @@ const MainPage = () => {
     <>
       <div className="top-nav">
         <ul>
-          <li className={`nav-item ${activeSection === "Inicio" ? "active-orange" : ""}`} onClick={() => {
-            setActiveSection("Inicio");
-            resetState();
-          }}>Inicio</li>
-
-          <li className={`nav-item ${activeSection === "Alumnos" ? "active-orange" : ""}`} onClick={() => {
-            setActiveSection("Alumnos");
-            resetState();
-          }}>Alumnos</li>
-
+          <li className={`nav-item ${activeSection === "Inicio" ? "active-orange" : ""}`} onClick={() => { resetState(); setActiveSection("Inicio"); }}>Inicio</li>
+          <li className={`nav-item ${activeSection === "Alumnos" ? "active-orange" : ""}`} onClick={() => { resetState(); setActiveSection("Alumnos"); }}>Alumnos</li>
           {isAdmin && (
-            <li className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`} onClick={() => {
-              setActiveSection("Administrador");
-              resetState();
-            }}>Administrador</li>
+            <li className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`} onClick={() => { resetState(); setActiveSection("Administrador"); }}>Administrador</li>
           )}
         </ul>
       </div>

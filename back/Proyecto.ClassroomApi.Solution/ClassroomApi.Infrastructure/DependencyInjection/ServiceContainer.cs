@@ -16,11 +16,8 @@ namespace ClassroomApi.Infrastructure.DependencyInjection
         {
             SharedServiceContainer.AddSharedServices<ClassroomDbContext>(services, config, config["MySerilog:FileName"]!);
 
-           
-            services.AddScoped<IClassroom<Asistencia>, ClassroomRepository<Asistencia>>();
-            services.AddScoped<IClassroom<Calificacion>, ClassroomRepository<Calificacion>>();
-            services.AddScoped<IClassroom<Sancion>, ClassroomRepository<Sancion>>();
-            services.AddScoped<IClassroom<Reporte>, ClassroomRepository<Reporte>>();
+
+            services.AddScoped<IReporte, ReporteRepository>();
 
             return services;
         }

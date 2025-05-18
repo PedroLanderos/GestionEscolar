@@ -15,7 +15,7 @@ namespace ClassroomApi.Application.Interfaces
         Task<Response> CrearReporte(ReporteDTO dto);
         Task<Response> ActualizarReporte(ReporteDTO dto);
         Task<Response> EliminarReporte(int id);
-        Task<Response> ObtenerReportePorId(int id);
+        Task<ReporteDTO> ObtenerReportePorId(int id);
 
         Task<IEnumerable<ReporteDTO>> ObtenerReportes();
         Task<IEnumerable<Reporte>> GetBy(Expression<Func<Reporte, bool>> predicate);
