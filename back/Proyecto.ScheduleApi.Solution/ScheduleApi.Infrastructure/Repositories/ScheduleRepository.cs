@@ -38,11 +38,27 @@ namespace ScheduleApi.Infrastructure.Repositories
         {
             try
             {
+                
+                var traslape = await context.SubjectToSchedules
+                    .AnyAsync(s =>
+                        s.IdMateria == subjectToScheduleDTO.IdMateria &&
+                        s.Dia == subjectToScheduleDTO.Dia &&
+                        s.HoraInicio == subjectToScheduleDTO.HoraInicio &&
+                        s.IdHorario != subjectToScheduleDTO.IdHorario); 
+
+                if (traslape)
+                {
+                    return new Response(false, "Ya existe una asignación para esta materia en otro horario en el mismo día y hora. No se permite el traslape.");
+                }
+
+                // Si no hay traslape, se asigna la materia normalmente
                 var entity = SubjectToScheduleMapper.ToEntity(subjectToScheduleDTO);
                 var response = context.SubjectToSchedules.Add(entity);
                 await context.SaveChangesAsync();
 
-                if(response is null) return new Response(false, "Error al asignar la materia al horario");
+                if (response is null)
+                    return new Response(false, "Error al asignar la materia al horario");
+
                 return new Response(true, "Materia asignada al horario exitosamente");
             }
             catch (Exception ex)
@@ -175,6 +191,20 @@ namespace ScheduleApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForTeacherAsync(string idUsuario)
+        {
+            try
+            {
+                var results = await context.SubjectToSchedules.Where(s => s.IdMateria != null && s.IdMateria.EndsWith($"-{idUsuario}")).ToListAsync();
+                return SubjectToScheduleMapper.FromEntityList(results);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al iobtener el horario del docente en el repositorio");
+            }
+        }
+
         public async Task<IEnumerable<ScheduleDTO>> GetSchedules()
         {
             try
@@ -199,6 +229,20 @@ namespace ScheduleApi.Infrastructure.Repositories
                 if (existing == null)
                     return new Response(false, "Asignación no encontrada");
 
+                
+                var traslape = await context.SubjectToSchedules
+                    .AnyAsync(s =>
+                        s.Id != subjectToScheduleDTO.Id && 
+                        s.IdMateria == subjectToScheduleDTO.IdMateria &&
+                        s.Dia == subjectToScheduleDTO.Dia &&
+                        s.HoraInicio == subjectToScheduleDTO.HoraInicio &&
+                        s.IdHorario != subjectToScheduleDTO.IdHorario); 
+
+                if (traslape)
+                {
+                    return new Response(false, "Ya existe una asignación para esta materia en otro horario en el mismo día y hora. No se permite el traslape.");
+                }
+
                 existing.IdMateria = subjectToScheduleDTO.IdMateria;
                 existing.IdHorario = subjectToScheduleDTO.IdHorario;
                 existing.HoraInicio = subjectToScheduleDTO.HoraInicio;
@@ -215,6 +259,7 @@ namespace ScheduleApi.Infrastructure.Repositories
                 return new Response(false, "Error al actualizar la asignación");
             }
         }
+
 
         public async Task<Response> UpdateAsignStudentToScheduleAsync(ScheduleToUserDTO dto)
         {

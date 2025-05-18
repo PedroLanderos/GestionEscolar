@@ -93,5 +93,12 @@ namespace ScheduleApi.Presentation.Controllers
             var result = await scheduleService.DeleteAsignStudentToScheduleAsync(id);
             return result.Flag ? Ok(result) : BadRequest(result);
         }
+
+        [HttpGet("horarioDocente/{idUsuario}")]
+        public async Task<IActionResult> GetTeacherSchedule(string idUsuario)
+        {
+            var result = await scheduleService.GetScheduleForTeacherAsync(idUsuario);
+            return Ok(result);
+        }
     }
 }
