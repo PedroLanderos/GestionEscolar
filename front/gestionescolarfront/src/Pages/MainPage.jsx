@@ -14,6 +14,7 @@ import AssignSchedule from "./AssignSchedule";
 import User from "./User";
 import ShowSchedule from "./ShowSchedule";
 import CreateReport from "./CreateReport";
+import AddSanction from "./AddSanction"; // NUEVA LÍNEA IMPORTANTE
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -71,7 +72,7 @@ const MainPage = () => {
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return "BUENOS DÍAS";
-    if (hour < 19) return "BUENAS TARDES";
+    if (hour < 19) return "BUENAS TARDE";
     return "BUENAS NOCHES";
   };
 
@@ -102,7 +103,10 @@ const MainPage = () => {
           <li onClick={() => { resetState(); setActiveSubOption("Horario"); }}>Horario</li>
         )}
         {isTeacher && (
-          <li onClick={() => { resetState(); setActiveSubOption("CrearReporte"); }}>Crear Reporte</li>
+          <>
+            <li onClick={() => { resetState(); setActiveSubOption("CrearReporte"); }}>Crear Reporte</li>
+            <li onClick={() => { resetState(); setActiveSubOption("AgregarSancion"); }}>Registrar Sanción</li>
+          </>
         )}
         <li>Talleres</li>
         <li>Asistencias</li>
@@ -137,6 +141,7 @@ const MainPage = () => {
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;
     if (activeSubOption === "Horario") return <ShowSchedule />;
     if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
+    if (activeSubOption === "AgregarSancion") return <AddSanction onBack={resetState} />;
 
     return (
       <>
