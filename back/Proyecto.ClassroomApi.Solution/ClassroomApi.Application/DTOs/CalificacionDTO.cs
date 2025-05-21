@@ -1,17 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ClassroomApi.Application.DTOs
 {
     public record CalificacionDTO(
-       int Id,
-       [Required] int IdMateria, 
-       [Required] decimal CalificacionFinal,  
-       string Comentarios,  
-       [Required] DateTime FechaRegistro  
-   );
+        int Id,
+
+        [Required]
+        string IdMateria,    
+
+        string? IdAlumno,     
+
+        [Required]
+        decimal CalificacionFinal,
+
+        string? Comentarios,
+
+        [Required]
+        string IdCiclo        
+    );
 }

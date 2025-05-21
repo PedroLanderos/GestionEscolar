@@ -8,8 +8,9 @@ namespace ClassroomApi.Infrastructure.Data
     {
         
         public DbSet<Asistencia> Asistencias { get; set; }
-        //public DbSet<Calificacion> Calificaciones { get; set; }
+        public DbSet<Calificacion> Calificaciones { get; set; }
         public DbSet<Sancion> Sanciones { get; set; }
         public DbSet<Reporte> Reportes { get; set; }
+        public DbSet<CicloEscolar> CiclosEscolares { get; set; }
     }
 }

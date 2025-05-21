@@ -1,6 +1,5 @@
 ﻿using ClassroomApi.Application.DTOs;
 using ClassroomApi.Domain.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,10 +11,11 @@ namespace ClassroomApi.Application.Mapper
         {
             return new CalificacionDTO(
                 Id: entity.Id,
-                IdMateria: entity.IdMateria,
+                IdMateria: entity.IdMateria ?? string.Empty,  
+                IdAlumno: entity.IdAlumno,
                 CalificacionFinal: entity.CalificacionFinal,
-                Comentarios: entity.Comentarios!,
-                FechaRegistro: entity.FechaRegistro
+                Comentarios: entity.Comentarios,
+                IdCiclo: entity.IdCiclo ?? string.Empty      
             );
         }
 
@@ -25,9 +25,10 @@ namespace ClassroomApi.Application.Mapper
             {
                 Id = dto.Id,
                 IdMateria = dto.IdMateria,
+                IdAlumno = dto.IdAlumno,
                 CalificacionFinal = dto.CalificacionFinal,
                 Comentarios = dto.Comentarios,
-                FechaRegistro = dto.FechaRegistro
+                IdCiclo = dto.IdCiclo
             };
         }
 
