@@ -106,5 +106,16 @@ namespace ScheduleApi.Presentation.Controllers
             var result = await scheduleService.GetScheduleForStudentAsync(idUsuario);
             return Ok(result);
         }
+
+        [HttpGet("alumnosPorMateriaHorario")]
+        public async Task<IActionResult> GetStudentsBySubjectAndSchedule([FromQuery] string materiaProfesor, [FromQuery] string horario)
+        {
+            if (string.IsNullOrEmpty(materiaProfesor) || string.IsNullOrEmpty(horario))
+                return BadRequest("Se requiere materiaProfesor y horario.");
+
+            var studentIds = await scheduleService.GetStudentIdsBySubjectAndScheduleAsync(materiaProfesor, horario);
+            return Ok(studentIds);
+        }
+
     }
 }

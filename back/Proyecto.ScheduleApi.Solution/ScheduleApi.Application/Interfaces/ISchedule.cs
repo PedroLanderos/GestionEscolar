@@ -31,5 +31,6 @@ namespace ScheduleApi.Application.Interfaces
         //apartado para obtener los horarios de los profesores y de los alumnos
         Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForTeacherAsync(string idUsuario);
         Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForStudentAsync(string idUsuario);
+        Task<IEnumerable<string>> GetStudentIdsBySubjectAndScheduleAsync(string materiaProfesor, string horario);
     }
 }

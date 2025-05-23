@@ -326,8 +326,49 @@ namespace ScheduleApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<string>> GetStudentIdsBySubjectAndScheduleAsync(string materiaProfesor, string horario)
+        {
+            try
+            {
+                // Primero obtener el horario con grado y grupo iguales al parámetro "horario"
+                // horario tiene formato "1A", se separa en grado y grupo
+                if (string.IsNullOrEmpty(horario) || horario.Length < 2)
+                    return Enumerable.Empty<string>();
 
-        //obtener a todos los alumnos inscritos en cierta clase 
-        
+                int grado;
+                if (!int.TryParse(horario.Substring(0, horario.Length - 1), out grado))
+                    return Enumerable.Empty<string>();
+
+                string grupo = horario.Substring(horario.Length - 1);
+
+                // Buscar el idHorario con esos datos
+                var schedule = await context.Schedules
+                    .FirstOrDefaultAsync(s => s.Grado == grado && s.Grupo == grupo);
+
+                if (schedule == null)
+                    return Enumerable.Empty<string>();
+
+                // Verificar si la materia existe en SubjectToSchedules para ese IdHorario
+                var subjectExists = await context.SubjectToSchedules
+                    .AnyAsync(sts => sts.IdMateria == materiaProfesor && sts.IdHorario == schedule.Id);
+
+                if (!subjectExists)
+                    return Enumerable.Empty<string>();
+
+                // Buscar todos los asignados al horario con IdSchedule == schedule.Id
+                var studentsAssignments = await context.ScheduleToUsers
+                    .Where(stu => stu.IdSchedule == schedule.Id)
+                    .ToListAsync();
+
+                // Retornar los IdUser de los alumnos asignados
+                return studentsAssignments.Select(sa => sa.IdUser!).ToList();
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener alumnos por materia y horario");
+            }
+        }
+
     }
 }

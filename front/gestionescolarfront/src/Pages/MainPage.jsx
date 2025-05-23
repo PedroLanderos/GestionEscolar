@@ -17,6 +17,7 @@ import CreateReport from "./CreateReport";
 import AddSanction from "./AddSanction"; // NUEVA LÍNEA IMPORTANTE
 import AddSchoolYear from "./AddSchoolYear"; // Importa tu componente nuevo
 import TeacherClassesTable from "./TeacherClassesTable"; // Nuevo componente para mostrar clases del maestro
+import AttendanceRegister from "./SetAttendance"; // Nuevo componente para registrar asistencia
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -44,6 +45,10 @@ const MainPage = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [userMode, setUserMode] = useState(null);
 
+  // Estado para manejar la vista de registro de asistencia
+  // { claseProfesor: string, horarioId: number }
+  const [attendanceData, setAttendanceData] = useState(null);
+
   const handleUserView = (type) => {
     resetState();
     setActiveSubOption("VerUsuarios");
@@ -69,6 +74,7 @@ const MainPage = () => {
     setSelectedUserId(null);
     setUserMode(null);
     setActiveSubOption(null);
+    setAttendanceData(null);
   };
 
   const getGreeting = () => {
@@ -109,7 +115,7 @@ const MainPage = () => {
           <>
             <li onClick={() => { resetState(); setActiveSubOption("CrearReporte"); }}>Crear Reporte</li>
             <li onClick={() => { resetState(); setActiveSubOption("AgregarSancion"); }}>Registrar Sanción</li>
-            <li onClick={() => { resetState(); setActiveSubOption("ClasesDelMaestro"); }}>Administrar Clases</li> 
+            <li onClick={() => { resetState(); setActiveSubOption("ClasesDelMaestro"); }}>Administrar Clases</li>
           </>
         )}
         <li>Talleres</li>
@@ -147,7 +153,29 @@ const MainPage = () => {
     if (activeSubOption === "Horario") return <ShowSchedule />;
     if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
     if (activeSubOption === "AgregarSancion") return <AddSanction onBack={resetState} />;
-    if (isTeacher && activeSubOption === "ClasesDelMaestro") return <TeacherClassesTable teacherId={auth.user?.id} />;
+
+    // Renderizamos TeacherClassesTable o AttendanceRegister según el estado
+    if (isTeacher) {
+      if (attendanceData) {
+        // Mostrar componente de registro de asistencia con datos
+        return (
+          <AttendanceRegister
+            claseProfesor={attendanceData.claseProfesor}
+            horarioId={attendanceData.horarioId}
+            onBack={() => setAttendanceData(null)}
+          />
+        );
+      }
+      if (activeSubOption === "ClasesDelMaestro") {
+        // Mostrar listado de clases y horarios con opción para registrar asistencia
+        return (
+          <TeacherClassesTable
+            teacherId={auth.user?.id}
+            onRegistrarAsistencia={(claseProfesor, horarioId) => setAttendanceData({ claseProfesor, horarioId })}
+          />
+        );
+      }
+    }
 
     return (
       <>

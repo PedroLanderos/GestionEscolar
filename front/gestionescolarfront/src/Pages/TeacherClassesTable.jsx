@@ -1,59 +1,94 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { AUTH_API } from "../Config/apiConfig";
 import "./CSS/UsersTable.css";
 import { AuthContext } from "../Context/AuthContext";
 
-const TeacherClassesTable = () => {
+const TeacherClassesTable = ({ onRegistrarAsistencia }) => {
   const { auth } = useContext(AuthContext);
   const teacherId = auth.user?.id;
 
-  const [classes, setClasses] = useState([]);
+  const [classes, setClasses] = useState([]); // [{id, nombre, horarios: [{id, grado, grupo}]}]
   const [loading, setLoading] = useState(true);
+  const [selectedHorarios, setSelectedHorarios] = useState({}); // Para guardar el horario seleccionado por clase
 
   useEffect(() => {
     if (!teacherId) return;
 
-    const fetchTeacherClasses = async () => {
+    const fetchTeacherClassesAndSchedules = async () => {
       setLoading(true);
       try {
-        // Obtener horario docente del endpoint correcto
         const scheduleRes = await axios.get(`http://localhost:5002/api/Schedule/horarioDocente/${teacherId}`);
 
-        // Extraer códigos únicos de materia (parte antes del guion)
-        const materiaCodesSet = new Set(
-          scheduleRes.data.map((item) => item.idMateria.split("-")[0])
-        );
+        const materiasMap = new Map();
+        scheduleRes.data.forEach((item) => {
+          const codigoMateria = item.idMateria.split("-")[0];
+          if (!materiasMap.has(codigoMateria)) {
+            materiasMap.set(codigoMateria, {
+              id: codigoMateria,
+              horariosIds: new Set(),
+            });
+          }
+          materiasMap.get(codigoMateria).horariosIds.add(item.idHorario);
+        });
 
-        // Para cada código obtener nombre materia del endpoint correcto
         const materias = await Promise.all(
-          Array.from(materiaCodesSet).map(async (codigo) => {
+          Array.from(materiasMap.values()).map(async (materia) => {
+            let nombre = "Nombre no disponible";
             try {
-              const res = await axios.get(`http://localhost:5001/api/Subject/obtenerPorCodigo/${codigo}`);
-              return {
-                id: codigo,
-                nombre: res.data.nombre || "Nombre no disponible",
-              };
-            } catch {
-              return {
-                id: codigo,
-                nombre: "Nombre no disponible",
-              };
-            }
+              const res = await axios.get(`http://localhost:5001/api/Subject/obtenerPorCodigo/${materia.id}`);
+              nombre = res.data.nombre || nombre;
+            } catch {}
+
+            const horarios = await Promise.all(
+              Array.from(materia.horariosIds).map(async (idHorario) => {
+                try {
+                  const resHorario = await axios.get(`http://localhost:5002/api/Schedule/${idHorario}`);
+                  return {
+                    id: idHorario,
+                    grado: resHorario.data.grado,
+                    grupo: resHorario.data.grupo,
+                  };
+                } catch {
+                  return null;
+                }
+              })
+            );
+
+            const horariosValidos = horarios.filter(h => h !== null);
+
+            return {
+              id: materia.id,
+              nombre,
+              horarios: horariosValidos,
+            };
           })
         );
 
         setClasses(materias);
+
+        // Inicializar el horario seleccionado por materia al primero disponible
+        const initialSelected = {};
+        materias.forEach(m => {
+          if (m.horarios.length > 0) initialSelected[m.id] = String(m.horarios[0].id);
+        });
+        setSelectedHorarios(initialSelected);
       } catch (error) {
-        console.error("❌ Error al obtener las clases del maestro:", error);
+        console.error("❌ Error al obtener las clases y horarios del maestro:", error);
         setClasses([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTeacherClasses();
+    fetchTeacherClassesAndSchedules();
   }, [teacherId]);
+
+  const handleHorarioChange = (materiaId, horarioId) => {
+    setSelectedHorarios(prev => ({
+      ...prev,
+      [materiaId]: horarioId,
+    }));
+  };
 
   return (
     <div className="users-table-container">
@@ -66,13 +101,14 @@ const TeacherClassesTable = () => {
             <tr>
               <th>ID Materia</th>
               <th>Nombre de la Materia</th>
+              <th>Horarios</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             {classes.length === 0 ? (
               <tr>
-                <td colSpan={3}>No se encontraron clases para este maestro.</td>
+                <td colSpan={4}>No se encontraron clases para este maestro.</td>
               </tr>
             ) : (
               classes.map((clase) => (
@@ -80,7 +116,30 @@ const TeacherClassesTable = () => {
                   <td>{clase.id}</td>
                   <td>{clase.nombre}</td>
                   <td>
-                    <button onClick={() => alert("Registrar asistencia aún no implementado")}>
+                    <select
+                      value={selectedHorarios[clase.id] || (clase.horarios[0] && String(clase.horarios[0].id))}
+                      onChange={(e) => handleHorarioChange(clase.id, e.target.value)}
+                    >
+                      {clase.horarios.map((horario) => (
+                        <option key={horario.id} value={String(horario.id)}>
+                          {`${horario.grado}${horario.grupo}`}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => {
+                        const horarioId = selectedHorarios[clase.id];
+                        if (!horarioId) {
+                          alert("Selecciona un horario antes de registrar asistencia.");
+                          return;
+                        }
+                        if (typeof onRegistrarAsistencia === "function") {
+                          onRegistrarAsistencia(`${clase.id}-${teacherId}`, Number(horarioId));
+                        }
+                      }}
+                    >
                       Registrar asistencia
                     </button>
                     <button onClick={() => alert("Registrar calificación aún no implementado")}>
