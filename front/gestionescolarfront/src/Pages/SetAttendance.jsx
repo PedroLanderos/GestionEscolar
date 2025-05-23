@@ -18,17 +18,25 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
       setLoading(true);
       setError(null);
       try {
+        console.log(
+          `Llamando a alumnosPorMateriaHorario con materiaProfesor=${claseProfesor} y horario=${horarioId}`
+        );
+
         // 1. Obtener IDs alumnos inscritos
         const resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorMateriaHorario`, {
           params: { materiaProfesor: claseProfesor, horario: horarioId },
         });
         const alumnoIds = resIds.data;
 
+        console.log("IDs de alumnos obtenidos:", alumnoIds);
+
         if (!alumnoIds.length) {
           setAlumnos([]);
           setLoading(false);
           return;
         }
+
+        console.log("Enviando IDs para obtener datos de alumnos:", alumnoIds);
 
         // 2. Obtener datos de alumnos
         const resAlumnos = await axios.post("http://localhost:5000/api/usuario/obtenerusuariosporids", alumnoIds);
@@ -71,14 +79,16 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
     try {
       const requests = alumnos.map((a) => {
         const asistencia = asistencias[a.id];
-        return axios.post("http://localhost:5004/api/asistencias", {
+        const payload = {
           id: 0,
           fecha: todayDate + "T00:00:00",
           asistio: asistencia.asistio,
           justificacion: asistencia.justificacion,
           idAlumno: a.id,
           idProfesor: claseProfesor, // idMateria-idProfesor
-        });
+        };
+        console.log("Enviando asistencia:", payload);
+        return axios.post("http://localhost:5004/api/asistencias", payload);
       });
 
       await Promise.all(requests);

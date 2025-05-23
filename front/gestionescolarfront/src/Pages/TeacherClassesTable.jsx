@@ -9,7 +9,7 @@ const TeacherClassesTable = ({ onRegistrarAsistencia }) => {
 
   const [classes, setClasses] = useState([]); // [{id, nombre, horarios: [{id, grado, grupo}]}]
   const [loading, setLoading] = useState(true);
-  const [selectedHorarios, setSelectedHorarios] = useState({}); // Para guardar el horario seleccionado por clase
+  const [selectedHorarios, setSelectedHorarios] = useState({}); // Guardará el string "1A", "2B", etc.
 
   useEffect(() => {
     if (!teacherId) return;
@@ -66,10 +66,10 @@ const TeacherClassesTable = ({ onRegistrarAsistencia }) => {
 
         setClasses(materias);
 
-        // Inicializar el horario seleccionado por materia al primero disponible
+        // Inicializar el horario seleccionado por materia con el string grado+grupo del primer horario válido
         const initialSelected = {};
         materias.forEach(m => {
-          if (m.horarios.length > 0) initialSelected[m.id] = String(m.horarios[0].id);
+          if (m.horarios.length > 0) initialSelected[m.id] = `${m.horarios[0].grado}${m.horarios[0].grupo}`;
         });
         setSelectedHorarios(initialSelected);
       } catch (error) {
@@ -83,10 +83,10 @@ const TeacherClassesTable = ({ onRegistrarAsistencia }) => {
     fetchTeacherClassesAndSchedules();
   }, [teacherId]);
 
-  const handleHorarioChange = (materiaId, horarioId) => {
+  const handleHorarioChange = (materiaId, horarioString) => {
     setSelectedHorarios(prev => ({
       ...prev,
-      [materiaId]: horarioId,
+      [materiaId]: horarioString, // Guarda "1A", "2B", etc.
     }));
   };
 
@@ -117,11 +117,11 @@ const TeacherClassesTable = ({ onRegistrarAsistencia }) => {
                   <td>{clase.nombre}</td>
                   <td>
                     <select
-                      value={selectedHorarios[clase.id] || (clase.horarios[0] && String(clase.horarios[0].id))}
+                      value={selectedHorarios[clase.id] || (clase.horarios[0] && `${clase.horarios[0].grado}${clase.horarios[0].grupo}`)}
                       onChange={(e) => handleHorarioChange(clase.id, e.target.value)}
                     >
                       {clase.horarios.map((horario) => (
-                        <option key={horario.id} value={String(horario.id)}>
+                        <option key={horario.id} value={`${horario.grado}${horario.grupo}`}>
                           {`${horario.grado}${horario.grupo}`}
                         </option>
                       ))}
@@ -130,13 +130,13 @@ const TeacherClassesTable = ({ onRegistrarAsistencia }) => {
                   <td>
                     <button
                       onClick={() => {
-                        const horarioId = selectedHorarios[clase.id];
-                        if (!horarioId) {
+                        const horario = selectedHorarios[clase.id];
+                        if (!horario) {
                           alert("Selecciona un horario antes de registrar asistencia.");
                           return;
                         }
                         if (typeof onRegistrarAsistencia === "function") {
-                          onRegistrarAsistencia(`${clase.id}-${teacherId}`, Number(horarioId));
+                          onRegistrarAsistencia(`${clase.id}-${teacherId}`, horario);
                         }
                       }}
                     >
