@@ -16,6 +16,7 @@ import ShowSchedule from "./ShowSchedule";
 import CreateReport from "./CreateReport";
 import AddSanction from "./AddSanction"; // NUEVA LÍNEA IMPORTANTE
 import AddSchoolYear from "./AddSchoolYear"; // Importa tu componente nuevo
+import TeacherClassesTable from "./TeacherClassesTable"; // Nuevo componente para mostrar clases del maestro
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -108,6 +109,7 @@ const MainPage = () => {
           <>
             <li onClick={() => { resetState(); setActiveSubOption("CrearReporte"); }}>Crear Reporte</li>
             <li onClick={() => { resetState(); setActiveSubOption("AgregarSancion"); }}>Registrar Sanción</li>
+            <li onClick={() => { resetState(); setActiveSubOption("ClasesDelMaestro"); }}>Administrar Clases</li> 
           </>
         )}
         <li>Talleres</li>
@@ -145,6 +147,7 @@ const MainPage = () => {
     if (activeSubOption === "Horario") return <ShowSchedule />;
     if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
     if (activeSubOption === "AgregarSancion") return <AddSanction onBack={resetState} />;
+    if (isTeacher && activeSubOption === "ClasesDelMaestro") return <TeacherClassesTable teacherId={auth.user?.id} />;
 
     return (
       <>

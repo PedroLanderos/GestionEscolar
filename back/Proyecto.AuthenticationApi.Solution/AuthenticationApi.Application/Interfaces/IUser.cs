@@ -22,5 +22,6 @@ namespace AuthenticationApi.Application.Interfaces
         Task<Response> EditarUsuario(EditarUsuarioDTO dto);
         Task<Response> EliminarUsuario(string id);
         Task<IEnumerable<UsuarioDTO>> FiltrarPorGrado(int grado);
+        Task<Response> RecuperarContrasenaPorId(string id);
     }
 }

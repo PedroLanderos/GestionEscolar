@@ -132,7 +132,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 string baseCurp = dto.Curp.Substring(0, 10).ToUpper();
                 string alumnoId = $"C{baseCurp}";
                 string homoclave = randomService.GenerateHomoclave();
-                string padreId = $"{baseCurp}{homoclave}";
+                string padreId = $"C{baseCurp}{homoclave}";
 
                 string alumnoPass = randomService.GenerateRandomPassword();
                 string padrePass = randomService.GenerateRandomPassword();
@@ -407,5 +407,61 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 throw;
             }
         }
+
+        public async Task<Response> RecuperarContrasenaPorId(string id)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(id) || id.Length < 11 || !id.StartsWith("C"))
+                    return new Response(false, "ID inválido para recuperación de contraseña.");
+
+                // Buscar el usuario por ID
+                var usuario = await context.Usuarios.FirstOrDefaultAsync(u => u.Id == id);
+                if (usuario is null)
+                    return new Response(false, "No se encontró un usuario con ese ID.");
+
+                // Solo se permite recuperar contraseña a tutores/padres
+                if (usuario.Rol?.ToLower() != "padre")
+                    return new Response(false, "Solo los padres o tutores pueden recuperar su contraseña por este medio.");
+
+                // Extraer base CURP del ID
+                string curpBase = id.Substring(1, 10); // Sin la "C"
+
+                // Buscar solicitud asociada a esa CURP
+                var solicitud = (await solicitudes.GetBy(s => s.CurpAlumno.ToUpper().StartsWith(curpBase))).FirstOrDefault();
+                if (solicitud is null)
+                    return new Response(false, "No se encontró una solicitud asociada al usuario para enviar el correo.");
+
+                // Generar nueva contraseña
+                string nuevaContrasena = randomService.GenerateRandomPassword();
+                usuario.Contrasena = BCrypt.Net.BCrypt.HashPassword(nuevaContrasena);
+
+                context.Usuarios.Update(usuario);
+                await context.SaveChangesAsync();
+
+                // Enviar email al padre/tutor
+                string subject = "Recuperación de contraseña - Sistema Escolar";
+                string body = $@"
+            <p>Hola <strong>{solicitud.NombrePadre}</strong>,</p>
+            <p>Se ha generado una nueva contraseña para la cuenta asociada a tu hijo(a) <strong>{solicitud.NombreAlumno}</strong>.</p>
+            <p><strong>ID de usuario:</strong> {usuario.Id}</p>
+            <p><strong>Nueva contraseña:</strong> {nuevaContrasena}</p>
+            <p>⚠️ Te recomendamos cambiar esta contraseña al iniciar sesión.</p>
+            <br/>
+            <p>Atentamente,<br/>Sistema Escolar</p>";
+
+                await emailService.EnviarCorreoAsync(solicitud.CorreoPadre, subject, body);
+
+                return new Response(true, "Contraseña actualizada y enviada correctamente al correo del padre/tutor.");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al recuperar la contraseña.");
+            }
+        }
+
+
+
     }
 }

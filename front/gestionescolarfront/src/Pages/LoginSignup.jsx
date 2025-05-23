@@ -9,6 +9,9 @@ const LoginSignup = () => {
   const [isRequesting, setIsRequesting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorCount, setErrorCount] = useState(0);
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [recoveryId, setRecoveryId] = useState("");
+
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
@@ -75,6 +78,7 @@ const LoginSignup = () => {
       });
 
       if (response.data.flag) {
+        setErrorCount(0); // Reiniciar contador al login exitoso
         login(response.data.message);
         navigate("/MenuPrincipal");
       } else {
@@ -87,8 +91,22 @@ const LoginSignup = () => {
         }
       }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      alert("Ocurrió un error al intentar iniciar sesión.");
+      // Manejo específico para 401 (Unauthorized)
+      if (error.response && error.response.status === 401) {
+        const nuevosIntentos = errorCount + 1;
+        setErrorCount(nuevosIntentos);
+        const mensaje =
+          (error.response.data && error.response.data.message) ||
+          "Credenciales inválidas";
+        alert("❌ " + mensaje);
+
+        if (nuevosIntentos >= 3) {
+          await bloquearUsuario();
+        }
+      } else {
+        console.error("Error al iniciar sesión:", error);
+        alert("Ocurrió un error al intentar iniciar sesión.");
+      }
     } finally {
       setLoading(false);
     }
@@ -118,6 +136,25 @@ const LoginSignup = () => {
       alert("Ocurrió un error al enviar la solicitud.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRecovery = async () => {
+    if (!recoveryId.trim()) return alert("Ingresa un ID válido.");
+
+    try {
+      const response = await axios.post(
+        `${AUTH_API}/usuario/recuperarContrasena`,
+        JSON.stringify(recoveryId),
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      alert(response.data.message);
+      setShowRecovery(false);
+      setRecoveryId("");
+    } catch (error) {
+      alert("❌ Error al intentar recuperar la contraseña.");
+      console.error(error);
     }
   };
 
@@ -205,6 +242,12 @@ const LoginSignup = () => {
             <button type="submit" disabled={loading}>
               {loading ? "Iniciando..." : "Iniciar sesión"}
             </button>
+            <div className="password-recovery">
+              <p>
+                ¿Olvidaste tu contraseña?{" "}
+                <span onClick={() => setShowRecovery(true)}>Recupérala aquí</span>
+              </p>
+            </div>
           </>
         )}
 
@@ -224,6 +267,23 @@ const LoginSignup = () => {
           )}
         </div>
       </form>
+
+      {showRecovery && (
+        <div className="modal-recovery">
+          <div className="modal-content">
+            <h3>Recuperar contraseña</h3>
+            <input
+              type="text"
+              placeholder="ID del usuario"
+              value={recoveryId}
+              onChange={(e) => setRecoveryId(e.target.value)}
+              required
+            />
+            <button onClick={handleRecovery}>Enviar nueva contraseña</button>
+            <button onClick={() => setShowRecovery(false)}>Cancelar</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

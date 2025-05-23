@@ -263,5 +263,24 @@ namespace AuthenticationApi.Presentation.Controllers
                 return StatusCode(500, "Error al obtener usuarios por IDs desde el controlador.");
             }
         }
+
+        [HttpPost("recuperarContrasena")]
+        public async Task<ActionResult<Response>> RecuperarContrasena([FromBody] string id)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(id))
+                    return BadRequest("Se requiere un ID válido.");
+
+                var resultado = await userService.RecuperarContrasenaPorId(id);
+                return resultado.Flag ? Ok(resultado) : BadRequest(resultado);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, new Response(false, "Error al recuperar la contraseña desde el controlador."));
+            }
+        }
+
     }
 }

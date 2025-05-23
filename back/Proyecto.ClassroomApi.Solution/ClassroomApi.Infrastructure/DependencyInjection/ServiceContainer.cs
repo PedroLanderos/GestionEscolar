@@ -20,6 +20,8 @@ namespace ClassroomApi.Infrastructure.DependencyInjection
             services.AddScoped<IReporte, ReporteRepository>();
             services.AddScoped<IAsistencia, AsistenciaRepository>();
             services.AddScoped<ISancion, SancionRepository>();
+            services.AddScoped<ICicloEscolar, CicloEscolarRepository>();
+            services.AddScoped<ICalificacion, CalificacionRepository>();
 
             return services;
         }
