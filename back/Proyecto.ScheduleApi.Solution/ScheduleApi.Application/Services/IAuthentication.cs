@@ -9,6 +9,6 @@ namespace ScheduleApi.Application.Services
 {
     public interface IAuthentication
     {
-        Task<UserDto> ValidateUser(int id); //metodo que valida si un usuario existe a traves de authenticaion api
+        Task<UserDto> ValidateUser(string id); //metodo que valida si un usuario existe a traves de authenticaion api
     }
 }

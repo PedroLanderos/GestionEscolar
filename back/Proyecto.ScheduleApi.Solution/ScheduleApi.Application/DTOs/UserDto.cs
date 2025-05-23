@@ -9,7 +9,8 @@ namespace ScheduleApi.Application.DTOs
 {
     public class UserDto
     {
-        public int Id { get; set; }
+        [Required]
+        public string? Id { get; set; }
 
         [Required]
         public string NombreCompleto { get; set; } = null!;

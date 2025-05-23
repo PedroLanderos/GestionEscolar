@@ -15,6 +15,7 @@ import User from "./User";
 import ShowSchedule from "./ShowSchedule";
 import CreateReport from "./CreateReport";
 import AddSanction from "./AddSanction"; // NUEVA LÍNEA IMPORTANTE
+import AddSchoolYear from "./AddSchoolYear"; // Importa tu componente nuevo
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -92,6 +93,7 @@ const MainPage = () => {
           <li onClick={() => handleUserView("docentes")}>Docentes</li>
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
+          <li onClick={() => { resetState(); setActiveSubOption("RegistrarCicloEscolar"); }}>Registrar ciclo escolar</li> {/* Nueva opción */}
         </ul>
       );
     }
@@ -136,6 +138,7 @@ const MainPage = () => {
       if (activeSubOption === "AsignarMateria") return <AssignSubject />;
       if (activeSubOption === "AgregarHorario") return <AddSchedule />;
       if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} onAssignSchedule={setAssignSchedule} />;
+      if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;  // Aquí el nuevo componente
     }
 
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;

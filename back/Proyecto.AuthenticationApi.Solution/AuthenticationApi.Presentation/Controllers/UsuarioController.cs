@@ -232,5 +232,36 @@ namespace AuthenticationApi.Presentation.Controllers
                 return StatusCode(500, $"Error al filtrar los alumnos por grado {grado}");
             }
         }
+
+        [HttpPost("obtenerUsuariosPorIds")]
+        public async Task<ActionResult<IEnumerable<ObtenerUsuarioDTO>>> ObtenerUsuariosPorIds([FromBody] List<string> ids)
+        {
+            try
+            {
+                if (ids == null || !ids.Any())
+                    return BadRequest("Se debe proporcionar al menos un ID.");
+
+                var usuarios = await userService.GetByAsync(u => ids.Contains(u.Id!));
+
+                var resultado = usuarios.Select(u => new ObtenerUsuarioDTO
+                {
+                    Id = u.Id!,
+                    NombreCompleto = u.NombreCompleto!,
+                    Correo = u.Correo!,
+                    Curp = u.Curp!,
+                    CuentaBloqueada = u.CuentaBloqueada ?? false,
+                    DadoDeBaja = u.DadoDeBaja ?? false,
+                    UltimaSesion = u.UltimaSesion ?? DateTime.MinValue,
+                    Rol = u.Rol!
+                });
+
+                return Ok(resultado);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, "Error al obtener usuarios por IDs desde el controlador.");
+            }
+        }
     }
 }

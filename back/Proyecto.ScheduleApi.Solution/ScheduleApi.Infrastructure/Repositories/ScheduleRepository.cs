@@ -325,5 +325,9 @@ namespace ScheduleApi.Infrastructure.Repositories
                 throw new Exception("Error al obtener el horario del alumno en el repositorio");
             }
         }
+
+
+        //obtener a todos los alumnos inscritos en cierta clase 
+        
     }
 }
