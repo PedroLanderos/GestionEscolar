@@ -23,5 +23,6 @@ namespace AuthenticationApi.Application.Interfaces
         Task<Response> EliminarUsuario(string id);
         Task<IEnumerable<UsuarioDTO>> FiltrarPorGrado(int grado);
         Task<Response> RecuperarContrasenaPorId(string id);
+        Task<ObtenerUsuarioDTO?> ObtenerAlumnoPorTutor(string tutorId);
     }
 }

@@ -461,6 +461,49 @@ namespace AuthenticationApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<ObtenerUsuarioDTO?> ObtenerAlumnoPorTutor(string tutorId)
+        {
+            try
+            {
+                // Primero buscamos el tutor/padre por Id
+                var tutor = await context.Usuarios.FirstOrDefaultAsync(u => u.Id == tutorId && u.Rol == "Padre");
+                if (tutor == null)
+                    return null;
+
+                // El tutorId tiene formato: "C" + baseCurp + homoclave
+                // Extraemos la baseCurp que es desde el índice 1 hasta índice 10 inclusive
+                if (tutorId.Length < 11)
+                    return null;
+
+                string baseCurp = tutorId.Substring(1, 10).ToUpper();
+
+                // Buscamos el alumno cuyo Id es "C" + baseCurp
+                string alumnoId = $"C{baseCurp}";
+
+                var alumno = await context.Usuarios.FirstOrDefaultAsync(u => u.Id == alumnoId && u.Rol == "Alumno");
+                if (alumno == null)
+                    return null;
+
+                return new ObtenerUsuarioDTO
+                {
+                    Id = alumno.Id!,
+                    NombreCompleto = alumno.NombreCompleto!,
+                    Correo = alumno.Correo!,
+                    Curp = alumno.Curp!,
+                    CuentaBloqueada = alumno.CuentaBloqueada ?? false,
+                    DadoDeBaja = alumno.DadoDeBaja ?? false,
+                    UltimaSesion = alumno.UltimaSesion ?? DateTime.MinValue,
+                    Rol = alumno.Rol!
+                };
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener el alumno asociado al tutor en el repositorio");
+            }
+        }
+
+
 
 
     }

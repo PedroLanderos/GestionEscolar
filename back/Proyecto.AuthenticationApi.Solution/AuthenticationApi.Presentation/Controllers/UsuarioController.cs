@@ -282,5 +282,26 @@ namespace AuthenticationApi.Presentation.Controllers
             }
         }
 
+        [HttpGet("obtenerAlumnoPorTutor/{tutorId}")]
+        public async Task<ActionResult<ObtenerUsuarioDTO>> ObtenerAlumnoPorTutor(string tutorId)
+        {
+            try
+            {
+                var alumno = await userService.ObtenerAlumnoPorTutor(tutorId);
+
+                if (alumno == null)
+                    return NotFound($"No se encontró un alumno asociado al tutor con ID: {tutorId}");
+
+                return Ok(alumno);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, "Error al obtener el alumno asociado al tutor desde el controlador");
+            }
+        }
+
+
+
     }
 }
