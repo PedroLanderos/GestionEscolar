@@ -19,5 +19,6 @@ namespace ClassroomApi.Application.Interfaces
 
         Task<IEnumerable<ReporteDTO>> ObtenerReportes();
         Task<IEnumerable<Reporte>> GetBy(Expression<Func<Reporte, bool>> predicate);
+        Task<ReporteDTO?> ObtenerReporteInasistenciaPorAlumnoFechaGrupoAsync(string idAlumno, DateTime fecha, string grupo);
     }
 }

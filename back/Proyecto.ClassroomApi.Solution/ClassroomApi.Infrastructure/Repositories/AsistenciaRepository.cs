@@ -82,6 +82,8 @@ namespace ClassroomApi.Infrastructure.Repositories
                 if (existing == null)
                     return new Response(false, "Asistencia no encontrada.");
 
+                bool cambioInasistenciaAAsistencia = existing.Asistio == false && dto.Asistio == true;
+
                 existing.Fecha = dto.Fecha;
                 existing.Asistio = dto.Asistio;
                 existing.Justificacion = dto.Justificacion;
@@ -90,6 +92,37 @@ namespace ClassroomApi.Infrastructure.Repositories
 
                 context.Asistencias.Update(existing);
                 await context.SaveChangesAsync();
+
+                if (cambioInasistenciaAAsistencia)
+                {
+                    try
+                    {
+                        var horario = await _schedule.GetScheduleByUserId(dto.IdAlumno!);
+                        if (horario == null)
+                        {
+                            LogException.LogExceptions(new Exception("No se encontró horario asignado para el alumno al actualizar asistencia."));
+                        }
+                        else
+                        {
+                            var gradoGrupo = $"{horario.Grado}{horario.Grupo}";
+
+                            var reporteDto = await _reporte.ObtenerReporteInasistenciaPorAlumnoFechaGrupoAsync(dto.IdAlumno!, dto.Fecha, gradoGrupo);
+
+                            if (reporteDto != null)
+                            {
+                                var eliminarResponse = await _reporte.EliminarReporte(reporteDto.Id);
+                                if (!eliminarResponse.Flag)
+                                {
+                                    LogException.LogExceptions(new Exception($"Error al eliminar reporte con Id {reporteDto.Id}: {eliminarResponse.Message}"));
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogException.LogExceptions(ex);
+                    }
+                }
 
                 return new Response(true, "Asistencia actualizada correctamente.");
             }

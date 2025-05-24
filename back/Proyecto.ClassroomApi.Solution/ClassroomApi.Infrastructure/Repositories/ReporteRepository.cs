@@ -124,5 +124,29 @@ namespace ClassroomApi.Infrastructure.Repositories
                 throw new Exception("Error al filtrar los reportes");
             }
         }
+
+        public async Task<ReporteDTO?> ObtenerReporteInasistenciaPorAlumnoFechaGrupoAsync(string idAlumno, DateTime fecha, string grupo)
+        {
+            try
+            {
+                var reportes = await GetBy(r =>
+                    r.IdAlumno == idAlumno &&
+                    r.Fecha.Date == fecha.Date &&
+                    r.Grupo == grupo &&
+                    r.Tipo == "Inasistencia");
+
+                var reporte = reportes.FirstOrDefault();
+
+                if (reporte == null)
+                    return null;
+
+                return ReporteMapper.FromEntity(reporte);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener reporte de inasistencia por alumno, fecha y grupo en repositorio");
+            }
+        }
     }
 }
