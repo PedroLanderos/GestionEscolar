@@ -19,6 +19,8 @@ import AddSchoolYear from "./AddSchoolYear"; // Importa tu componente nuevo
 import TeacherClassesTable from "./TeacherClassesTable"; // Nuevo componente para mostrar clases del maestro
 import AttendanceRegister from "./SetAttendance"; // Nuevo componente para registrar asistencia
 import SetGrades from "./SetGrades"; // Nuevo componente para registrar calificaciones
+import ShowGrades from "./ShowGrades"; // Nuevo componente para ver calificaciones (alumno)
+import ShowAttendance from "./ShowAttendance"; // Nuevo componente para ver asistencias (alumno)
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -121,6 +123,12 @@ const MainPage = () => {
             <li onClick={() => { resetState(); setActiveSubOption("ClasesDelMaestro"); }}>Administrar Clases</li>
           </>
         )}
+        {isStudent && (
+          <>
+            <li onClick={() => { resetState(); setActiveSubOption("Calificaciones"); }}>Calificaciones</li>
+            <li onClick={() => { resetState(); setActiveSubOption("Asistencias"); }}>Asistencias</li>
+          </>
+        )}
         <li>Talleres</li>
         <li>Asistencias</li>
         <li>Reportes</li>
@@ -185,6 +193,15 @@ const MainPage = () => {
             onRegistrarCalificacion={(claseProfesor, horario) => setGradesData({ claseProfesor, horario })}
           />
         );
+      }
+    }
+
+    if (isStudent) {
+      if (activeSubOption === "Calificaciones") {
+        return <ShowGrades />;
+      }
+      if (activeSubOption === "Asistencias") {
+        return <ShowAttendance />;
       }
     }
 
