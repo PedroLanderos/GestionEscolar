@@ -3,7 +3,7 @@ import axios from "axios";
 import "./CSS/UsersTable.css";
 import { AuthContext } from "../Context/AuthContext";
 
-const TeacherClassesTable = ({ onRegistrarAsistencia }) => {
+const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion }) => {
   const { auth } = useContext(AuthContext);
   const teacherId = auth.user?.id;
 
@@ -142,7 +142,18 @@ const TeacherClassesTable = ({ onRegistrarAsistencia }) => {
                     >
                       Registrar asistencia
                     </button>
-                    <button onClick={() => alert("Registrar calificación aún no implementado")}>
+                    <button
+                      onClick={() => {
+                        const horario = selectedHorarios[clase.id];
+                        if (!horario) {
+                          alert("Selecciona un horario antes de registrar calificación.");
+                          return;
+                        }
+                        if (typeof onRegistrarCalificacion === "function") {
+                          onRegistrarCalificacion(`${clase.id}-${teacherId}`, horario);
+                        }
+                      }}
+                    >
                       Registrar calificación
                     </button>
                   </td>

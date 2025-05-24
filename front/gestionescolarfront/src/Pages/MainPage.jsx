@@ -18,6 +18,7 @@ import AddSanction from "./AddSanction"; // NUEVA LÍNEA IMPORTANTE
 import AddSchoolYear from "./AddSchoolYear"; // Importa tu componente nuevo
 import TeacherClassesTable from "./TeacherClassesTable"; // Nuevo componente para mostrar clases del maestro
 import AttendanceRegister from "./SetAttendance"; // Nuevo componente para registrar asistencia
+import SetGrades from "./SetGrades"; // Nuevo componente para registrar calificaciones
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -45,9 +46,10 @@ const MainPage = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [userMode, setUserMode] = useState(null);
 
-  // Estado para manejar la vista de registro de asistencia
-  // { claseProfesor: string, horarioId: number }
+  // Estado para manejar la vista de registro de asistencia o calificaciones
+  // { claseProfesor: string, horarioId: string }
   const [attendanceData, setAttendanceData] = useState(null);
+  const [gradesData, setGradesData] = useState(null);
 
   const handleUserView = (type) => {
     resetState();
@@ -75,6 +77,7 @@ const MainPage = () => {
     setUserMode(null);
     setActiveSubOption(null);
     setAttendanceData(null);
+    setGradesData(null);
   };
 
   const getGreeting = () => {
@@ -154,10 +157,9 @@ const MainPage = () => {
     if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
     if (activeSubOption === "AgregarSancion") return <AddSanction onBack={resetState} />;
 
-    // Renderizamos TeacherClassesTable o AttendanceRegister según el estado
+    // Renderizamos TeacherClassesTable o AttendanceRegister o SetGrades según el estado
     if (isTeacher) {
       if (attendanceData) {
-        // Mostrar componente de registro de asistencia con datos
         return (
           <AttendanceRegister
             claseProfesor={attendanceData.claseProfesor}
@@ -166,12 +168,21 @@ const MainPage = () => {
           />
         );
       }
+      if (gradesData) {
+        return (
+          <SetGrades
+            claseProfesor={gradesData.claseProfesor}
+            horario={gradesData.horario}
+            onBack={() => setGradesData(null)}
+          />
+        );
+      }
       if (activeSubOption === "ClasesDelMaestro") {
-        // Mostrar listado de clases y horarios con opción para registrar asistencia
         return (
           <TeacherClassesTable
             teacherId={auth.user?.id}
             onRegistrarAsistencia={(claseProfesor, horarioId) => setAttendanceData({ claseProfesor, horarioId })}
+            onRegistrarCalificacion={(claseProfesor, horario) => setGradesData({ claseProfesor, horario })}
           />
         );
       }
