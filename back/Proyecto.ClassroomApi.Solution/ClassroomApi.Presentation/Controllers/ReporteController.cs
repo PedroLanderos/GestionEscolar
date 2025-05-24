@@ -142,7 +142,7 @@ namespace ClassroomApi.Presentation.Controllers
 
 
         [HttpGet("alumno/{idAlumno}")]
-        public async Task<IActionResult> ObtenerPorAlumno(int idAlumno)
+        public async Task<IActionResult> ObtenerPorAlumno(string idAlumno)
         {
             try
             {
@@ -178,6 +178,49 @@ namespace ClassroomApi.Presentation.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Error al obtener reportes por tipo '{tipo}': {ex.Message}");
+            }
+        }
+
+        [HttpGet("ciclo/{cicloEscolar}/alumno/{idAlumno}")]
+        public async Task<IActionResult> ObtenerPorCicloYAlumno(string cicloEscolar, string idAlumno)
+        {
+            try
+            {
+                var reportes = await reporteService.GetBy(r =>
+                    r.CicloEscolar != null && r.CicloEscolar.Equals(cicloEscolar) &&
+                    r.IdAlumno == idAlumno);
+
+                if (!reportes.Any())
+                    return NotFound($"No se encontraron reportes para el alumno '{idAlumno}' en el ciclo '{cicloEscolar}'");
+
+                var result = reportes.Select(ReporteMapper.FromEntity).ToList();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener reportes por ciclo '{cicloEscolar}' y alumno '{idAlumno}': {ex.Message}");
+            }
+        }
+
+        [HttpGet("alumno/{idAlumno}/fechas")]
+        public async Task<IActionResult> ObtenerPorAlumnoYFechas(string idAlumno, [FromQuery] DateTime inicio, [FromQuery] DateTime fin)
+        {
+            try
+            {
+                var reportes = await reporteService.GetBy(r =>
+                    r.IdAlumno == idAlumno &&
+                    r.Fecha >= inicio &&
+                    r.Fecha <= fin);
+
+                if (!reportes.Any())
+                    return NotFound($"No se encontraron reportes para el alumno '{idAlumno}' entre {inicio:yyyy-MM-dd} y {fin:yyyy-MM-dd}");
+
+                var result = reportes.Select(ReporteMapper.FromEntity).ToList();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener reportes por alumno '{idAlumno}' y fechas: {ex.Message}");
             }
         }
     }

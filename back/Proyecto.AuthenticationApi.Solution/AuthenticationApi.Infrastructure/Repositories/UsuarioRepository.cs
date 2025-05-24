@@ -215,6 +215,23 @@ namespace AuthenticationApi.Infrastructure.Repositories
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(dto.Id) || !System.Text.RegularExpressions.Regex.IsMatch(dto.Id, @"^A0[1-3]$"))
+                {
+                    return new Response(false, "El ID del administrador debe ser uno de los siguientes: A01, A02, A03.");
+                }
+
+                bool exists = await context.Usuarios.AnyAsync(u => u.Id == dto.Id && u.Rol == "Administrador");
+                if (exists)
+                {
+                    return new Response(false, $"Ya existe un administrador con el ID {dto.Id}.");
+                }
+
+                int adminsCount = await context.Usuarios.CountAsync(u => u.Rol == "Administrador");
+                if (adminsCount >= 3)
+                {
+                    return new Response(false, "Ya existen 3 administradores registrados. No se pueden registrar más.");
+                }
+
                 var result = context.Usuarios.Add(new Usuario()
                 {
                     Id = dto.Id,
@@ -230,13 +247,13 @@ namespace AuthenticationApi.Infrastructure.Repositories
 
                 await context.SaveChangesAsync();
 
-                if (result is null) return new Response(false, "Error al registrar adminstrador");
+                if (result is null) return new Response(false, "Error al registrar administrador");
                 return new Response(true, "Administrador registrado exitosamente");
             }
             catch (Exception ex)
             {
                 LogException.LogExceptions(ex);
-                return new Response(false, "Error al registrar adminstrador");
+                return new Response(false, "Error al registrar administrador");
             }
         }
 
@@ -297,6 +314,20 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 var usuario = await context.Usuarios.FirstOrDefaultAsync(u => u.Id == dto.Id);
                 if (usuario is null)
                     return new Response(false, "Usuario no encontrado");
+
+                if (usuario.Rol == "Administrador")
+                {
+                    if (string.IsNullOrWhiteSpace(dto.Id) || !System.Text.RegularExpressions.Regex.IsMatch(dto.Id, @"^A0[1-3]$"))
+                    {
+                        return new Response(false, "El ID del administrador debe ser uno de los siguientes: A01, A02, A03.");
+                    }
+
+                    bool exists = await context.Usuarios.AnyAsync(u => u.Id == dto.Id && u.Rol == "Administrador" && u.Id != dto.Id);
+                    if (exists)
+                    {
+                        return new Response(false, $"Ya existe un administrador con el ID {dto.Id}.");
+                    }
+                }
 
                 usuario.NombreCompleto = dto.NombreCompleto;
                 usuario.Correo = dto.Correo;

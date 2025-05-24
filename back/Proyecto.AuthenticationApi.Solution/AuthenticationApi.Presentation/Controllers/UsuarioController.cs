@@ -300,8 +300,5 @@ namespace AuthenticationApi.Presentation.Controllers
                 return StatusCode(500, "Error al obtener el alumno asociado al tutor desde el controlador");
             }
         }
-
-
-
     }
 }
