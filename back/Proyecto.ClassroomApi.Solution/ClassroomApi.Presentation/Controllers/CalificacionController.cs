@@ -174,5 +174,39 @@ namespace ClassroomApi.Presentation.Controllers
                 return StatusCode(500, $"Error al obtener calificaciones por ciclo y materia: {ex.Message}");
             }
         }
+
+        [HttpGet("alumno/{idAlumno}")]
+        public async Task<IActionResult> ObtenerPorAlumno(string idAlumno)
+        {
+            try
+            {
+                var calificaciones = await calificacionService.GetManyBy(c => c.IdAlumno == idAlumno);
+                if (calificaciones == null || !calificaciones.Any())
+                    return NotFound("No se encontraron calificaciones para ese alumno.");
+
+                return Ok(calificaciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener calificaciones por alumno: {ex.Message}");
+            }
+        }
+
+        [HttpGet("alumno/{idAlumno}/ciclo/{idCiclo}")]
+        public async Task<IActionResult> ObtenerPorAlumnoYCiclo(string idAlumno, string idCiclo)
+        {
+            try
+            {
+                var calificaciones = await calificacionService.GetManyBy(c => c.IdAlumno == idAlumno && c.IdCiclo == idCiclo);
+                if (calificaciones == null || !calificaciones.Any())
+                    return NotFound("No se encontraron calificaciones para ese alumno en el ciclo escolar especificado.");
+
+                return Ok(calificaciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener calificaciones por alumno y ciclo: {ex.Message}");
+            }
+        }
     }
 }

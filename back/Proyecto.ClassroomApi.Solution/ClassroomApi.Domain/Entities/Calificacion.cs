@@ -13,7 +13,7 @@ namespace ClassroomApi.Domain.Entities
         [Key]
         public int Id { get; set; }
         public string? IdMateria { get; set; }
-        public string? IdAlumno { get; set; }
+        public string? IdAlumno { get; set; }   
         public decimal CalificacionFinal { get; set; }
         public string? Comentarios { get; set; }  
         public string? IdCiclo { get; set; } 
