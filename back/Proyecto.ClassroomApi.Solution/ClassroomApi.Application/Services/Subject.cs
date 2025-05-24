@@ -20,15 +20,14 @@ namespace ClassroomApi.Application.Services
         }
         public async Task<SubjectDTO> GetSubject(int id)
         {
-			try
-			{
-                var getSubject = await _httpClient.GetAsync($"/api/subject/{id}");
-                if (!getSubject.IsSuccessStatusCode)
+            try
+            {
+                var response = await _httpClient.GetAsync($"subject/{id}");
+                if (!response.IsSuccessStatusCode)
                     return null!;
 
-                var subject = await getSubject.Content.ReadFromJsonAsync<SubjectDTO>();
+                var subject = await response.Content.ReadFromJsonAsync<SubjectDTO>();
                 return subject!;
-
             }
             catch (Exception ex)
             {

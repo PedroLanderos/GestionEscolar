@@ -127,5 +127,23 @@ namespace ClassroomApi.Infrastructure.Repositories
                 throw new Exception("Error al obtener ciclos escolares con filtro");
             }
         }
+
+        public async Task<CicloEscolar> GetBy(Expression<Func<CicloEscolar, bool>> predicate)
+        {
+            try
+            {
+                
+                var ciclo = await context.CiclosEscolares.FirstOrDefaultAsync(predicate);
+
+                if (ciclo is null) return null!;
+
+                return ciclo;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener ciclo escolar con filtro");
+            }
+        }
     }
 }

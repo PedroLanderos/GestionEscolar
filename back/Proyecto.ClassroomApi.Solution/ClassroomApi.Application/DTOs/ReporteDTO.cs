@@ -11,13 +11,13 @@ namespace ClassroomApi.Application.DTOs
         DateTime Fecha,
 
         [Required]
-        int IdAlumno,
+        string IdAlumno,
 
         string? Grupo,
 
         string? CicloEscolar,
 
-        string? IdHorario,
+        int IdHorario,
 
         [Required]
         string Tipo 

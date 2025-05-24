@@ -14,14 +14,17 @@ namespace ScheduleApi.Application.DependencyInjection
     {
         public static IServiceCollection AddApplicationService(this IServiceCollection services, IConfiguration config)
         {
-            // HttpClient para IArticles apuntando al API Gateway
             services.AddHttpClient<IAuthentication, Authentication>(client =>
             {
-                client.BaseAddress = new Uri("http://apigateway:5000/api/article/");
+                client.BaseAddress = new Uri("http://authenticationapiservice:5000/api/");
             });
             services.AddHttpClient<ISubject, Subject>(client =>
             {
-                client.BaseAddress = new Uri("http://apigateway:5001/api/article/");
+                client.BaseAddress = new Uri("http://subjectsapiservice:5001/api/");
+            });
+            services.AddHttpClient<ISchedule, Schedule>(client =>
+            {
+                client.BaseAddress = new Uri("http://scheduleapiservice:5002/api/"); 
             });
 
             return services;

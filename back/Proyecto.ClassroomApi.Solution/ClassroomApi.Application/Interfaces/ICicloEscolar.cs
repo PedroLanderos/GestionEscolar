@@ -16,5 +16,6 @@ namespace ClassroomApi.Application.Interfaces
         Task<IEnumerable<CicloEscolarDTO>> ObtenerCiclosEscolares();
         Task<CicloEscolarDTO> ObtenerCicloEscolarPorId(string id);
         Task<IEnumerable<CicloEscolar>> GetManyBy(Expression<Func<CicloEscolar, bool>> predicate);
+        Task<CicloEscolar> GetBy(Expression<Func<CicloEscolar, bool>> predicate);
     }
 }

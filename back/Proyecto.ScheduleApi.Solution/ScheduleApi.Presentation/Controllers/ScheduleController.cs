@@ -117,5 +117,15 @@ namespace ScheduleApi.Presentation.Controllers
             return Ok(studentIds);
         }
 
+        [HttpGet("horarioPorUsuario/{idUsuario}")]
+        public async Task<IActionResult> GetScheduleByUserId(string idUsuario)
+        {
+            var schedule = await scheduleService.GetScheduleByUserIdAsync(idUsuario);
+            if (schedule == null)
+                return NotFound($"No se encontró horario asignado para el usuario {idUsuario}");
+
+            return Ok(schedule);
+        }
+
     }
 }

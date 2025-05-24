@@ -12,7 +12,7 @@ namespace ClassroomApi.Domain.Entities
         [Key]
         public int Id { get; set; }
         public DateTime Fecha { get; set; }
-        public int IdAlumno { get; set; }
+        public string? IdAlumno { get; set; }
         public string? Grupo { get; set; }
         public string? CicloEscolar { get; set; }
         public string? idHorario { get; set; } //para poder filtrar que tanto faltaron los alumnos de x grupo a la semana

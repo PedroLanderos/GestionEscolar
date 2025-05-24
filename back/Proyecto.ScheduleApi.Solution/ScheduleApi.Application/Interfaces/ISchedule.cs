@@ -32,5 +32,6 @@ namespace ScheduleApi.Application.Interfaces
         Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForTeacherAsync(string idUsuario);
         Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForStudentAsync(string idUsuario);
         Task<IEnumerable<string>> GetStudentIdsBySubjectAndScheduleAsync(string materiaProfesor, string horario);
+        Task<ScheduleDTO?> GetScheduleByUserIdAsync(string idUser);
     }
 }

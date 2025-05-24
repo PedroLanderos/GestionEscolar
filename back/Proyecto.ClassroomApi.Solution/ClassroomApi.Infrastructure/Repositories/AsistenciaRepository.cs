@@ -1,6 +1,7 @@
 ﻿using ClassroomApi.Application.DTOs;
 using ClassroomApi.Application.Interfaces;
 using ClassroomApi.Application.Mapper;
+using ClassroomApi.Application.Services;
 using ClassroomApi.Domain.Entities;
 using ClassroomApi.Infrastructure.Data;
 using Llaveremos.SharedLibrary.Logs;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace ClassroomApi.Infrastructure.Repositories
 {
-    public class AsistenciaRepository(ClassroomDbContext context) : IAsistencia
+    public class AsistenciaRepository(ClassroomDbContext context, ICicloEscolar _ciclo, IReporte _reporte, ISchedule _schedule) : IAsistencia
     {
         public async Task<Response> CrearAsistencia(AsistenciaDTO dto)
         {
@@ -22,6 +23,47 @@ namespace ClassroomApi.Infrastructure.Repositories
                 var entity = AsistenciaMapper.ToEntity(dto);
                 await context.Asistencias.AddAsync(entity);
                 await context.SaveChangesAsync();
+
+                if (dto.Asistio == false)
+                {
+                    try
+                    {
+                        var ciclo = await _ciclo.GetBy(x => x.EsActual == true);
+                        if (ciclo == null)
+                        {
+                            return new Response(false, "No se encontró un ciclo escolar activo para crear el reporte.");
+                        }
+
+                        var horario = await _schedule.GetScheduleByUserId(dto.IdAlumno!);
+                        if (horario == null)
+                        {
+                            return new Response(false, "No se encontró un horario asignado para el alumno.");
+                        }
+
+                        var gradoGrupo = $"{horario.Grado}{horario.Grupo}";
+
+                        var reporte = new ReporteDTO
+                        (
+                            Id: 0,
+                            Fecha: dto.Fecha,
+                            IdAlumno: dto.IdAlumno!,
+                            Grupo: gradoGrupo,
+                            CicloEscolar: ciclo.Id,
+                            IdHorario: horario.Id,
+                            Tipo: "Inasistencia"
+                        );
+
+                        var reporteResponse = await _reporte.CrearReporte(reporte);
+                        if (!reporteResponse.Flag)
+                        {
+                            LogException.LogExceptions(new Exception("Error al crear el reporte: " + reporteResponse.Message));
+                        }
+                    }
+                    catch (Exception exReporte)
+                    {
+                        LogException.LogExceptions(exReporte);
+                    }
+                }
 
                 return new Response(true, "Asistencia registrada correctamente.");
             }

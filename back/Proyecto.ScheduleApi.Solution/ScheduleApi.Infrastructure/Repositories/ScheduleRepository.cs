@@ -72,13 +72,30 @@ namespace ScheduleApi.Infrastructure.Repositories
         {
             try
             {
+                if (schedule.Grupo != "A" && schedule.Grupo != "B")
+                    return new Response(false, "Solo se permiten los grupos A y B.");
+
+                if (schedule.Grado < 1 || schedule.Grado > 3)
+                    return new Response(false, "Solo se permiten grados del 1 al 3.");
+
+                var countSchedulesForGrade = await context.Schedules
+                    .CountAsync(s => s.Grado == schedule.Grado);
+
+                if (countSchedulesForGrade >= 2)
+                    return new Response(false, $"Ya existen 2 horarios para el grado {schedule.Grado}. No se permiten más.");
+
+                var exists = await context.Schedules
+                    .AnyAsync(s => s.Grado == schedule.Grado && s.Grupo == schedule.Grupo);
+
+                if (exists)
+                    return new Response(false, $"Ya existe un horario para el grado {schedule.Grado} y grupo {schedule.Grupo}.");
+
                 var entity = ScheduleMapper.ToEntity(schedule);
                 var response = context.Schedules.Add(entity);
                 await context.SaveChangesAsync();
 
-                if(response is null) return new Response(false, "Error al crear horario");
+                if (response is null) return new Response(false, "Error al crear horario");
                 return new Response(true, "Horario creado exitosamente");
-
             }
             catch (Exception ex)
             {
@@ -290,6 +307,24 @@ namespace ScheduleApi.Infrastructure.Repositories
                 if (existing == null)
                     return new Response(false, "Horario no encontrado");
 
+                if (schedule.Grupo != "A" && schedule.Grupo != "B")
+                    return new Response(false, "Solo se permiten los grupos A y B.");
+
+                if (schedule.Grado < 1 || schedule.Grado > 3)
+                    return new Response(false, "Solo se permiten grados del 1 al 3.");
+
+                var countSchedulesForGrade = await context.Schedules
+                    .CountAsync(s => s.Grado == schedule.Grado && s.Id != schedule.Id);
+
+                if (countSchedulesForGrade >= 2)
+                    return new Response(false, $"Ya existen 2 horarios para el grado {schedule.Grado}. No se permiten más.");
+
+                var exists = await context.Schedules
+                    .AnyAsync(s => s.Grado == schedule.Grado && s.Grupo == schedule.Grupo && s.Id != schedule.Id);
+
+                if (exists)
+                    return new Response(false, $"Ya existe un horario para el grado {schedule.Grado} y grupo {schedule.Grupo}.");
+
                 existing.Grado = schedule.Grado;
                 existing.Grupo = schedule.Grupo;
 
@@ -369,6 +404,34 @@ namespace ScheduleApi.Infrastructure.Repositories
                 throw new Exception("Error al obtener alumnos por materia y horario");
             }
         }
+
+        public async Task<ScheduleDTO?> GetScheduleByUserIdAsync(string idUser)
+        {
+            try
+            {
+                // Buscar la asignación del usuario en ScheduleToUsers
+                var assignment = await context.ScheduleToUsers
+                    .FirstOrDefaultAsync(s => s.IdUser == idUser);
+
+                if (assignment == null)
+                    return null; // No asignado a ningún horario
+
+                // Obtener el horario asignado con IdSchedule
+                var schedule = await context.Schedules.FindAsync(assignment.IdSchedule);
+
+                if (schedule == null)
+                    return null; // Horario no encontrado
+
+                // Mapear a DTO y devolver
+                return ScheduleMapper.FromEntity(schedule);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener el horario por IdUser en el repositorio");
+            }
+        }
+
 
     }
 }

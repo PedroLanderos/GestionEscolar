@@ -23,14 +23,12 @@ namespace ScheduleApi.Application.Services
         {
             try
             {
-                var getuser = await _httpClient.GetAsync($"/api/authentication/{id}");
-
-                if (!getuser.IsSuccessStatusCode)
+                var response = await _httpClient.GetAsync($"usuario/obtenerUsuarioPorId/{id}");
+                if (!response.IsSuccessStatusCode)
                     return null!;
 
-                var user = await getuser.Content.ReadFromJsonAsync<UserDto>();
+                var user = await response.Content.ReadFromJsonAsync<UserDto>();
                 return user!;
-
             }
             catch (Exception ex)
             {
