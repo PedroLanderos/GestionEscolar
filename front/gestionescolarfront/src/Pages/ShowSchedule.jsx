@@ -20,10 +20,29 @@ const ShowSchedule = () => {
     const fetchSchedule = async () => {
       if (!auth?.user?.id || !auth?.user?.role) return;
 
-      const isDocente = auth.user.role.toLowerCase() === "docente";
+      const role = auth.user.role.toLowerCase();
+      let userId = auth.user.id;
+
+      // Si es tutor, obtener id de su alumno (hijo)
+      if (role === "tutor" || role === "padre") {
+        try {
+          const res = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
+          if (res.data && res.data.id) {
+            userId = res.data.id;
+          } else {
+            console.warn("No se encontró alumno asociado al tutor");
+            return;
+          }
+        } catch (error) {
+          console.error("Error al obtener alumno para tutor:", error);
+          return;
+        }
+      }
+
+      const isDocente = role === "docente";
       const endpoint = isDocente
-        ? `http://localhost:5002/api/Schedule/horarioDocente/${auth.user.id}`
-        : `http://localhost:5002/api/Schedule/horarioAlumno/${auth.user.id}`;
+        ? `http://localhost:5002/api/Schedule/horarioDocente/${userId}`
+        : `http://localhost:5002/api/Schedule/horarioAlumno/${userId}`;
 
       try {
         const res = await axios.get(endpoint);

@@ -19,8 +19,8 @@ import AddSchoolYear from "./AddSchoolYear"; // Importa tu componente nuevo
 import TeacherClassesTable from "./TeacherClassesTable"; // Nuevo componente para mostrar clases del maestro
 import AttendanceRegister from "./SetAttendance"; // Nuevo componente para registrar asistencia
 import SetGrades from "./SetGrades"; // Nuevo componente para registrar calificaciones
-import ShowGrades from "./ShowGrades"; // Nuevo componente para ver calificaciones (alumno)
-import ShowAttendance from "./ShowAttendance"; // Nuevo componente para ver asistencias (alumno)
+import ShowGrades from "./ShowGrades"; // Nuevo componente para ver calificaciones (alumno y tutor)
+import ShowAttendance from "./ShowAttendance"; // Nuevo componente para ver asistencias (alumno y tutor)
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -37,6 +37,7 @@ const MainPage = () => {
   const isAdmin = auth.user?.role === "Administrador";
   const isTeacher = auth.user?.role === "Docente";
   const isStudent = auth.user?.role === "Alumno";
+  const isTutor = auth.user?.role === "Tutor";
 
   const [activeSection, setActiveSection] = useState(isAdmin ? "Administrador" : "Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
@@ -113,7 +114,7 @@ const MainPage = () => {
     return (
       <ul>
         <li onClick={() => { resetState(); setActiveSubOption("DatosPersonales"); }}>Datos Personales</li>
-        {(isTeacher || isStudent) && (
+        {(isTeacher || isStudent || isTutor) && (
           <li onClick={() => { resetState(); setActiveSubOption("Horario"); }}>Horario</li>
         )}
         {isTeacher && (
@@ -123,7 +124,7 @@ const MainPage = () => {
             <li onClick={() => { resetState(); setActiveSubOption("ClasesDelMaestro"); }}>Administrar Clases</li>
           </>
         )}
-        {isStudent && (
+        {(isStudent || isTutor) && (
           <>
             <li onClick={() => { resetState(); setActiveSubOption("Calificaciones"); }}>Calificaciones</li>
             <li onClick={() => { resetState(); setActiveSubOption("Asistencias"); }}>Asistencias</li>
@@ -161,7 +162,7 @@ const MainPage = () => {
     }
 
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;
-    if (activeSubOption === "Horario") return <ShowSchedule />;
+    if ((activeSubOption === "Horario") && (isTeacher || isStudent || isTutor)) return <ShowSchedule />;
     if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
     if (activeSubOption === "AgregarSancion") return <AddSanction onBack={resetState} />;
 
@@ -196,7 +197,7 @@ const MainPage = () => {
       }
     }
 
-    if (isStudent) {
+    if ((isStudent || isTutor)) {
       if (activeSubOption === "Calificaciones") {
         return <ShowGrades />;
       }

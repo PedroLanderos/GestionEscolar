@@ -5,7 +5,8 @@ import "./CSS/UsersTable.css";
 
 const ShowGrades = () => {
   const { auth } = useContext(AuthContext);
-  const alumnoId = auth.user?.id;
+  const userId = auth.user?.id;
+  const userRole = auth.user?.role?.toLowerCase();
 
   const [grades, setGrades] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +14,7 @@ const ShowGrades = () => {
   const [activeCycle, setActiveCycle] = useState(null);
 
   useEffect(() => {
-    if (!alumnoId) return;
+    if (!userId) return;
 
     const fetchGrades = async () => {
       setLoading(true);
@@ -31,6 +32,25 @@ const ShowGrades = () => {
           return;
         }
 
+        // Si es tutor, obtener el id del alumno (hijo)
+        let alumnoId = userId;
+        if (userRole === "tutor" || userRole === "padre") {
+          try {
+            const res = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
+            if (res.data && res.data.id) {
+              alumnoId = res.data.id;
+            } else {
+              setError("No se encontró alumno asociado al tutor");
+              setLoading(false);
+              return;
+            }
+          } catch (error) {
+            setError("Error al obtener alumno para tutor");
+            setLoading(false);
+            return;
+          }
+        }
+
         // 2. Obtener calificaciones por alumno y ciclo
         const gradesRes = await axios.get(
           `http://localhost:5004/api/calificacion/alumno/${alumnoId}/ciclo/${cicloActual}`
@@ -45,7 +65,7 @@ const ShowGrades = () => {
     };
 
     fetchGrades();
-  }, [alumnoId]);
+  }, [userId, userRole]);
 
   if (loading) return <p>Cargando calificaciones...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;

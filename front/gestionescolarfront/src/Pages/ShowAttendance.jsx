@@ -5,14 +5,15 @@ import { AuthContext } from "../Context/AuthContext";
 
 const ShowAttendance = () => {
   const { auth } = useContext(AuthContext);
-  const alumnoId = auth.user?.id;
+  const userId = auth.user?.id;
+  const userRole = auth.user?.role?.toLowerCase();
 
   const [asistencias, setAsistencias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!alumnoId || auth.user?.role !== "Alumno") {
+    if (!userId) {
       setError("No autorizado para ver esta sección.");
       setLoading(false);
       return;
@@ -21,7 +22,35 @@ const ShowAttendance = () => {
     const fetchAsistencias = async () => {
       setLoading(true);
       setError(null);
+
       try {
+        let alumnoId = userId;
+
+        // Si es tutor, obtener id de alumno (hijo)
+        if (userRole === "tutor" || userRole === "padre") {
+          try {
+            const res = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
+            if (res.data && res.data.id) {
+              alumnoId = res.data.id;
+            } else {
+              setError("No se encontró alumno asociado al tutor");
+              setLoading(false);
+              return;
+            }
+          } catch (error) {
+            setError("Error al obtener alumno para tutor");
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Solo alumnos y tutores pueden ver asistencias
+        if (!(userRole === "alumno" || userRole === "tutor" || userRole === "padre")) {
+          setError("No autorizado para ver esta sección.");
+          setLoading(false);
+          return;
+        }
+
         const res = await axios.get(`http://localhost:5004/api/asistencias/alumno/${alumnoId}`);
         setAsistencias(res.data);
       } catch (err) {
@@ -33,7 +62,7 @@ const ShowAttendance = () => {
     };
 
     fetchAsistencias();
-  }, [alumnoId, auth.user?.role]);
+  }, [userId, userRole]);
 
   if (loading) return <p>Cargando asistencias...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
