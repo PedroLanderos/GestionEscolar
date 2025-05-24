@@ -8,7 +8,7 @@ const AddSubject = ({ subject = null, onSuccess }) => {
     id: 0,
     nombre: "",
     codigo: "",
-    tipo: "Teórica",
+    tipo: "Materia", // Cambié el valor inicial a "Materia"
     grado: 1,
     esObligatoria: true,
     estaActiva: true,
@@ -46,6 +46,13 @@ const AddSubject = ({ subject = null, onSuccess }) => {
     setLoading(true);
     setMessage("");
 
+    // Validar tipo antes de enviar
+    if (formData.tipo !== "Materia" && formData.tipo !== "Taller") {
+      setMessage("❌ El tipo debe ser 'Materia' o 'Taller'.");
+      setLoading(false);
+      return;
+    }
+
     const payload = {
       ...formData,
       grado: parseInt(formData.grado),
@@ -65,7 +72,7 @@ const AddSubject = ({ subject = null, onSuccess }) => {
             id: 0,
             nombre: "",
             codigo: "",
-            tipo: "Teórica",
+            tipo: "Materia", // Reiniciar con valor válido
             grado: 1,
             esObligatoria: true,
             estaActiva: true,
@@ -108,10 +115,9 @@ const AddSubject = ({ subject = null, onSuccess }) => {
           />
 
           <label>Tipo</label>
-          <select name="tipo" value={formData.tipo} onChange={handleChange}>
-            <option value="Teórica">Teórica</option>
-            <option value="Práctica">Práctica</option>
-            <option value="Mixta">Mixta</option>
+          <select name="tipo" value={formData.tipo} onChange={handleChange} required>
+            <option value="Materia">Materia</option>
+            <option value="Taller">Taller</option>
           </select>
 
           <label>Grado</label>

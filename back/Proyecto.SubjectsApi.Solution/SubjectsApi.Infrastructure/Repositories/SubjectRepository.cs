@@ -20,6 +20,9 @@ namespace SubjectsApi.Infrastructure.Repositories
         {
             try
             {
+                if (dto.Tipo != "Materia" && dto.Tipo != "Taller")
+                    return new Response(false, "El tipo debe ser 'Materia' o 'Taller'.");
+
                 var entity = SubjectMapper.ToEntity(dto);
                 entity.FechaCreacion = DateTime.UtcNow;
 
@@ -34,6 +37,7 @@ namespace SubjectsApi.Infrastructure.Repositories
                 return new Response(false, "Error al crear la materia");
             }
         }
+
 
         public async Task<Response> DeleteAsync(SubjectDTO dto)
         {
@@ -136,6 +140,9 @@ namespace SubjectsApi.Infrastructure.Repositories
         {
             try
             {
+                if (dto.Tipo != "Materia" && dto.Tipo != "Taller")
+                    return new Response(false, "El tipo debe ser 'Materia' o 'Taller'.");
+
                 var entity = await context.Subjects.FindAsync(dto.Id);
                 if (entity is null)
                     return new Response(false, "Materia no encontrada");
