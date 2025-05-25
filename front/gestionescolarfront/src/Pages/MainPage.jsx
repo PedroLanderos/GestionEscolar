@@ -14,13 +14,14 @@ import AssignSchedule from "./AssignSchedule";
 import User from "./User";
 import ShowSchedule from "./ShowSchedule";
 import CreateReport from "./CreateReport";
-import AddSanction from "./AddSanction"; // NUEVA LÍNEA IMPORTANTE
-import AddSchoolYear from "./AddSchoolYear"; // Importa tu componente nuevo
-import TeacherClassesTable from "./TeacherClassesTable"; // Nuevo componente para mostrar clases del maestro
-import AttendanceRegister from "./SetAttendance"; // Nuevo componente para registrar asistencia
-import SetGrades from "./SetGrades"; // Nuevo componente para registrar calificaciones
-import ShowGrades from "./ShowGrades"; // Nuevo componente para ver calificaciones (alumno y tutor)
-import ShowAttendance from "./ShowAttendance"; // Nuevo componente para ver asistencias (alumno y tutor)
+import AddSanction from "./AddSanction";
+import AddSchoolYear from "./AddSchoolYear";
+import TeacherClassesTable from "./TeacherClassesTable";
+import AttendanceRegister from "./SetAttendance";
+import SetGrades from "./SetGrades";
+import ShowGrades from "./ShowGrades";
+import ShowAttendance from "./ShowAttendance";
+import ShowReport from "./ShowReport"; // ✅ Nuevo componente
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -41,6 +42,7 @@ const MainPage = () => {
 
   const [activeSection, setActiveSection] = useState(isAdmin ? "Administrador" : "Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
+  const [reportesModo, setReportesModo] = useState(null); // ✅ Nuevo estado
   const [registerData, setRegisterData] = useState(null);
   const [userType, setUserType] = useState(null);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
@@ -48,9 +50,6 @@ const MainPage = () => {
   const [editingSubject, setEditingSubject] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [userMode, setUserMode] = useState(null);
-
-  // Estado para manejar la vista de registro de asistencia o calificaciones
-  // { claseProfesor: string, horarioId: string }
   const [attendanceData, setAttendanceData] = useState(null);
   const [gradesData, setGradesData] = useState(null);
 
@@ -81,6 +80,7 @@ const MainPage = () => {
     setActiveSubOption(null);
     setAttendanceData(null);
     setGradesData(null);
+    setReportesModo(null); // ✅ Reset también aquí
   };
 
   const getGreeting = () => {
@@ -106,7 +106,7 @@ const MainPage = () => {
           <li onClick={() => handleUserView("docentes")}>Docentes</li>
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
-          <li onClick={() => { resetState(); setActiveSubOption("RegistrarCicloEscolar"); }}>Registrar ciclo escolar</li> {/* Nueva opción */}
+          <li onClick={() => { resetState(); setActiveSubOption("RegistrarCicloEscolar"); }}>Registrar ciclo escolar</li>
         </ul>
       );
     }
@@ -128,11 +128,17 @@ const MainPage = () => {
           <>
             <li onClick={() => { resetState(); setActiveSubOption("Calificaciones"); }}>Calificaciones</li>
             <li onClick={() => { resetState(); setActiveSubOption("Asistencias"); }}>Asistencias</li>
+            <li className="submenu" onClick={() => setActiveSubOption("Reportes")}>- Reportes</li>
+            {activeSubOption === "Reportes" && (
+              <>
+                <li className="submenu" onClick={() => setReportesModo("ciclo")}>-- Ciclo Escolar</li>
+                <li className="submenu" onClick={() => setReportesModo("semana")}>-- Semanal</li>
+              </>
+            )}
           </>
         )}
         <li>Talleres</li>
         <li>Asistencias</li>
-        <li>Reportes</li>
         <li>Sanciones</li>
         <li>Datos Académicos</li>
         <li className="submenu">- Kárdex</li>
@@ -141,6 +147,18 @@ const MainPage = () => {
   };
 
   const renderMainContent = () => {
+    if (reportesModo && (isStudent || isTutor)) {
+      return (
+        <ShowReport
+          modo={reportesModo}
+          onBack={() => {
+            setReportesModo(null);
+            setActiveSubOption(null);
+          }}
+        />
+      );
+    }
+
     if (activeSection === "Administrador" && isAdmin) {
       if (selectedSchedule) return <Schedule schedule={selectedSchedule} onBack={() => setSelectedSchedule(null)} />;
       if (assignSchedule) return <AssignSchedule schedule={assignSchedule} onClose={() => setAssignSchedule(null)} />;
@@ -158,33 +176,20 @@ const MainPage = () => {
       if (activeSubOption === "AsignarMateria") return <AssignSubject />;
       if (activeSubOption === "AgregarHorario") return <AddSchedule />;
       if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} onAssignSchedule={setAssignSchedule} />;
-      if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;  // Aquí el nuevo componente
+      if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;
     }
 
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;
-    if ((activeSubOption === "Horario") && (isTeacher || isStudent || isTutor)) return <ShowSchedule />;
+    if (activeSubOption === "Horario" && (isTeacher || isStudent || isTutor)) return <ShowSchedule />;
     if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
     if (activeSubOption === "AgregarSancion") return <AddSanction onBack={resetState} />;
 
-    // Renderizamos TeacherClassesTable o AttendanceRegister o SetGrades según el estado
     if (isTeacher) {
       if (attendanceData) {
-        return (
-          <AttendanceRegister
-            claseProfesor={attendanceData.claseProfesor}
-            horarioId={attendanceData.horarioId}
-            onBack={() => setAttendanceData(null)}
-          />
-        );
+        return <AttendanceRegister claseProfesor={attendanceData.claseProfesor} horarioId={attendanceData.horarioId} onBack={() => setAttendanceData(null)} />;
       }
       if (gradesData) {
-        return (
-          <SetGrades
-            claseProfesor={gradesData.claseProfesor}
-            horario={gradesData.horario}
-            onBack={() => setGradesData(null)}
-          />
-        );
+        return <SetGrades claseProfesor={gradesData.claseProfesor} horario={gradesData.horario} onBack={() => setGradesData(null)} />;
       }
       if (activeSubOption === "ClasesDelMaestro") {
         return (
@@ -198,12 +203,8 @@ const MainPage = () => {
     }
 
     if ((isStudent || isTutor)) {
-      if (activeSubOption === "Calificaciones") {
-        return <ShowGrades />;
-      }
-      if (activeSubOption === "Asistencias") {
-        return <ShowAttendance />;
-      }
+      if (activeSubOption === "Calificaciones") return <ShowGrades />;
+      if (activeSubOption === "Asistencias") return <ShowAttendance />;
     }
 
     return (
