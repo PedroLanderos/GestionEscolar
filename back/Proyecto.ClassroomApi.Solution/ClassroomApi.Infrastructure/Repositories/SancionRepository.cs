@@ -1,11 +1,13 @@
 ﻿using ClassroomApi.Application.DTOs;
 using ClassroomApi.Application.Interfaces;
 using ClassroomApi.Application.Mapper;
+using ClassroomApi.Application.Services;
 using ClassroomApi.Domain.Entities;
 using ClassroomApi.Infrastructure.Data;
 using Llaveremos.SharedLibrary.Logs;
 using Llaveremos.SharedLibrary.Responses;
 using Microsoft.EntityFrameworkCore;
+using Proyecto.SharedLibrary.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace ClassroomApi.Infrastructure.Repositories
 {
-    public class SancionRepository(ClassroomDbContext context) : ISancion
+    public class SancionRepository(ClassroomDbContext context, IAuthentication authentication, IEmail emailService) : ISancion
     {
         private static readonly HashSet<string> TiposPermitidos = new()
         {
@@ -37,7 +39,41 @@ namespace ClassroomApi.Infrastructure.Repositories
                 await context.Sanciones.AddAsync(entity);
                 await context.SaveChangesAsync();
 
-                return new Response(true, "Sanción creada exitosamente");
+                // Enviar al correo del padre la sanción
+                try
+                {
+                    // Obtener el alumno para obtener correo del padre/tutor
+                    var alumno = await authentication.ValidateUser(dto.IdAlumno);
+                    if (alumno == null)
+                        return new Response(false, "Alumno no encontrado para enviar correo");
+
+                    string asunto = $"Notificación de Sanción: {dto.TipoSancion}";
+                    string cuerpo = $@"
+                    <p>Estimado padre/tutor,</p>
+                    <p>Se ha registrado una nueva sanción para su hijo(a) <strong>{alumno.NombreCompleto}</strong> con los siguientes detalles:</p>
+                    <ul>
+                        <li><strong>Tipo de Sanción:</strong> {dto.TipoSancion}</li>
+                        <li><strong>Descripción:</strong> {dto.Descripcion}</li>
+                        <li><strong>Fecha:</strong> {dto.Fecha:dd/MM/yyyy}</li>
+                        <li><strong>Profesor:</strong> {dto.IdProfesor}</li>
+                    </ul>
+                    <p>Por favor, tome las medidas necesarias.</p>
+                    <p>Atentamente,<br/>Sistema Escolar</p>";
+
+                    bool correoEnviado = await emailService.EnviarCorreoAsync(alumno.Correo!, asunto, cuerpo);
+                    if (!correoEnviado)
+                    {
+                        LogException.LogExceptions(new Exception("Error enviando correo de sanción"));
+                        return new Response(false, "Sanción creada pero no se pudo enviar el correo.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogException.LogExceptions(ex);
+                    return new Response(true, "Sanción creada, pero hubo un error enviando el correo.");
+                }
+
+                return new Response(true, "Sanción creada exitosamente y correo enviado.");
             }
             catch (Exception ex)
             {
@@ -45,6 +81,7 @@ namespace ClassroomApi.Infrastructure.Repositories
                 return new Response(false, "Error al crear la sanción");
             }
         }
+
 
         public async Task<Response> ActualizarSancion(SancionDTO dto)
         {
@@ -66,7 +103,40 @@ namespace ClassroomApi.Infrastructure.Repositories
                 context.Sanciones.Update(existing);
                 await context.SaveChangesAsync();
 
-                return new Response(true, "Sanción actualizada correctamente");
+                // Enviar al correo del padre la sanción actualizada
+                try
+                {
+                    var alumno = await authentication.ValidateUser(dto.IdAlumno);
+                    if (alumno == null)
+                        return new Response(false, "Alumno no encontrado para enviar correo");
+
+                    string asunto = $"Actualización de Sanción: {dto.TipoSancion}";
+                    string cuerpo = $@"
+                    <p>Estimado padre/tutor,</p>
+                    <p>Se ha actualizado la sanción para su hijo(a) <strong>{alumno.NombreCompleto}</strong> con los siguientes detalles nuevos:</p>
+                    <ul>
+                        <li><strong>Tipo de Sanción:</strong> {dto.TipoSancion}</li>
+                        <li><strong>Descripción:</strong> {dto.Descripcion}</li>
+                        <li><strong>Fecha:</strong> {dto.Fecha:dd/MM/yyyy}</li>
+                        <li><strong>Profesor:</strong> {dto.IdProfesor}</li>
+                    </ul>
+                    <p>Por favor, tome las medidas necesarias.</p>
+                    <p>Atentamente,<br/>Sistema Escolar</p>";
+
+                    bool correoEnviado = await emailService.EnviarCorreoAsync(alumno.Correo!, asunto, cuerpo);
+                    if (!correoEnviado)
+                    {
+                        LogException.LogExceptions(new Exception("Error enviando correo de actualización de sanción"));
+                        return new Response(true, "Sanción actualizada, pero no se pudo enviar el correo.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogException.LogExceptions(ex);
+                    return new Response(true, "Sanción actualizada, pero hubo un error enviando el correo.");
+                }
+
+                return new Response(true, "Sanción actualizada correctamente y correo enviado.");
             }
             catch (Exception ex)
             {
@@ -74,6 +144,7 @@ namespace ClassroomApi.Infrastructure.Repositories
                 return new Response(false, "Error al actualizar la sanción");
             }
         }
+
 
         public async Task<Response> EliminarSancion(SancionDTO dto)
         {

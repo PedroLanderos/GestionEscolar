@@ -19,7 +19,7 @@ namespace ScheduleApi.Application.Services
         {
             _httpClient = client;
         }
-        public async Task<UserDto> ValidateUser(int id)
+        public async Task<UserDto> ValidateUser(string id)
         {
             try
             {

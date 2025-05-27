@@ -9,6 +9,6 @@ namespace ClassroomApi.Application.Services
 {
     public interface IAuthentication
     {
-        Task<UserDto> ValidateUser(int id);
+        Task<UserDto> ValidateUser(string id);
     }
 }

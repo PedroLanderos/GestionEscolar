@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "yp7SsDd5qDA=",
+  "dgSpecHash": "6SZXm5l1RZE=",
   "success": true,
   "projectFilePath": "D:\\Code\\sistemagestionescolar\\back\\Proyecto.AuthenticationApi.Solution\\AuthenticationApi.Presentation\\AuthenticationApi.Presentation.csproj",
   "expectedPackageFiles": [
@@ -9,7 +9,7 @@
     "C:\\Users\\lande\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
-    "C:\\Users\\lande\\.nuget\\packages\\mailkit\\4.12.0\\mailkit.4.12.0.nupkg.sha512",
+    "C:\\Users\\lande\\.nuget\\packages\\mailkit\\4.12.1\\mailkit.4.12.1.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.7\\microsoft.aspnetcore.authentication.jwtbearer.8.0.7.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.3.3\\microsoft.codeanalysis.analyzers.3.3.3.nupkg.sha512",
@@ -78,7 +78,7 @@
     "C:\\Users\\lande\\.nuget\\packages\\system.configuration.configurationmanager\\6.0.1\\system.configuration.configurationmanager.6.0.1.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\system.diagnostics.diagnosticsource\\8.0.0\\system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
-    "C:\\Users\\lande\\.nuget\\packages\\system.formats.asn1\\8.0.2\\system.formats.asn1.8.0.2.nupkg.sha512",
+    "C:\\Users\\lande\\.nuget\\packages\\system.formats.asn1\\8.0.1\\system.formats.asn1.8.0.1.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\system.identitymodel.tokens.jwt\\7.1.2\\system.identitymodel.tokens.jwt.7.1.2.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\system.io.filesystem.accesscontrol\\5.0.0\\system.io.filesystem.accesscontrol.5.0.0.nupkg.sha512",
     "C:\\Users\\lande\\.nuget\\packages\\system.io.pipelines\\6.0.3\\system.io.pipelines.6.0.3.nupkg.sha512",
