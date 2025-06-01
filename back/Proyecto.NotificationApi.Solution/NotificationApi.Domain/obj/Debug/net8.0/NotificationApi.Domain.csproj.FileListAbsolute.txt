@@ -1,0 +1,16 @@
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\bin\Debug\net8.0\NotificationApi.Domain.deps.json
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\bin\Debug\net8.0\NotificationApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\bin\Debug\net8.0\NotificationApi.Domain.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\bin\Debug\net8.0\Proyecto.SharedLibrary.dll
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\bin\Debug\net8.0\Proyecto.SharedLibrary.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\NotificationApi.Domain.csproj.AssemblyReference.cache
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\NotificationApi.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\NotificationApi.Domain.AssemblyInfoInputs.cache
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\NotificationApi.Domain.AssemblyInfo.cs
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\NotificationApi.Domain.csproj.CoreCompileInputs.cache
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\NotificationApi.Domain.sourcelink.json
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\Notifica.C6719C31.Up2Date
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\NotificationApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\refint\NotificationApi.Domain.dll
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\NotificationApi.Domain.pdb
+D:\Code\sistemagestionescolar\back\Proyecto.NotificationApi.Solution\NotificationApi.Domain\obj\Debug\net8.0\ref\NotificationApi.Domain.dll
