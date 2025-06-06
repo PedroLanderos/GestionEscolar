@@ -1775,6 +1775,7 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.7",
           "Microsoft.EntityFrameworkCore": "8.0.7",
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.7",
+          "RabbitMQ.Client": "6.7.0",
           "Serilog.AspNetCore": "8.0.1"
         },
         "compile": {

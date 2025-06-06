@@ -21,7 +21,8 @@ import AttendanceRegister from "./SetAttendance";
 import SetGrades from "./SetGrades";
 import ShowGrades from "./ShowGrades";
 import ShowAttendance from "./ShowAttendance";
-import ShowReport from "./ShowReport"; // ✅ Nuevo componente
+import ShowReport from "./ShowReports"; // ✅ Nuevo componente
+import ShowAssignments from "./ShowAssignments"; // ✅ Nuevo componente para mostrar asignaciones
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -107,6 +108,7 @@ const MainPage = () => {
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
           <li onClick={() => { resetState(); setActiveSubOption("RegistrarCicloEscolar"); }}>Registrar ciclo escolar</li>
+          <li onClick={() => { resetState(); setActiveSubOption("EliminarAsignaciones"); }}>Eliminar asignaciones</li> {/* Nueva opción */}
         </ul>
       );
     }
@@ -177,6 +179,7 @@ const MainPage = () => {
       if (activeSubOption === "AgregarHorario") return <AddSchedule />;
       if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} onAssignSchedule={setAssignSchedule} />;
       if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;
+      if (activeSubOption === "EliminarAsignaciones") return <ShowAssignments />; {/* Nueva vista para eliminar asignaciones */}
     }
 
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;

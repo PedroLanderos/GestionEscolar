@@ -7,7 +7,6 @@ using ClassroomApi.Infrastructure.Data;
 using Llaveremos.SharedLibrary.Logs;
 using Llaveremos.SharedLibrary.Responses;
 using Microsoft.EntityFrameworkCore;
-using Proyecto.SharedLibrary.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace ClassroomApi.Infrastructure.Repositories
 {
-    public class SancionRepository(ClassroomDbContext context, INotificationPublisher notificationPublisher, IAuthentication authentication, IEmail emailService) : ISancion
+    public class SancionRepository(ClassroomDbContext context, INotificationPublisher notificationPublisher, IAuthentication authentication) : ISancion
     {
         private static readonly HashSet<string> TiposPermitidos = new()
         {

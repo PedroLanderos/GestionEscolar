@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using NotificationApi.Application.Interfaces;
 using NotificationApi.Infrastructure.Services;
-using Proyecto.SharedLibrary.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;

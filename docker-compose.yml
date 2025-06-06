@@ -100,7 +100,7 @@ services:
     container_name: dockerwdb-frontend
     build:
       context: ./front/gestionescolarfront
-    dockerfile: Dockerfile
+      dockerfile: Dockerfile  # Asegúrate de que esta ruta sea correcta
     ports:
       - "3000:80"
     depends_on:
