@@ -18,6 +18,7 @@ namespace AuthenticationApi.Application.DependencyInjection
         {
             services.AddScoped<IEmail, Email>();
             services.AddScoped<IRandomService, RandomService>();
+            services.AddScoped<INotificationPublisher, NotificationPublisher>();
 
             return services;
         }

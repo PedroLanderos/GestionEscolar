@@ -69,7 +69,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 if (solicitud is null)
                     return new Response(false, "Solicitud no encontrada");
 
-                
+
                 if (!string.IsNullOrWhiteSpace(dto.NombreAlumno))
                     solicitud.NombreAlumno = dto.NombreAlumno;
 
@@ -110,7 +110,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
             try
             {
                 var solicitudes = await context.SolicitudesAltas.Where(predicate).ToListAsync()!;
-                return solicitudes is not null ? solicitudes:null!;
+                return solicitudes is not null ? solicitudes : null!;
             }
             catch (Exception ex)
             {
@@ -138,5 +138,5 @@ namespace AuthenticationApi.Infrastructure.Repositories
         }
     }
 
-    
+
 }

@@ -1,46 +1,33 @@
 ﻿using AuthenticationApi.Application.DTOs;
 using AuthenticationApi.Application.Interfaces;
-using AuthenticationApi.Application.Services;
 using Llaveremos.SharedLibrary.Responses;
-using Llaveremos.SharedLibrary.Logs; 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AuthenticationApi.Domain.Entities;
 using AuthenticationApi.Infrastructure.Repositories;
+using Llaveremos.SharedLibrary.Logs;
 
 namespace AuthenticationApi.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class SolicitudController(ISolicitudRepository repo, IEmail emailService) : ControllerBase
+    public class SolicitudController : ControllerBase
     {
+        private readonly ISolicitudRepository _repo;
+
+        public SolicitudController(ISolicitudRepository repo)
+        {
+            _repo = repo;
+        }
+
         [HttpPost("enviar")]
         public async Task<ActionResult<Response>> EnviarSolicitud([FromBody] SolicitudAltaDTO dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var response = await repo.CrearSolicitud(dto);
-
-            string subject = "📥 Solicitud de registro recibida";
-            string body = $@"
-                <p>Hola <strong>{dto.NombrePadre}</strong>,</p>
-                <p>Tu solicitud para registrar al alumno <strong>{dto.NombreAlumno}</strong> (CURP: {dto.CurpAlumno}) en <strong>{dto.Grado}° grado</strong> ha sido recibida exitosamente.</p>
-                <p>Nos pondremos en contacto contigo en breve.</p>
-                <br/>
-                <p>Atentamente,<br/>Sistema Escolar</p>";
-
-            try
-            {
-                await emailService.EnviarCorreoAsync(dto.CorreoPadre, subject, body);
-            }
-            catch (Exception ex)
-            {
-                LogException.LogExceptions(ex); // Aquí se guarda el error
-                return Ok(new Response(true, "Solicitud enviada, pero el correo no pudo enviarse."));
-            }
-
+            var response = await _repo.CrearSolicitud(dto);
             return Ok(response);
         }
 
@@ -49,9 +36,10 @@ namespace AuthenticationApi.Presentation.Controllers
         {
             try
             {
-                var solicitudes = await repo.ObtenerSolicitudes();
+                var solicitudes = await _repo.ObtenerSolicitudes();
 
-                if (!solicitudes.Any() || solicitudes is null) return NotFound("No hay solicitudes registradas.");
+                if (!solicitudes.Any() || solicitudes is null)
+                    return NotFound("No hay solicitudes registradas.");
 
                 return Ok(solicitudes);
             }
@@ -67,8 +55,9 @@ namespace AuthenticationApi.Presentation.Controllers
         {
             try
             {
-                var solicitudes = await repo.GetBy(x => x.Procesado == false);
-                if (!solicitudes.Any() || solicitudes is null) return NotFound("No hay solicitudes registradas.");
+                var solicitudes = await _repo.GetBy(x => x.Procesado == false);
+                if (!solicitudes.Any() || solicitudes is null)
+                    return NotFound("No hay solicitudes registradas.");
                 return Ok(solicitudes);
             }
             catch (Exception ex)
@@ -86,7 +75,7 @@ namespace AuthenticationApi.Presentation.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                var result = await repo.EditarSolicitud(dto);
+                var result = await _repo.EditarSolicitud(dto);
                 return result.Flag ? Ok(result) : BadRequest(result);
             }
             catch (Exception ex)
