@@ -16,7 +16,7 @@ using System.Linq.Expressions;
 
 namespace AuthenticationApi.Infrastructure.Repositories
 {
-    public class UsuarioRepository(AuthenticationDbContext context, IEmail emailService, IConfiguration config, IRandomService randomService, ISolicitudRepository solicitudes) : IUser
+    public class UsuarioRepository(AuthenticationDbContext context, IEmail emailService, IConfiguration config, IRandomService randomService, ISolicitudRepository solicitudes, INotificationPublisher notificationPublisher) : IUser
     {
         public async Task<IEnumerable<ObtenerUsuarioDTO>> GetAllUsers()
         {
@@ -168,24 +168,28 @@ namespace AuthenticationApi.Infrastructure.Repositories
 
                 string subject = "Datos de acceso - Sistema Escolar";
                 string body = $@"
-                <p>Hola <strong>{padre.NombreCompleto}</strong>,</p>
-                <p>Tu solicitud ha sido procesada exitosamente. A continuación, se encuentran los datos de acceso:</p>
-                <hr/>
-                <p><strong>Alumno:</strong><br/>
-                Usuario: {alumno.Id}<br/>
-                Contraseña: {alumnoPass}</p>
+        <p>Hola <strong>{padre.NombreCompleto}</strong>,</p>
+        <p>Tu solicitud ha sido procesada exitosamente. A continuación, se encuentran los datos de acceso:</p>
+        <hr/>
+        <p><strong>Alumno:</strong><br/>
+        Usuario: {alumno.Id}<br/>
+        Contraseña: {alumnoPass}</p>
 
-                <p><strong>Padre/Tutor:</strong><br/>
-                Usuario: {padre.Id}<br/>
-                Contraseña: {padrePass}</p>
+        <p><strong>Padre/Tutor:</strong><br/>
+        Usuario: {padre.Id}<br/>
+        Contraseña: {padrePass}</p>
 
-                <p>⚠️ Por seguridad, te recomendamos iniciar sesión y cambiar la contraseña en cuanto sea posible.</p>
-                <br/>
-                <p>Atentamente,<br/>Sistema Escolar</p>";
+        <p>⚠️ Por seguridad, te recomendamos iniciar sesión y cambiar la contraseña en cuanto sea posible.</p>
+        <br/>
+        <p>Atentamente,<br/>Sistema Escolar</p>";
+
+                // Crear el objeto EmailNotificationDTO
+                var notification = new EmailNotificationDTO(padre.Correo!, subject, body);
 
                 try
                 {
-                    await emailService.EnviarCorreoAsync(padre.Correo!, subject, body);
+                    // Enviar la notificación a través de RabbitMQ usando NotificationPublisher
+                    notificationPublisher.PublishEmailNotification(notification);
                 }
                 catch (Exception ex)
                 {
@@ -210,6 +214,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 return new Response(false, "Error mientras se creaba el usuario en el repositorio");
             }
         }
+
 
         public async Task<Response> RegistrarAdministrador(UsuarioDTO dto)
         {

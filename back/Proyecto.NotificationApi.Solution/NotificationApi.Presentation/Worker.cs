@@ -30,7 +30,7 @@ public class Worker : BackgroundService
         var factory = new ConnectionFactory
         {
             HostName = _config["RabbitMq:Host"],
-            DispatchConsumersAsync = true // necesario para consumir async
+            DispatchConsumersAsync = true 
         };
 
         _connection = factory.CreateConnection();
