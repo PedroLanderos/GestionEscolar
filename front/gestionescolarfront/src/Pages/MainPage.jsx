@@ -21,8 +21,9 @@ import AttendanceRegister from "./SetAttendance";
 import SetGrades from "./SetGrades";
 import ShowGrades from "./ShowGrades";
 import ShowAttendance from "./ShowAttendance";
-import ShowReport from "./ShowReports"; // ✅ Nuevo componente
-import ShowAssignments from "./ShowAssignments"; // ✅ Nuevo componente para mostrar asignaciones
+import ShowReport from "./ShowReports"; 
+import ShowAssignments from "./ShowAssignments"; 
+import ShowSanctions from "./ShowSanctions"; 
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -108,7 +109,8 @@ const MainPage = () => {
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
           <li onClick={() => { resetState(); setActiveSubOption("RegistrarCicloEscolar"); }}>Registrar ciclo escolar</li>
-          <li onClick={() => { resetState(); setActiveSubOption("EliminarAsignaciones"); }}>Eliminar asignaciones</li> {/* Nueva opción */}
+          <li onClick={() => { resetState(); setActiveSubOption("EliminarAsignaciones"); }}>Eliminar asignaciones</li>
+          <li onClick={() => { resetState(); setActiveSubOption("VerSanciones"); }}>Ver sanciones</li> {/* Nueva opción */}
         </ul>
       );
     }
@@ -179,7 +181,8 @@ const MainPage = () => {
       if (activeSubOption === "AgregarHorario") return <AddSchedule />;
       if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} onAssignSchedule={setAssignSchedule} />;
       if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;
-      if (activeSubOption === "EliminarAsignaciones") return <ShowAssignments />; {/* Nueva vista para eliminar asignaciones */}
+      if (activeSubOption === "EliminarAsignaciones") return <ShowAssignments />;
+      if (activeSubOption === "VerSanciones") return <ShowSanctions />; {/* Nueva vista para ver sanciones */}
     }
 
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;

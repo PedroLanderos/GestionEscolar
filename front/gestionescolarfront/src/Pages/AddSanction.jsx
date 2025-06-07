@@ -1,20 +1,31 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
 import "./CSS/Register.css";
 import { AuthContext } from "../Context/AuthContext";
 
-const AddSanction = ({ onBack }) => {
+const AddSanction = ({ onBack, initialData }) => {
   const { auth } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     tipoSancion: "Riña",
     descripcion: "",
     fecha: new Date().toISOString().split("T")[0],
-    idAlumno: ""
+    idAlumno: "",
   });
-
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+
+  // Si hay datos iniciales, los usamos para rellenar el formulario
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        tipoSancion: initialData.tipoSancion,
+        descripcion: initialData.descripcion,
+        fecha: new Date(initialData.fecha).toISOString().split("T")[0],
+        idAlumno: initialData.idAlumno,
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,23 +39,31 @@ const AddSanction = ({ onBack }) => {
 
     try {
       const payload = {
-        id: 0,
+        id: initialData ? initialData.id : 0, // Si es edición, usamos la ID de los datos iniciales
         ...formData,
         idAlumno: parseInt(formData.idAlumno),
         idProfesor: parseInt(auth.user?.id), // ID del docente desde sesión
-        fecha: new Date(formData.fecha).toISOString()
+        fecha: new Date(formData.fecha).toISOString(),
       };
 
-      await axios.post("http://localhost:5004/api/sancion", payload);
-      setSuccess("✅ La sanción fue registrada exitosamente.");
+      if (initialData) {
+        // Si estamos editando, hacemos un PUT
+        await axios.put("http://localhost:5004/api/sancion", payload);
+        setSuccess("✅ La sanción fue actualizada exitosamente.");
+      } else {
+        // Si estamos creando, hacemos un POST
+        await axios.post("http://localhost:5004/api/sancion", payload);
+        setSuccess("✅ La sanción fue registrada exitosamente.");
+      }
+
       setFormData({
         tipoSancion: "Riña",
         descripcion: "",
         fecha: new Date().toISOString().split("T")[0],
-        idAlumno: ""
+        idAlumno: "",
       });
     } catch (err) {
-      console.error("❌ Error al crear la sanción:", err);
+      console.error("❌ Error al guardar la sanción:", err);
       setError("❌ Ocurrió un error al guardar la sanción.");
     }
   };
@@ -52,10 +71,15 @@ const AddSanction = ({ onBack }) => {
   return (
     <div className="register-container">
       <div className="register-content">
-        <h2>Registrar Sanción</h2>
+        <h2>{initialData ? "Editar Sanción" : "Registrar Sanción"}</h2>
         <form onSubmit={handleSubmit}>
           <label>Tipo de Sanción</label>
-          <select name="tipoSancion" value={formData.tipoSancion} onChange={handleChange} required>
+          <select
+            name="tipoSancion"
+            value={formData.tipoSancion}
+            onChange={handleChange}
+            required
+          >
             <option value="Riña">Riña</option>
             <option value="Asistencia">Asistencia</option>
             <option value="No trabajo">No trabajo</option>
@@ -74,12 +98,24 @@ const AddSanction = ({ onBack }) => {
           />
 
           <label>Fecha</label>
-          <input type="date" name="fecha" value={formData.fecha} onChange={handleChange} required />
+          <input
+            type="date"
+            name="fecha"
+            value={formData.fecha}
+            onChange={handleChange}
+            required
+          />
 
           <label>ID del Alumno</label>
-          <input type="number" name="idAlumno" value={formData.idAlumno} onChange={handleChange} required />
+          <input
+            type="number"
+            name="idAlumno"
+            value={formData.idAlumno}
+            onChange={handleChange}
+            required
+          />
 
-          <button type="submit">Guardar Sanción</button>
+          <button type="submit">{initialData ? "Actualizar" : "Guardar"} Sanción</button>
           <button type="button" className="back-button" onClick={onBack}>
             Volver
           </button>

@@ -63,8 +63,8 @@ const ShowAssignments = () => {
             {assignments.length > 0 ? (
               assignments.map((assignment) => (
                 <tr key={assignment.id}>
-                  <td>{assignment.teacherName}</td>
-                  <td>{assignment.subjectName}</td>
+                  <td>{assignment.UserId }</td>
+                  <td>{assignment.SubjectId }</td>
                   <td>
                     <button onClick={() => handleDelete(assignment.id)}>Eliminar</button>
                   </td>
