@@ -24,6 +24,7 @@ import ShowAttendance from "./ShowAttendance";
 import ShowReport from "./ShowReports"; 
 import ShowAssignments from "./ShowAssignments"; 
 import ShowSanctions from "./ShowSanctions"; 
+import ShowAbsences from "./ShowAbsences"; 
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -110,7 +111,8 @@ const MainPage = () => {
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
           <li onClick={() => { resetState(); setActiveSubOption("RegistrarCicloEscolar"); }}>Registrar ciclo escolar</li>
           <li onClick={() => { resetState(); setActiveSubOption("EliminarAsignaciones"); }}>Eliminar asignaciones</li>
-          <li onClick={() => { resetState(); setActiveSubOption("VerSanciones"); }}>Ver sanciones</li> {/* Nueva opción */}
+          <li onClick={() => { resetState(); setActiveSubOption("VerSanciones"); }}>Ver sanciones</li> 
+          <li onClick={() => { resetState(); setActiveSubOption("VerInasistencias"); }}>Ver inasistencias</li> 
         </ul>
       );
     }
@@ -182,51 +184,11 @@ const MainPage = () => {
       if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} onAssignSchedule={setAssignSchedule} />;
       if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;
       if (activeSubOption === "EliminarAsignaciones") return <ShowAssignments />;
-      if (activeSubOption === "VerSanciones") return <ShowSanctions />; {/* Nueva vista para ver sanciones */}
+      if (activeSubOption === "VerSanciones") return <ShowSanctions />;
+      if (activeSubOption === "VerInasistencias") return <ShowAbsences />; {/* Mostrar las inasistencias */}
     }
 
-    if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;
-    if (activeSubOption === "Horario" && (isTeacher || isStudent || isTutor)) return <ShowSchedule />;
-    if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
-    if (activeSubOption === "AgregarSancion") return <AddSanction onBack={resetState} />;
-
-    if (isTeacher) {
-      if (attendanceData) {
-        return <AttendanceRegister claseProfesor={attendanceData.claseProfesor} horarioId={attendanceData.horarioId} onBack={() => setAttendanceData(null)} />;
-      }
-      if (gradesData) {
-        return <SetGrades claseProfesor={gradesData.claseProfesor} horario={gradesData.horario} onBack={() => setGradesData(null)} />;
-      }
-      if (activeSubOption === "ClasesDelMaestro") {
-        return (
-          <TeacherClassesTable
-            teacherId={auth.user?.id}
-            onRegistrarAsistencia={(claseProfesor, horarioId) => setAttendanceData({ claseProfesor, horarioId })}
-            onRegistrarCalificacion={(claseProfesor, horario) => setGradesData({ claseProfesor, horario })}
-          />
-        );
-      }
-    }
-
-    if ((isStudent || isTutor)) {
-      if (activeSubOption === "Calificaciones") return <ShowGrades />;
-      if (activeSubOption === "Asistencias") return <ShowAttendance />;
-    }
-
-    return (
-      <>
-        <h2>MENÚ PRINCIPAL DE {activeSection.toUpperCase()}</h2>
-        <h3>{getGreeting()}</h3>
-        <h3>{auth.user?.name?.toUpperCase()}</h3>
-        <p className="notice">
-          <strong>AVISO:</strong> Recuerda que la credencial del IPN te reconoce como alumno y es la forma de identificarte dentro del Instituto.
-        </p>
-        <div className="alert">
-          <h4>ALERTA</h4>
-          <p>Ningún empleado del Instituto está facultado para solicitar datos personales por redes sociales. <strong>¡DENUNCIA!</strong></p>
-        </div>
-      </>
-    );
+    return null;
   };
 
   return (
