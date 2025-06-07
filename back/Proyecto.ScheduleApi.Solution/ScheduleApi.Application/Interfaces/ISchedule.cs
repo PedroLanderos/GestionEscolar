@@ -33,5 +33,14 @@ namespace ScheduleApi.Application.Interfaces
         Task<IEnumerable<SubjectToScheduleDTO>> GetScheduleForStudentAsync(string idUsuario);
         Task<IEnumerable<string>> GetStudentIdsBySubjectAndScheduleAsync(string materiaProfesor, string horario);
         Task<ScheduleDTO?> GetScheduleByUserIdAsync(string idUser);
+
+        //apartado para administrar los talleres
+
+        Task<Response> CreateWorkshopAsync(SubjectToUserDTO workshop);
+        Task<Response> UpdateWorkshopAsync(SubjectToUserDTO workshop);
+        Task<Response> DeleteWorkshopAsync(int id);
+        Task<IEnumerable<SubjectToUserDTO>> GetWorkshopsAsync();
+        Task<SubjectToUserDTO?> GetWorkshopByIdAsync(int id);
+        Task<IEnumerable<SubjectToUser>> GetWorkShopBy(Expression<Func<SubjectToUser, bool>> predicate);
     }
 }

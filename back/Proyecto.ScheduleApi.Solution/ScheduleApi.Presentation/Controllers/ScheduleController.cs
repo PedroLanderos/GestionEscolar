@@ -8,8 +8,15 @@ namespace ScheduleApi.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ScheduleController(ISchedule scheduleService) : ControllerBase
+    public class ScheduleController : ControllerBase
     {
+        private readonly ISchedule scheduleService;
+
+        public ScheduleController(ISchedule scheduleService)
+        {
+            this.scheduleService = scheduleService;
+        }
+
         [HttpPost("crearHorario")]
         public async Task<IActionResult> CreateSchedule([FromBody] ScheduleDTO schedule)
         {
@@ -100,6 +107,7 @@ namespace ScheduleApi.Presentation.Controllers
             var result = await scheduleService.GetScheduleForTeacherAsync(idUsuario);
             return Ok(result);
         }
+
         [HttpGet("horarioAlumno/{idUsuario}")]
         public async Task<IActionResult> GetStudentSchedule(string idUsuario)
         {
@@ -127,5 +135,40 @@ namespace ScheduleApi.Presentation.Controllers
             return Ok(schedule);
         }
 
+        // Nuevos Métodos de Talleres (Workshops)
+        [HttpPost("crearTaller")]
+        public async Task<IActionResult> CreateWorkshop([FromBody] SubjectToUserDTO workshop)
+        {
+            var result = await scheduleService.CreateWorkshopAsync(workshop);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpPut("actualizarTaller")]
+        public async Task<IActionResult> UpdateWorkshop([FromBody] SubjectToUserDTO workshop)
+        {
+            var result = await scheduleService.UpdateWorkshopAsync(workshop);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpDelete("eliminarTaller/{id}")]
+        public async Task<IActionResult> DeleteWorkshop(int id)
+        {
+            var result = await scheduleService.DeleteWorkshopAsync(id);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpGet("obtenerTalleres")]
+        public async Task<IActionResult> GetWorkshops()
+        {
+            var result = await scheduleService.GetWorkshopsAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("obtenerTallerPorId/{id}")]
+        public async Task<IActionResult> GetWorkshopById(int id)
+        {
+            var result = await scheduleService.GetWorkshopByIdAsync(id);
+            return result is not null ? Ok(result) : NotFound("Taller no encontrado");
+        }
     }
 }

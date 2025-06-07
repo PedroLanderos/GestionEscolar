@@ -4,32 +4,42 @@ using ClassroomApi.Application.Mapper;
 using Llaveremos.SharedLibrary.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ClassroomApi.Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AsistenciasController(IAsistencia asistenciaService, ICicloEscolar cicloEscolarService) : ControllerBase
+    public class AsistenciasController : ControllerBase
     {
+        private readonly IAsistencia _asistenciaService;
+        private readonly ICicloEscolar _cicloEscolarService;
+
+        public AsistenciasController(IAsistencia asistenciaService, ICicloEscolar cicloEscolarService)
+        {
+            _asistenciaService = asistenciaService;
+            _cicloEscolarService = cicloEscolarService;
+        }
+
         [HttpPost]
         public async Task<IActionResult> CrearAsistencia([FromBody] AsistenciaDTO dto)
         {
-            var result = await asistenciaService.CrearAsistencia(dto);
+            var result = await _asistenciaService.CrearAsistencia(dto);
             return StatusCode(result.Flag ? 200 : 400, result);
         }
 
         [HttpPut]
         public async Task<IActionResult> ActualizarAsistencia([FromBody] AsistenciaDTO dto)
         {
-            var result = await asistenciaService.ActualizarAsistencia(dto);
+            var result = await _asistenciaService.ActualizarAsistencia(dto);
             return StatusCode(result.Flag ? 200 : 400, result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarAsistencia(int id)
         {
-            var result = await asistenciaService.EliminarAsistencia(id);
+            var result = await _asistenciaService.EliminarAsistencia(id);
             return StatusCode(result.Flag ? 200 : 400, result);
         }
 
@@ -38,8 +48,20 @@ namespace ClassroomApi.Presentation.Controllers
         {
             try
             {
-                var result = await asistenciaService.ObtenerAsistencias();
-                return Ok(result);
+                var cicloEscolar = await _cicloEscolarService.GetBy(x => x.EsActual == true);
+                if (cicloEscolar == null)
+                {
+                    return BadRequest("No se encontró un ciclo escolar activo.");
+                }
+
+                // Filtrar las asistencias dentro del rango de fechas del ciclo escolar
+                var asistencias = await _asistenciaService.GetBy(a =>
+                    a.Fecha >= cicloEscolar.FechaInicio &&
+                    a.Fecha <= cicloEscolar.FechaFin
+                );
+
+                var dtoList = asistencias.Select(AsistenciaMapper.FromEntity).ToList();
+                return Ok(dtoList);
             }
             catch (Exception ex)
             {
@@ -52,7 +74,7 @@ namespace ClassroomApi.Presentation.Controllers
         {
             try
             {
-                var result = await asistenciaService.ObtenerAsistenciaPorId(id);
+                var result = await _asistenciaService.ObtenerAsistenciaPorId(id);
                 if (result == null)
                     return NotFound("Asistencia no encontrada");
 
@@ -69,7 +91,18 @@ namespace ClassroomApi.Presentation.Controllers
         {
             try
             {
-                var asistencias = await asistenciaService.GetBy(a => a.IdAlumno == idAlumno);
+                var cicloEscolar = await _cicloEscolarService.GetBy(x => x.EsActual == true);
+                if (cicloEscolar == null)
+                {
+                    return BadRequest("No se encontró un ciclo escolar activo.");
+                }
+
+                var asistencias = await _asistenciaService.GetBy(a =>
+                    a.IdAlumno == idAlumno &&
+                    a.Fecha >= cicloEscolar.FechaInicio &&
+                    a.Fecha <= cicloEscolar.FechaFin
+                );
+
                 var dtoList = asistencias.Select(AsistenciaMapper.FromEntity).ToList();
                 return Ok(dtoList);
             }
@@ -84,9 +117,17 @@ namespace ClassroomApi.Presentation.Controllers
         {
             try
             {
-                var asistencias = await asistenciaService.GetBy(a =>
+                var cicloEscolar = await _cicloEscolarService.GetBy(x => x.EsActual == true);
+                if (cicloEscolar == null)
+                {
+                    return BadRequest("No se encontró un ciclo escolar activo.");
+                }
+
+                var asistencias = await _asistenciaService.GetBy(a =>
                     a.IdProfesor == idProfesor &&
-                    a.Fecha.Date == fecha.Date
+                    a.Fecha.Date == fecha.Date &&
+                    a.Fecha >= cicloEscolar.FechaInicio &&
+                    a.Fecha <= cicloEscolar.FechaFin
                 );
 
                 var dtoList = asistencias.Select(AsistenciaMapper.FromEntity).ToList();
@@ -103,7 +144,19 @@ namespace ClassroomApi.Presentation.Controllers
         {
             try
             {
-                var asistencias = await asistenciaService.GetBy(a => a.IdProfesor == idProfesor);
+                var cicloEscolar = await _cicloEscolarService.GetBy(x => x.EsActual == true);
+                if (cicloEscolar == null)
+                {
+                    return BadRequest("No se encontró un ciclo escolar activo.");
+                }
+
+                // Filtrar las asistencias por profesor dentro del ciclo escolar
+                var asistencias = await _asistenciaService.GetBy(a =>
+                    a.IdProfesor == idProfesor &&
+                    a.Fecha >= cicloEscolar.FechaInicio &&
+                    a.Fecha <= cicloEscolar.FechaFin
+                );
+
                 var dtoList = asistencias.Select(AsistenciaMapper.FromEntity).ToList();
                 return Ok(dtoList);
             }
@@ -118,8 +171,17 @@ namespace ClassroomApi.Presentation.Controllers
         {
             try
             {
-                var asistencias = await asistenciaService.GetBy(a =>
-                    a.IdAlumno == idAlumno && a.Justificacion != null && a.Justificacion != string.Empty
+                var cicloEscolar = await _cicloEscolarService.GetBy(x => x.EsActual == true);
+                if (cicloEscolar == null)
+                {
+                    return BadRequest("No se encontró un ciclo escolar activo.");
+                }
+
+                var asistencias = await _asistenciaService.GetBy(a =>
+                    a.IdAlumno == idAlumno &&
+                    a.Justificacion != null && a.Justificacion != string.Empty &&
+                    a.Fecha >= cicloEscolar.FechaInicio &&
+                    a.Fecha <= cicloEscolar.FechaFin
                 );
 
                 var dtoList = asistencias.Select(AsistenciaMapper.FromEntity).ToList();
@@ -136,15 +198,13 @@ namespace ClassroomApi.Presentation.Controllers
         {
             try
             {
-                // Obtener el ciclo escolar activo
-                var cicloEscolar = await cicloEscolarService.GetBy(x => x.EsActual == true);
+                var cicloEscolar = await _cicloEscolarService.GetBy(x => x.EsActual == true);
                 if (cicloEscolar == null)
                 {
                     return BadRequest("No se encontró un ciclo escolar activo.");
                 }
 
-                // Filtrar las asistencias dentro del rango de fechas del ciclo escolar
-                var inasistencias = await asistenciaService.GetBy(a =>
+                var inasistencias = await _asistenciaService.GetBy(a =>
                     a.Asistio == false &&
                     a.Justificacion == null &&
                     a.Fecha >= cicloEscolar.FechaInicio &&

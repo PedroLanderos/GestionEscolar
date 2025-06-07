@@ -432,6 +432,116 @@ namespace ScheduleApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<Response> CreateWorkshopAsync(SubjectToUserDTO workshop)
+        {
+            try
+            {
+                var entity = SubjectToUserMapper.ToEntity(workshop); 
+                context.SubjectToUsers.Add(entity); 
+                await context.SaveChangesAsync(); 
+
+                return new Response(true, "Taller asignado exitosamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex); 
+                return new Response(false, "Error al asignar el taller");
+            }
+        }
+
+
+        public async Task<Response> UpdateWorkshopAsync(SubjectToUserDTO workshop)
+        {
+            try
+            {
+                var existing = await context.SubjectToUsers.FindAsync(workshop.Id);
+                if (existing == null)
+                    return new Response(false, "Taller no encontrado");
+
+                
+                existing.UserId = workshop.UserId;
+                existing.CourseId = workshop.CourseId;
+                existing.HoraInicio = workshop.HoraInicio;
+
+                context.SubjectToUsers.Update(existing); 
+                await context.SaveChangesAsync(); 
+
+                return new Response(true, "Taller actualizado correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex); 
+                return new Response(false, "Error al actualizar el taller");
+            }
+        }
+
+
+        public async Task<Response> DeleteWorkshopAsync(int id)
+        {
+            try
+            {
+                var workshop = await context.SubjectToUsers.FindAsync(id);
+                if (workshop == null)
+                    return new Response(false, "Taller no encontrado");
+
+                context.SubjectToUsers.Remove(workshop); 
+                await context.SaveChangesAsync(); 
+
+                return new Response(true, "Taller eliminado correctamente");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex); 
+                return new Response(false, "Error al eliminar el taller");
+            }
+        }
+
+
+        public async Task<IEnumerable<SubjectToUserDTO>> GetWorkshopsAsync()
+        {
+            try
+            {
+                var workshops = await context.SubjectToUsers.ToListAsync();
+                return SubjectToUserMapper.FromEntityList(workshops);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex); 
+                throw new Exception("Error al obtener los talleres");
+            }
+        }
+
+
+        public async Task<SubjectToUserDTO?> GetWorkshopByIdAsync(int id)
+        {
+            try
+            {
+                var workshop = await context.SubjectToUsers.FindAsync(id); 
+                if (workshop == null) return null; 
+                return SubjectToUserMapper.FromEntity(workshop); 
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex); 
+                throw new Exception("Error al obtener el taller por ID");
+            }
+        }
+
+
+        public async Task<IEnumerable<SubjectToUser>> GetWorkShopBy(Expression<Func<SubjectToUser, bool>> predicate)
+        {
+            try
+            {
+                var results = await context.SubjectToUsers.Where(predicate).ToListAsync(); 
+                if (results == null) return new List<SubjectToUser>(); 
+                return results;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex); 
+                throw new Exception("Error al obtener los talleres por filtro");
+            }
+        }
 
     }
 }
