@@ -8,15 +8,13 @@ namespace ClassroomApi.Application.DTOs
 {
     public class EmailNotificationDTO
     {
-        public string Para { get; set; }
-        public string Asunto { get; set; }
-        public string Contenido { get; set; }
+        public string? Destinatario { get; set; }
+        public string? Asunto { get; set; }
+        public string? CuerpoHtml { get; set; }
 
-        public EmailNotificationDTO(string para, string asunto, string contenido)
+        public EmailNotificationDTO(string destinatario, string asunto, string cuerpoHtml)
         {
-            Para = para;
-            Asunto = asunto;
-            Contenido = contenido;
+            Destinatario = destinatario; Asunto = asunto; CuerpoHtml = cuerpoHtml;
         }
     }
 }

@@ -41,9 +41,10 @@ const AddSanction = ({ onBack, initialData }) => {
       const payload = {
         id: initialData ? initialData.id : 0, // Si es edición, usamos la ID de los datos iniciales
         ...formData,
-        idAlumno: parseInt(formData.idAlumno),
-        idProfesor: parseInt(auth.user?.id), // ID del docente desde sesión
-        fecha: new Date(formData.fecha).toISOString(),
+        idAlumno: formData.idAlumno, // Dejamos idAlumno como string
+        idProfesor: auth.user?.id, // Dejamos idProfesor como string
+        // Ajustamos la fecha para tener el formato adecuado y la hora a las 08:00:00
+        fecha: new Date(formData.fecha).toISOString().split('T')[0] + 'T08:00:00',
       };
 
       if (initialData) {
@@ -108,7 +109,7 @@ const AddSanction = ({ onBack, initialData }) => {
 
           <label>ID del Alumno</label>
           <input
-            type="number"
+            type="text"
             name="idAlumno"
             value={formData.idAlumno}
             onChange={handleChange}

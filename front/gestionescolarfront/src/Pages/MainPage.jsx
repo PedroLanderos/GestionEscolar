@@ -185,7 +185,35 @@ const MainPage = () => {
       if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;
       if (activeSubOption === "EliminarAsignaciones") return <ShowAssignments />;
       if (activeSubOption === "VerSanciones") return <ShowSanctions />;
-      if (activeSubOption === "VerInasistencias") return <ShowAbsences />; {/* Mostrar las inasistencias */}
+      if (activeSubOption === "VerInasistencias") return <ShowAbsences />; 
+    }
+
+    if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;
+    if (activeSubOption === "Horario" && (isTeacher || isStudent || isTutor)) return <ShowSchedule />;
+    if (activeSubOption === "CrearReporte") return <CreateReport onBack={resetState} />;
+    if (activeSubOption === "AgregarSancion") return <AddSanction onBack={resetState} />;
+
+    if (isTeacher) {
+      if (attendanceData) {
+        return <AttendanceRegister claseProfesor={attendanceData.claseProfesor} horarioId={attendanceData.horarioId} onBack={() => setAttendanceData(null)} />;
+      }
+      if (gradesData) {
+        return <SetGrades claseProfesor={gradesData.claseProfesor} horario={gradesData.horario} onBack={() => setGradesData(null)} />;
+      }
+      if (activeSubOption === "ClasesDelMaestro") {
+        return (
+          <TeacherClassesTable
+            teacherId={auth.user?.id}
+            onRegistrarAsistencia={(claseProfesor, horarioId) => setAttendanceData({ claseProfesor, horarioId })}
+            onRegistrarCalificacion={(claseProfesor, horario) => setGradesData({ claseProfesor, horario })}
+          />
+        );
+      }
+    }
+
+    if ((isStudent || isTutor)) {
+      if (activeSubOption === "Calificaciones") return <ShowGrades />;
+      if (activeSubOption === "Asistencias") return <ShowAttendance />;
     }
 
     return null;

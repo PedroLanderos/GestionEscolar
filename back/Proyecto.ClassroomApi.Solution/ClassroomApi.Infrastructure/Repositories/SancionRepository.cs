@@ -46,10 +46,8 @@ namespace ClassroomApi.Infrastructure.Repositories
                     if (alumno == null)
                         return new Response(false, "Alumno no encontrado para enviar notificación");
 
-                    var notification = new EmailNotificationDTO(
-                        alumno.Correo!,
-                        $"Notificación de Sanción: {dto.TipoSancion}",
-                        $@"
+                    string subject = $"Sancion del alumno {alumno.NombreCompleto}";
+                    string body = $@"
                         <p>Estimado padre/tutor,</p>
                         <p>Se ha registrado una nueva sanción para su hijo(a) <strong>{alumno.NombreCompleto}</strong> con los siguientes detalles:</p>
                         <ul>
@@ -59,10 +57,10 @@ namespace ClassroomApi.Infrastructure.Repositories
                             <li><strong>Profesor:</strong> {dto.IdProfesor}</li>
                         </ul>
                         <p>Por favor, tome las medidas necesarias.</p>
-                        <p>Atentamente,<br/>Sistema Escolar</p>"
-                    );
+                        <p>Atentamente,<br/>Sistema Escolar</p>";
 
-                    // Publicamos la sanción en RabbitMQ
+
+                    var notification = new EmailNotificationDTO(alumno.Correo, subject, body);
                     notificationPublisher.PublishEmailNotification(notification);
                 }
                 catch (Exception ex)
@@ -108,10 +106,8 @@ namespace ClassroomApi.Infrastructure.Repositories
                     if (alumno == null)
                         return new Response(false, "Alumno no encontrado para enviar notificación");
 
-                    var notification = new EmailNotificationDTO(
-                        alumno.Correo!,
-                        $"Actualización de Sanción: {dto.TipoSancion}",
-                        $@"
+                    string subject = $"Actualización de Sanción del alumno {alumno.NombreCompleto}";
+                    string body = $@"
                         <p>Estimado padre/tutor,</p>
                         <p>Se ha actualizado la sanción para su hijo(a) <strong>{alumno.NombreCompleto}</strong> con los siguientes detalles nuevos:</p>
                         <ul>
@@ -121,10 +117,9 @@ namespace ClassroomApi.Infrastructure.Repositories
                             <li><strong>Profesor:</strong> {dto.IdProfesor}</li>
                         </ul>
                         <p>Por favor, tome las medidas necesarias.</p>
-                        <p>Atentamente,<br/>Sistema Escolar</p>"
-                    );
+                        <p>Atentamente,<br/>Sistema Escolar</p>";
 
-                    // Publicamos la notificación de la sanción actualizada en RabbitMQ
+                    var notification = new EmailNotificationDTO(alumno.Correo, subject, body);
                     notificationPublisher.PublishEmailNotification(notification);
                 }
                 catch (Exception ex)
