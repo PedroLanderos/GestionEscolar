@@ -8,6 +8,7 @@ services:
     ports:
       - "5000:5000"
     depends_on:
+      - rabbitmq
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -23,6 +24,7 @@ services:
     ports:
       - "5001:5001"
     depends_on:
+      - rabbitmq
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -38,6 +40,7 @@ services:
     ports:
       - "5002:5002"
     depends_on:
+      - rabbitmq
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -53,6 +56,7 @@ services:
     ports:
       - "5004:5004"  
     depends_on:
+      - rabbitmq
       - sqlserver
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -100,11 +104,17 @@ services:
     container_name: dockerwdb-frontend
     build:
       context: ./front/gestionescolarfront
-      dockerfile: Dockerfile  # Asegúrate de que esta ruta sea correcta
+      dockerfile: Dockerfile 
     ports:
       - "3000:80"
     depends_on:
       - authenticationapiservice
+      - subjectsapiservice
+      - scheduleapiservice
+      - classroomapiservice
+      - notificationapiservice
+      - rabbitmq
+      - sqlserver
     networks:
       - my_network
     restart: always

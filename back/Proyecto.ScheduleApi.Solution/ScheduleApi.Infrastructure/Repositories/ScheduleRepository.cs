@@ -462,6 +462,7 @@ namespace ScheduleApi.Infrastructure.Repositories
                 existing.UserId = workshop.UserId;
                 existing.CourseId = workshop.CourseId;
                 existing.HoraInicio = workshop.HoraInicio;
+                existing.Dia = workshop.Dia;
 
                 context.SubjectToUsers.Update(existing); 
                 await context.SaveChangesAsync(); 

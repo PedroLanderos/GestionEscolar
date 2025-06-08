@@ -1,6 +1,7 @@
 using ClassroomApi.Infrastructure.Data;
 using ClassroomApi.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using ScheduleApi.Application.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddApplicationService(builder.Configuration);
 builder.Services.AddInfrastructureService(builder.Configuration);
 
 builder.Services.AddCors(options =>

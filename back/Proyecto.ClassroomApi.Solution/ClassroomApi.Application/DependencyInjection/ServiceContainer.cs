@@ -27,7 +27,7 @@ namespace ScheduleApi.Application.DependencyInjection
                 client.BaseAddress = new Uri("http://scheduleapiservice:5002/api/"); 
             });
 
-            services.AddScoped<INotificationPublisher, NotificationPublisher>();
+            services.AddScoped<INotificationPublisher, NotificationPublisher>();    
 
             return services;
         }

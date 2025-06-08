@@ -16,12 +16,41 @@ namespace SubjectsApi.Infrastructure.Repositories
 {
     public class SubjectRepository(SubjectsDbContext context) : ISubject
     {
+        private readonly List<string> validSubjects = new List<string>
+        {
+            "Español", "Espanol", "Matematicas", "Historia", "Geografia", "Sociales"
+        };
+
+        private readonly List<string> validWorkshops = new List<string>
+        {
+            "Computación", "Electricidad", "Dibujo técnico", "Cocina", "Corte y confección"
+        };
+
+        private readonly List<string> validWorkshopSeries = new List<string>
+        {
+            "I", "II", "III"
+        };
+
         public async Task<Response> CreateAsync(SubjectDTO dto)
         {
             try
             {
                 if (dto.Tipo != "Materia" && dto.Tipo != "Taller")
                     return new Response(false, "El tipo debe ser 'Materia' o 'Taller'.");
+
+                if (dto.Tipo == "Materia" && !validSubjects.Contains(dto.Nombre))
+                    return new Response(false, "La materia no es válida.");
+
+                if (dto.Tipo == "Taller")
+                {
+                    string workshopName = dto.Nombre.Substring(0, dto.Nombre.LastIndexOf(' '));
+                    if (!validWorkshops.Contains(workshopName))
+                        return new Response(false, "El taller no es válido.");
+
+                    string series = dto.Nombre.Substring(dto.Nombre.LastIndexOf(' ') + 1);
+                    if (!validWorkshopSeries.Contains(series))
+                        return new Response(false, "Los talleres deben ser seriados (I, II, III).");
+                }
 
                 var entity = SubjectMapper.ToEntity(dto);
                 entity.FechaCreacion = DateTime.UtcNow;
@@ -37,7 +66,6 @@ namespace SubjectsApi.Infrastructure.Repositories
                 return new Response(false, "Error al crear la materia");
             }
         }
-
 
         public async Task<Response> DeleteAsync(SubjectDTO dto)
         {
@@ -142,6 +170,20 @@ namespace SubjectsApi.Infrastructure.Repositories
             {
                 if (dto.Tipo != "Materia" && dto.Tipo != "Taller")
                     return new Response(false, "El tipo debe ser 'Materia' o 'Taller'.");
+
+                if (dto.Tipo == "Materia" && !validSubjects.Contains(dto.Nombre))
+                    return new Response(false, "La materia no es válida.");
+
+                if (dto.Tipo == "Taller")
+                {
+                    string workshopName = dto.Nombre.Substring(0, dto.Nombre.LastIndexOf(' '));
+                    if (!validWorkshops.Contains(workshopName))
+                        return new Response(false, "El taller no es válido.");
+
+                    string series = dto.Nombre.Substring(dto.Nombre.LastIndexOf(' ') + 1);
+                    if (!validWorkshopSeries.Contains(series))
+                        return new Response(false, "Los talleres deben ser seriados (I, II, III).");
+                }
 
                 var entity = await context.Subjects.FindAsync(dto.Id);
                 if (entity is null)

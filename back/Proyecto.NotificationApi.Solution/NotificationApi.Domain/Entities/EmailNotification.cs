@@ -8,9 +8,8 @@ namespace NotificationApi.Domain.Entities
 {
     public class EmailNotification
     {
-        public string Para { get; set; } = null!;
-        public string Asunto { get; set; } = null!;
-        public string MensajeHtml { get; set; } = null!;
-        public string? Tipo { get; set; }
+        public string? Destinatario { get; set; } 
+        public string? Asunto { get; set; } 
+        public string? CuerpoHtml { get; set; }
     }
 }

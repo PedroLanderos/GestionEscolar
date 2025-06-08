@@ -13,7 +13,7 @@ namespace ScheduleApi.Domain.Entities
         public string? Id { get; set; }
         public string? UserId { get;set; }
         public string? CourseId { get; set; } //combinacion de materia y profesor
-
-        public DateTime HoraInicio { get; set; }
+        public string? HoraInicio { get; set; }
+        public string? Dia { get; set; }
     }
 }

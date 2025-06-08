@@ -27,23 +27,32 @@ public class Worker : BackgroundService
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        var factory = new ConnectionFactory
+        try
         {
-            HostName = _config["RabbitMq:Host"],
-            DispatchConsumersAsync = true 
-        };
+            var factory = new ConnectionFactory
+            {
+                HostName = _config["RabbitMq:Host"],
+                DispatchConsumersAsync = true
+            };
 
-        _connection = factory.CreateConnection();
-        _channel = _connection.CreateModel();
+            _connection = factory.CreateConnection();
+            _channel = _connection.CreateModel();
 
-        _channel.QueueDeclare(
-            queue: _config["RabbitMq:Queue"],
-            durable: true,
-            exclusive: false,
-            autoDelete: false,
-            arguments: null);
+            _channel.QueueDeclare(
+                queue: _config["RabbitMq:Queue"],
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
 
-        return base.StartAsync(cancellationToken);
+            _logger.LogInformation("Conexión establecida con RabbitMQ.");
+            return base.StartAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al iniciar conexión con RabbitMQ.");
+            throw;
+        }
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -56,23 +65,27 @@ public class Worker : BackgroundService
             {
                 var body = ea.Body.ToArray();
                 var json = Encoding.UTF8.GetString(body);
+                _logger.LogInformation("Mensaje recibido: {message}", json);
+
                 var notificacion = JsonSerializer.Deserialize<EmailNotification>(json);
 
                 if (notificacion != null)
                 {
+                    _logger.LogInformation("Correo a enviar: {email}", notificacion.Destinatario);
                     await _handler.HandleAsync(notificacion);
-                    _logger.LogInformation("Correo enviado a {email}", notificacion.Para);
+                    _logger.LogInformation("Correo enviado a {email}", notificacion.Destinatario);
+                    _channel!.BasicAck(ea.DeliveryTag, multiple: false);
                 }
                 else
                 {
                     _logger.LogWarning("Mensaje no se pudo deserializar.");
+                    _channel!.BasicNack(ea.DeliveryTag, false, true); // Reenviar mensaje a la cola en caso de error
                 }
-
-                _channel!.BasicAck(ea.DeliveryTag, multiple: false);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al procesar mensaje.");
+                _channel!.BasicNack(ea.DeliveryTag, false, true); // Reenviar mensaje a la cola en caso de error
             }
         };
 
@@ -87,8 +100,17 @@ public class Worker : BackgroundService
 
     public override Task StopAsync(CancellationToken cancellationToken)
     {
-        _channel?.Close();
-        _connection?.Close();
+        try
+        {
+            _channel?.Close();
+            _connection?.Close();
+            _logger.LogInformation("Conexión con RabbitMQ cerrada.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error al cerrar la conexión con RabbitMQ.");
+        }
+
         return base.StopAsync(cancellationToken);
     }
 }

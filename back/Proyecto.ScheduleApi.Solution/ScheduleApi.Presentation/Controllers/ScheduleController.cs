@@ -170,5 +170,17 @@ namespace ScheduleApi.Presentation.Controllers
             var result = await scheduleService.GetWorkshopByIdAsync(id);
             return result is not null ? Ok(result) : NotFound("Taller no encontrado");
         }
+
+        [HttpGet("obtenerTalleresPorUsuario/{userId}")]
+        public async Task<IActionResult> GetWorkshopsByUserId(string userId)
+        {
+            var result = await scheduleService.GetWorkShopBy(u => u.UserId == userId);
+            if (result != null && result.Any())
+            {
+                return Ok(result);
+            }
+            return NotFound("No se encontraron talleres asignados para este usuario.");
+        }
+
     }
 }

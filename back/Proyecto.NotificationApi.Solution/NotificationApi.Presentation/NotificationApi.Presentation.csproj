@@ -16,4 +16,8 @@
   <ItemGroup>
     <ProjectReference Include="..\NotificationApi.Infrastructure\NotificationApi.Infrastructure.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Test\" />
+  </ItemGroup>
 </Project>

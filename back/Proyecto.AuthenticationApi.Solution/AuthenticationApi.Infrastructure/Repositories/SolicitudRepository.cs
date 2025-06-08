@@ -1,18 +1,73 @@
 ﻿using AuthenticationApi.Application.DTOs;
 using AuthenticationApi.Application.Interfaces;
-using AuthenticationApi.Domain.Entities;
-using AuthenticationApi.Infrastructure.Data;
+using AuthenticationApi.Application.Services;
 using Llaveremos.SharedLibrary.Responses;
 using Llaveremos.SharedLibrary.Logs;
 using Microsoft.EntityFrameworkCore;
-using AuthenticationApi.Application.Mappers;
+using System;
 using System.Linq.Expressions;
-using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using AuthenticationApi.Application.Mappers;
+using AuthenticationApi.Domain.Entities;
+using AuthenticationApi.Infrastructure.Data;
 
 namespace AuthenticationApi.Infrastructure.Repositories
 {
-    public class SolicitudRepository(AuthenticationDbContext context) : ISolicitudRepository
+    public class SolicitudRepository(AuthenticationDbContext context, INotificationPublisher notificationPublisher) : ISolicitudRepository
     {
+
+        // Método para crear la solicitud y publicar la notificación
+        public async Task<Response> CrearSolicitud(SolicitudAltaDTO dto)
+        {
+            try
+            {
+                var solicitud = new SolicitudAlta
+                {
+                    NombreAlumno = dto.NombreAlumno,
+                    CurpAlumno = dto.CurpAlumno.ToUpper(),
+                    Grado = dto.Grado,
+                    NombrePadre = dto.NombrePadre,
+                    Telefono = dto.Telefono,
+                    CorreoPadre = dto.CorreoPadre
+                };
+
+                // Guardar la solicitud en la base de datos
+                await context.SolicitudesAltas.AddAsync(solicitud);
+                await context.SaveChangesAsync();
+
+                // Crear la notificación para publicar en RabbitMQ
+                string subject = "📥 Solicitud de registro recibida";
+                string body = $@"
+                    <p>Hola <strong>{dto.NombrePadre}</strong>,</p>
+                    <p>Tu solicitud para registrar al alumno <strong>{dto.NombreAlumno}</strong> (CURP: {dto.CurpAlumno}) en <strong>{dto.Grado}° grado</strong> ha sido recibida exitosamente.</p>
+                    <p>Nos pondremos en contacto contigo en breve.</p>
+                    <br/>
+                    <p>Atentamente,<br/>Sistema Escolar</p>";
+
+                // Crear el objeto de notificación
+                var notification = new EmailNotificationDTO(dto.CorreoPadre, subject, body);
+
+                try
+                {
+                    // Publicamos la notificación a RabbitMQ
+                    notificationPublisher.PublishEmailNotification(notification);
+                }
+                catch (Exception ex)
+                {
+                    LogException.LogExceptions(ex);
+                    return new Response(false, "La solicitud fue procesada, pero hubo un error al enviar la notificación.");
+                }
+
+                return new Response(true, "Solicitud enviada correctamente y notificación publicada.");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al guardar la solicitud");
+            }
+        }
+
+        // Método para marcar la solicitud como procesada
         public async Task<Response> MarcarSolicitudComoProcesada(string curpAlumno)
         {
             try
@@ -35,32 +90,8 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 return new Response(false, "Error al marcar la solicitud como procesada");
             }
         }
-        public async Task<Response> CrearSolicitud(SolicitudAltaDTO dto)
-        {
-            try
-            {
-                var solicitud = new SolicitudAlta
-                {
-                    NombreAlumno = dto.NombreAlumno,
-                    CurpAlumno = dto.CurpAlumno.ToUpper(),
-                    Grado = dto.Grado,
-                    NombrePadre = dto.NombrePadre,
-                    Telefono = dto.Telefono,
-                    CorreoPadre = dto.CorreoPadre
-                };
 
-                await context.SolicitudesAltas.AddAsync(solicitud);
-                await context.SaveChangesAsync();
-
-                return new Response(true, "Solicitud enviada correctamente");
-            }
-            catch (Exception ex)
-            {
-                LogException.LogExceptions(ex);
-                return new Response(false, "Error al guardar la solicitud");
-            }
-        }
-
+        // Método para editar una solicitud
         public async Task<Response> EditarSolicitud(EditarSolicitudDTO dto)
         {
             try
@@ -68,7 +99,6 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 var solicitud = await context.SolicitudesAltas.FindAsync(dto.Id);
                 if (solicitud is null)
                     return new Response(false, "Solicitud no encontrada");
-
 
                 if (!string.IsNullOrWhiteSpace(dto.NombreAlumno))
                     solicitud.NombreAlumno = dto.NombreAlumno;
@@ -103,8 +133,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
             }
         }
 
-
-
+        // Método para obtener solicitudes por predicado
         public async Task<IEnumerable<SolicitudAlta>> GetBy(Expression<Func<SolicitudAlta, bool>> predicate)
         {
             try
@@ -119,6 +148,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
             }
         }
 
+        // Método para obtener todas las solicitudes
         public async Task<IEnumerable<SolicitudAltaDTO>> ObtenerSolicitudes()
         {
             try
@@ -137,6 +167,4 @@ namespace AuthenticationApi.Infrastructure.Repositories
             }
         }
     }
-
-
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NotificationApi.Application.Interfaces;
+using NotificationApi.Application.UseCases;
 using NotificationApi.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace NotificationApi.Infrastructure.DependencyInjection
         public static IServiceCollection AddApplicationService(this IServiceCollection services, IConfiguration config)
         {
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<EnviarEmailHandler>();
             return services;
         }
     }

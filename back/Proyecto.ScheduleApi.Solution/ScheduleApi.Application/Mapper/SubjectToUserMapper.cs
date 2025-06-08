@@ -14,7 +14,8 @@ namespace ScheduleApi.Application.Mapper
                 Id = entity.Id,
                 UserId = entity.UserId,
                 CourseId = entity.CourseId,
-                HoraInicio = entity.HoraInicio
+                HoraInicio = entity.HoraInicio,
+                Dia = entity.Dia
             };
         }
 
@@ -25,7 +26,8 @@ namespace ScheduleApi.Application.Mapper
                 Id = dto.Id,
                 UserId = dto.UserId,
                 CourseId = dto.CourseId,
-                HoraInicio = dto.HoraInicio
+                HoraInicio = dto.HoraInicio,
+                Dia = dto.Dia
             };
         }
 

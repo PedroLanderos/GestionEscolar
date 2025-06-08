@@ -14,6 +14,8 @@ namespace ScheduleApi.Application.DTOs
         public string? CourseId { get; set; } 
 
         [Required]
-        public DateTime HoraInicio { get; set; } 
+        public string? Dia { get; set; }
+        [Required]
+        public string? HoraInicio { get; set; }
     }
 }

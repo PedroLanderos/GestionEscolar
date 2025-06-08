@@ -6,48 +6,56 @@ using MimeKit;
 using NotificationApi.Application.Interfaces;
 using NotificationApi.Domain.Entities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net;
 
 namespace NotificationApi.Infrastructure.Services
 {
-    public class EmailService(IConfiguration _config) : IEmailService
+    public class EmailService : IEmailService
     {
+        private readonly IConfiguration config;
+
+        public EmailService(IConfiguration _config)
+        {
+            config = _config;
+        }
+
         public async Task EnviarAsync(EmailNotification notificacion)
         {
             try
             {
+                LogException.LogExceptions(new Exception($"El mensaje es: {notificacion.CuerpoHtml}"));
                 var message = new MimeMessage();
-                message.From.Add(new MailboxAddress("Sistema Escolar", _config["Email:From"]));
-                message.To.Add(MailboxAddress.Parse(notificacion.Para));
+
+                //definir cabecera del mensaje
+                message.From.Add(new MailboxAddress("Sistema Escolar", config["Email:From"]));
+
+                //definir destinatario
+                message.To.Add(MailboxAddress.Parse(notificacion.Destinatario));
+
+                //definir asunto
                 message.Subject = notificacion.Asunto;
 
-                var bodyBuilder = new BodyBuilder { HtmlBody = notificacion.MensajeHtml };
+                //definir cuerpo del mensaje
+                var bodyBuilder = new BodyBuilder
+                {
+                    HtmlBody = notificacion.CuerpoHtml
+                };
                 message.Body = bodyBuilder.ToMessageBody();
+
 
                 using var client = new SmtpClient();
 
-                // Ignora errores de certificado (solo en desarrollo, no recomendado en producción)
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-                await client.ConnectAsync(
-                    _config["Email:Smtp"],
-                    int.Parse(_config["Email:Port"]!),
-                    SecureSocketOptions.SslOnConnect);
-
-                await client.AuthenticateAsync(
-                    _config["Email:User"],
-                    _config["Email:Password"]);
-
+                await client.ConnectAsync(config["Email:Smtp"], int.Parse(config["Email:Port"]!), SecureSocketOptions.SslOnConnect);
+                await client.AuthenticateAsync(config["Email:User"], config["Email:Password"]);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
             }
             catch (Exception ex)
             {
-                LogException.LogExceptions(ex); // Usa tu logger centralizado
-                throw new Exception("Error al enviar el correo desde NotificationApi");
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al enviar el correo desde EmailService en notification api", ex);
             }
         }
     }

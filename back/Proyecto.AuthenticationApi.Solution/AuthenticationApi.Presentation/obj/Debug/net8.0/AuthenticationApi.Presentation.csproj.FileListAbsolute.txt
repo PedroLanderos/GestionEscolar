@@ -169,3 +169,4 @@ D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\Authentic
 D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\MimeKit.dll
 D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+D:\Code\sistemagestionescolar\back\Proyecto.AuthenticationApi.Solution\AuthenticationApi.Presentation\bin\Debug\net8.0\RabbitMQ.Client.dll
