@@ -131,6 +131,44 @@ namespace SubjectsApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<IEnumerable<SubjectDTO>> GetWorkshopsByGradeAsync(int grade)
+        {
+            try
+            {
+                // Paso 1: Convertir el grado en su identificador romano
+                string romanGrade = ConvertToRoman(grade);
+
+                // Paso 2: Buscar los talleres que tengan este identificador
+                var workshops = await context.Subjects
+                    .Where(s => s.Tipo == "Taller" && s.Nombre!.EndsWith(romanGrade))
+                    .ToListAsync();
+
+                return SubjectMapper.FromEntityList(workshops);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener los talleres por grado");
+            }
+        }
+
+        private string ConvertToRoman(int number)
+        {
+            // Convertir los números 1, 2, 3 a sus equivalentes romanos
+            switch (number)
+            {
+                case 1:
+                    return "I";
+                case 2:
+                    return "II";
+                case 3:
+                    return "III";
+                default:
+                    throw new ArgumentException("Solo se permiten los grados 1, 2 y 3.");
+            }
+        }
+
+
         public async Task<SubjectDTO> GetByCode(string code)
         {
             try

@@ -79,5 +79,15 @@ namespace SubjectsApi.Presentation.Controllers
             var subject = await subjectService.GetByCode(codigo);
             return subject is not null ? Ok(subject) : NotFound("Materia no encontrada con el código proporcionado");
         }
+
+        [HttpGet("talleresPorGrado/{grado}")]
+        public async Task<ActionResult<IEnumerable<SubjectDTO>>> GetWorkshopsByGrade(int grado)
+        {
+            if (grado < 1 || grado > 3)
+                return BadRequest("El grado debe ser 1, 2 o 3");
+            var workshops = await subjectService.GetWorkshopsByGradeAsync(grado);
+            return workshops.Any() ? Ok(workshops) : NotFound($"No se encontraron talleres para el grado {grado}");
+
+        }
     }
 }

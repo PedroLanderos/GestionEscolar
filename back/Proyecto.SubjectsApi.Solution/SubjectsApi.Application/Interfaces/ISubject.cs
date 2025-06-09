@@ -13,5 +13,6 @@ namespace SubjectsApi.Application.Interfaces
     {
         Task<IEnumerable<SubjectDTO>> GetManyByAsync(Expression<Func<SubjectDTO, bool>> predicate);
         Task<SubjectDTO> GetByCode(string code);
+        Task<IEnumerable<SubjectDTO>> GetWorkshopsByGradeAsync(int grade);
     }
 }

@@ -11,11 +11,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 
 namespace SubjectsApi.Infrastructure.Repositories
 {
-    public class SubjectAssignmentRepository(SubjectsDbContext context, IUser _user) : ISubjectAssignment
+    public class SubjectAssignmentRepository(SubjectsDbContext context, IUser _user, ISubject subject) : ISubjectAssignment
     {
         public async Task<Response> CreateAsignmnet(SubjectAssignmentDTO dto)
         {
@@ -156,6 +157,32 @@ namespace SubjectsApi.Infrastructure.Repositories
             {
                 LogException.LogExceptions(ex);
                 return new Response(false, "Error al actualizar la asignación");
+            }
+        }
+
+        public async Task<IEnumerable<SubjectAssignmentDTO>> GetAssignmentsByGradeAsync(int grado)
+        {
+            try
+            {
+                var workshops = await subject.GetWorkshopsByGradeAsync(grado);
+
+                if (!workshops.Any())
+                {
+                    return new List<SubjectAssignmentDTO>(); 
+                }
+
+                var workshopIds = workshops.Select(w => w.Codigo).ToList();
+
+                var assignments = await context.SubjectAssignments
+                    .Where(a => workshopIds.Contains(a.SubjectId!))
+                    .ToListAsync();
+
+                return SubjectAssignmentMapper.FromEntityList(assignments);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener las asignaciones para los talleres del grado especificado.");
             }
         }
     }
