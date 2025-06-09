@@ -182,5 +182,12 @@ namespace ScheduleApi.Presentation.Controllers
             return NotFound("No se encontraron talleres asignados para este usuario.");
         }
 
+        [HttpPost("asignarTallerEspaciosLibres/{userId}/{courseId}")]
+        public async Task<IActionResult> AssignWorkshopToFreeSpaces(string userId, string courseId)
+        {
+            var result = await scheduleService.AsignarTallerEnEspaciosLibresAsync(userId, courseId);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
     }
 }

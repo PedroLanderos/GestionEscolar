@@ -42,5 +42,7 @@ namespace ScheduleApi.Application.Interfaces
         Task<IEnumerable<SubjectToUserDTO>> GetWorkshopsAsync();
         Task<SubjectToUserDTO?> GetWorkshopByIdAsync(int id);
         Task<IEnumerable<SubjectToUser>> GetWorkShopBy(Expression<Func<SubjectToUser, bool>> predicate);
+
+        Task<Response> AsignarTallerEnEspaciosLibresAsync(string userId, string courseId);
     }
 }

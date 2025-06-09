@@ -220,5 +220,37 @@ namespace ClassroomApi.Presentation.Controllers
                 return StatusCode(500, $"Error al obtener las inasistencias: {ex.Message}");
             }
         }
+
+        [HttpPost("profesor/{idProfesor}/fecha/{fecha}")]
+        public async Task<IActionResult> ObtenerAsistenciasPorFechaYAlumnos(
+        string idProfesor,
+        DateTime fecha,
+        [FromBody] List<string> idAlumnos)
+        {
+            try
+            {
+                var cicloEscolar = await _cicloEscolarService.GetBy(x => x.EsActual == true);
+                if (cicloEscolar == null)
+                {
+                    return BadRequest("No se encontró un ciclo escolar activo.");
+                }
+
+                // Filtramos las asistencias por fecha, profesor y el conjunto de alumnos
+                var asistencias = await _asistenciaService.GetBy(a =>
+                    idAlumnos.Contains(a.IdAlumno) &&   // Filtramos por los alumnos proporcionados
+                    a.IdProfesor == idProfesor &&        // Filtramos por el profesor
+                    a.Fecha.Date == fecha.Date &&        // Filtramos por la fecha exacta
+                    a.Fecha >= cicloEscolar.FechaInicio &&  // Aseguramos que la fecha esté dentro del ciclo escolar
+                    a.Fecha <= cicloEscolar.FechaFin
+                );
+
+                var dtoList = asistencias.Select(AsistenciaMapper.FromEntity).ToList();
+                return Ok(dtoList);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error al obtener las asistencias por fecha y alumnos: {ex.Message}");
+            }
+        }
     }
 }

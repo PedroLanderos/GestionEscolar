@@ -12,6 +12,7 @@ const ShowGrades = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeCycle, setActiveCycle] = useState(null);
+  const [materias, setMaterias] = useState([]);  // Nuevo estado para materias
 
   useEffect(() => {
     if (!userId) return;
@@ -51,11 +52,28 @@ const ShowGrades = () => {
           }
         }
 
-        // 2. Obtener calificaciones por alumno y ciclo
+        // 2. Obtener las materias del alumno
+        const resMaterias = await axios.get(`http://localhost:5004/api/Subject/alumno/${alumnoId}`);
+        setMaterias(resMaterias.data); // Guardar las materias aunque no haya calificaciones
+
+        // 3. Obtener calificaciones por alumno y ciclo
         const gradesRes = await axios.get(
           `http://localhost:5004/api/calificacion/alumno/${alumnoId}/ciclo/${cicloActual}`
         );
-        setGrades(gradesRes.data);
+
+        const gradesData = gradesRes.data;
+
+        // Si las calificaciones se obtienen, mezclarlas con las materias
+        const mergedGrades = materias.map((materia) => {
+          const grade = gradesData.find((g) => g.idMateria === materia.codigo);
+          return {
+            ...materia,
+            calificacionFinal: grade ? grade.calificacionFinal : "-",
+            comentarios: grade ? grade.comentarios : "-",
+          };
+        });
+
+        setGrades(mergedGrades);  // Actualizar el estado con las materias y calificaciones
       } catch (err) {
         console.error("Error al obtener calificaciones:", err);
         setError("Error al cargar las calificaciones. Intente nuevamente.");
@@ -65,7 +83,7 @@ const ShowGrades = () => {
     };
 
     fetchGrades();
-  }, [userId, userRole]);
+  }, [userId, userRole, materias]);
 
   if (loading) return <p>Cargando calificaciones...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -85,7 +103,7 @@ const ShowGrades = () => {
         <tbody>
           {grades.map((grade) => (
             <tr key={grade.id}>
-              <td>{grade.idMateria}</td>
+              <td>{grade.nombre}</td>
               <td>{grade.calificacionFinal}</td>
               <td>{grade.comentarios || "-"}</td>
             </tr>

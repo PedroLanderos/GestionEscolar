@@ -544,5 +544,90 @@ namespace ScheduleApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<Response> AsignarTallerEnEspaciosLibresAsync(string userId, string courseId)
+        {
+            try
+            {
+                // Paso 1: Obtener el horario completo del alumno
+                var schedule = await GetScheduleForStudentAsync(userId);
+                if (schedule == null || !schedule.Any())
+                {
+                    return new Response(false, "El alumno no tiene un horario asignado.");
+                }
+
+                // Paso 2: Definir los días de la semana y las horas en que buscaremos los espacios vacíos
+                var dias = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes" };
+                var horas = new[] { "8:00-9:30", "9:30-11:00", "11:00-12:30", "12:30-2:00" }; // 4 franjas horarias
+                var disponibilidad = new bool[4, 5]; // Matriz de 4 filas (horas) x 5 columnas (días)
+
+                // Inicializar la matriz con 'false' (disponible)
+                for (int i = 0; i < 4; i++)
+                {
+                    for (int j = 0; j < 5; j++)
+                    {
+                        disponibilidad[i, j] = false;
+                    }
+                }
+
+                // Paso 3: Marcar las celdas de la matriz según el horario del alumno
+                foreach (var clase in schedule)
+                {
+                    int diaIndex = Array.IndexOf(dias, clase.Dia); // Encontrar el índice del día
+                    int horaIndex = Array.IndexOf(horas, clase.HoraInicio); // Encontrar el índice de la hora
+
+                    if (diaIndex != -1 && horaIndex != -1)
+                    {
+                        disponibilidad[horaIndex, diaIndex] = true; // Marcar el espacio como ocupado (true)
+                    }
+                }
+
+                // Paso 4: Buscar espacios vacíos en la matriz y asignar talleres en esos lugares
+                var espaciosLibres = new List<SubjectToUserDTO>();
+
+                for (int i = 0; i < 4; i++) // Recorremos las horas
+                {
+                    for (int j = 0; j < 5; j++) // Recorremos los días
+                    {
+                        if (!disponibilidad[i, j]) // Si el espacio está vacío
+                        {
+                            var dia = dias[j];
+                            var horaInicio = horas[i];
+
+                            // Crear una asignación del taller para este espacio libre
+                            espaciosLibres.Add(new SubjectToUserDTO
+                            {
+                                UserId = userId,
+                                CourseId = courseId,
+                                Dia = dia,
+                                HoraInicio = horaInicio
+                            });
+                        }
+                    }
+                }
+
+                if (!espaciosLibres.Any())
+                {
+                    return new Response(false, "No hay espacios libres para asignar el taller.");
+                }
+
+                // Paso 5: Crear las asignaciones de taller en los espacios vacíos encontrados
+                foreach (var espacio in espaciosLibres)
+                {
+                    var response = await CreateWorkshopAsync(espacio); // Usamos el método para crear los talleres
+                    if (!response.Flag)
+                    {
+                        return new Response(false, "Error al asignar un taller.");
+                    }
+                }
+
+                return new Response(true, "Taller asignado exitosamente en los espacios libres.");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al asignar el taller en los espacios libres.");
+            }
+        }
+
     }
 }

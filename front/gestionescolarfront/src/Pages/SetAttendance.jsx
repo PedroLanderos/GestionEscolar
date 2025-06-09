@@ -7,28 +7,20 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
   const [loading, setLoading] = useState(true);
   const [asistencias, setAsistencias] = useState({});
   const [error, setError] = useState(null);
-
-  // Fecha de hoy en formato ISO sin zona (YYYY-MM-DD)
-  const todayDate = new Date().toISOString().slice(0, 10);
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10)); // Fecha por defecto es hoy
 
   useEffect(() => {
     if (!claseProfesor || !horarioId) return;
 
-    const fetchAlumnos = async () => {
+    const fetchAsistencias = async () => {
       setLoading(true);
       setError(null);
       try {
-        console.log(
-          `Llamando a alumnosPorMateriaHorario con materiaProfesor=${claseProfesor} y horario=${horarioId}`
-        );
-
-        // 1. Obtener IDs alumnos inscritos
+        // Obtener IDs de alumnos inscritos
         const resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorMateriaHorario`, {
           params: { materiaProfesor: claseProfesor, horario: horarioId },
         });
         const alumnoIds = resIds.data;
-
-        console.log("IDs de alumnos obtenidos:", alumnoIds);
 
         if (!alumnoIds.length) {
           setAlumnos([]);
@@ -36,13 +28,11 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
           return;
         }
 
-        console.log("Enviando IDs para obtener datos de alumnos:", alumnoIds);
-
-        // 2. Obtener datos de alumnos
+        // Obtener datos de los alumnos
         const resAlumnos = await axios.post("http://localhost:5000/api/usuario/obtenerusuariosporids", alumnoIds);
         const alumnosData = resAlumnos.data;
 
-        // Inicializar estado de asistencias: { alumnoId: { asistio: false, justificacion: "" } }
+        // Inicializar el estado de asistencias
         const initialAsistencias = {};
         alumnosData.forEach((a) => {
           initialAsistencias[a.id] = { asistio: false, justificacion: "" };
@@ -50,16 +40,32 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
 
         setAlumnos(alumnosData);
         setAsistencias(initialAsistencias);
+
+        // Ahora buscamos si ya existen asistencias para esta fecha
+        const resAsistencias = await axios.post("http://localhost:5004/api/asistencias/profesor/" + claseProfesor + "/fecha/" + selectedDate, alumnoIds);
+        
+        // Si ya hay asistencias, las ponemos en el estado
+        if (resAsistencias.data && resAsistencias.data.length > 0) {
+          const asistenciasMap = {};
+          resAsistencias.data.forEach((asistencia) => {
+            asistenciasMap[asistencia.idAlumno] = {
+              asistio: asistencia.asistio,
+              justificacion: asistencia.justificacion || "",
+              id: asistencia.id,
+            };
+          });
+          setAsistencias(asistenciasMap);
+        }
       } catch (err) {
-        console.error("Error cargando alumnos o asistencias:", err);
+        console.error("Error cargando datos de alumnos o asistencias:", err);
         setError("Error cargando datos, intenta más tarde.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAlumnos();
-  }, [claseProfesor, horarioId]);
+    fetchAsistencias();
+  }, [claseProfesor, horarioId, selectedDate]);
 
   const handleCheckboxChange = (id) => {
     setAsistencias((prev) => ({
@@ -75,20 +81,30 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
     }));
   };
 
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
+
   const handleGuardar = async () => {
     try {
       const requests = alumnos.map((a) => {
         const asistencia = asistencias[a.id];
         const payload = {
-          id: 0,
-          fecha: todayDate + "T00:00:00",
+          id: asistencia.id || 0,  // Si la asistencia no tiene ID, es nueva
+          fecha: selectedDate + "T00:00:00", // Fecha completa con hora
           asistio: asistencia.asistio,
           justificacion: asistencia.justificacion,
           idAlumno: a.id,
           idProfesor: claseProfesor, // idMateria-idProfesor
         };
-        console.log("Enviando asistencia:", payload);
-        return axios.post("http://localhost:5004/api/asistencias", payload);
+
+        if (asistencia.id) {
+          // Si ya existe una asistencia (ID presente), se debe actualizar
+          return axios.put("http://localhost:5004/api/asistencias", payload);
+        } else {
+          // Si no existe (ID no presente), se debe crear
+          return axios.post("http://localhost:5004/api/asistencias", payload);
+        }
       });
 
       await Promise.all(requests);
@@ -106,6 +122,10 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
   return (
     <div className="users-table-container">
       <h2>Registrar Asistencia - {claseProfesor} - {horarioId}</h2>
+      
+      <label>Seleccionar Fecha</label>
+      <input type="date" value={selectedDate} onChange={handleDateChange} />
+      
       <table>
         <thead>
           <tr>
@@ -120,7 +140,7 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
             <tr key={alumno.id}>
               <td>{alumno.nombreCompleto}</td>
               <td>
-                <input type="date" value={todayDate} disabled />
+                <input type="date" value={selectedDate} disabled />
               </td>
               <td>
                 <input
