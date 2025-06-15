@@ -539,8 +539,29 @@ namespace AuthenticationApi.Infrastructure.Repositories
             }
         }
 
+        public async Task<int> ObtenerGradoDeAlumno(string alumnoId)
+        {
+            try
+            {
+                //obtener al alumno
+                var alumno = await GetUser(alumnoId);
+                if (alumno is null) throw new Exception("El alumno no fue encontrado");
 
+                //obtener la curp del alummno
+                string curp = alumno.Curp!.ToUpper();
 
+                var solicitud = await context.SolicitudesAltas
+                    .FirstOrDefaultAsync(s => s.CurpAlumno.ToUpper() == curp);
 
+                if(solicitud is null) throw new Exception("No se encontró una solicitud de alta para el alumno");
+
+                return solicitud.Grado;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error en el repo para obtener grado de alumno");
+            }
+        }
     }
 }

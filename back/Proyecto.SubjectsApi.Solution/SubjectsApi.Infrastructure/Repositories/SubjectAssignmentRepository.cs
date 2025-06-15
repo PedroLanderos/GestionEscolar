@@ -95,7 +95,7 @@ namespace SubjectsApi.Infrastructure.Repositories
         {
             try
             {
-                var subjectsIds = await context.Subjects.Where(s => s.Grado == grado).Select(s => s.Codigo).ToListAsync();
+                var subjectsIds = await context.Subjects.Where(s => s.Grado == grado && s.Tipo == "Materia").Select(s => s.Codigo).ToListAsync();
 
                 var assingments = await context.SubjectAssignments.Where(a => subjectsIds.Contains(a.SubjectId!)).ToListAsync();
 

@@ -300,5 +300,20 @@ namespace AuthenticationApi.Presentation.Controllers
                 return StatusCode(500, "Error al obtener el alumno asociado al tutor desde el controlador");
             }
         }
+
+        [HttpGet("ObtenerGradoDeAlumno/{alumnoId}")]
+        public async Task<ActionResult<int>> ObtenerGradoDeAlumno(string alumnoId)
+        {
+            try
+            {
+                var grado = await userService.ObtenerGradoDeAlumno(alumnoId);
+                return Ok(grado);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, "Error al obtener el grado del alumno desde el controlador");
+            }
+        }
     }
 }

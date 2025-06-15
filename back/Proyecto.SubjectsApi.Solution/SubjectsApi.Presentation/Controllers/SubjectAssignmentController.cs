@@ -68,5 +68,15 @@ namespace SubjectsApi.Presentation.Controllers
             var asignaciones = await service.GetAssignmentByGrade(grado);
             return asignaciones.Any() ? Ok(asignaciones) : NotFound($"No se encontraron asignaciones para el grado {grado}");
         }
+
+        [HttpGet("obtenerTalleresPorGrado/{grado}")]
+        public async Task<ActionResult<IEnumerable<SubjectAssignmentDTO>>> GetWorshopByGrado(int grado)
+        {
+            if (grado < 1 || grado > 3)
+                return BadRequest("El grado debe estar entre 1 y 3");
+
+            var talleres = await service.GetAssignmentByGrade(grado);
+            return talleres.Any() ? Ok(talleres) : NotFound($"No se encontraron talleres para el grado {grado}");
+        }
     }
 }
