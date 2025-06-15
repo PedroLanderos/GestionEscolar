@@ -75,7 +75,7 @@ namespace SubjectsApi.Presentation.Controllers
             if (grado < 1 || grado > 3)
                 return BadRequest("El grado debe estar entre 1 y 3");
 
-            var talleres = await service.GetAssignmentByGrade(grado);
+            var talleres = await service.GetWorkShopsAssingmentByGradeAsync(grado);
             return talleres.Any() ? Ok(talleres) : NotFound($"No se encontraron talleres para el grado {grado}");
         }
     }

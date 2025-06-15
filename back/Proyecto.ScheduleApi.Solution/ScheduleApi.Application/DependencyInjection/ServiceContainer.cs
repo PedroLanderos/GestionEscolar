@@ -19,6 +19,11 @@ namespace ScheduleApi.Application.DependencyInjection
                 client.BaseAddress = new Uri("http://apigateway:5000/api/article/");
             });
 
+            services.AddHttpClient<ISubject, Subject>(client =>
+            {
+                client.BaseAddress = new Uri("http://subjectsapiservice:5001/api/");
+            });
+
             return services;
         }
     }

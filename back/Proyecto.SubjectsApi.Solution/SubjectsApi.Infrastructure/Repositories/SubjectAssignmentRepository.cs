@@ -160,7 +160,7 @@ namespace SubjectsApi.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<SubjectAssignmentDTO>> GetAssignmentsByGradeAsync(int grado)
+        public async Task<IEnumerable<SubjectAssignmentDTO>> GetWorkShopsAssingmentByGradeAsync(int grado)
         {
             try
             {

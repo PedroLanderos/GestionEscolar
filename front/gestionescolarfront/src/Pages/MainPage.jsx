@@ -21,10 +21,11 @@ import AttendanceRegister from "./SetAttendance";
 import SetGrades from "./SetGrades";
 import ShowGrades from "./ShowGrades";
 import ShowAttendance from "./ShowAttendance";
-import ShowReport from "./ShowReports"; 
-import ShowAssignments from "./ShowAssignments"; 
-import ShowSanctions from "./ShowSanctions"; 
-import ShowAbsences from "./ShowAbsences"; 
+import ShowReport from "./ShowReports";
+import ShowAssignments from "./ShowAssignments";
+import ShowSanctions from "./ShowSanctions";
+import ShowAbsences from "./ShowAbsences";
+import Workshops from "./Workshops"; // ✅ Importación nueva
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -45,7 +46,7 @@ const MainPage = () => {
 
   const [activeSection, setActiveSection] = useState(isAdmin ? "Administrador" : "Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
-  const [reportesModo, setReportesModo] = useState(null); // ✅ Nuevo estado
+  const [reportesModo, setReportesModo] = useState(null);
   const [registerData, setRegisterData] = useState(null);
   const [userType, setUserType] = useState(null);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
@@ -83,14 +84,7 @@ const MainPage = () => {
     setActiveSubOption(null);
     setAttendanceData(null);
     setGradesData(null);
-    setReportesModo(null); // ✅ Reset también aquí
-  };
-
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "BUENOS DÍAS";
-    if (hour < 19) return "BUENAS TARDE";
-    return "BUENAS NOCHES";
+    setReportesModo(null);
   };
 
   const renderSidebarContent = () => {
@@ -111,8 +105,8 @@ const MainPage = () => {
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
           <li onClick={() => { resetState(); setActiveSubOption("RegistrarCicloEscolar"); }}>Registrar ciclo escolar</li>
           <li onClick={() => { resetState(); setActiveSubOption("EliminarAsignaciones"); }}>Eliminar asignaciones</li>
-          <li onClick={() => { resetState(); setActiveSubOption("VerSanciones"); }}>Ver sanciones</li> 
-          <li onClick={() => { resetState(); setActiveSubOption("VerInasistencias"); }}>Ver inasistencias</li> 
+          <li onClick={() => { resetState(); setActiveSubOption("VerSanciones"); }}>Ver sanciones</li>
+          <li onClick={() => { resetState(); setActiveSubOption("VerInasistencias"); }}>Ver inasistencias</li>
         </ul>
       );
     }
@@ -143,7 +137,9 @@ const MainPage = () => {
             )}
           </>
         )}
-        <li>Talleres</li>
+        {isStudent && (
+          <li onClick={() => { resetState(); setActiveSubOption("Talleres"); }}>Talleres</li>
+        )}
         <li>Asistencias</li>
         <li>Sanciones</li>
         <li>Datos Académicos</li>
@@ -185,7 +181,7 @@ const MainPage = () => {
       if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;
       if (activeSubOption === "EliminarAsignaciones") return <ShowAssignments />;
       if (activeSubOption === "VerSanciones") return <ShowSanctions />;
-      if (activeSubOption === "VerInasistencias") return <ShowAbsences />; 
+      if (activeSubOption === "VerInasistencias") return <ShowAbsences />;
     }
 
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;
@@ -215,6 +211,8 @@ const MainPage = () => {
       if (activeSubOption === "Calificaciones") return <ShowGrades />;
       if (activeSubOption === "Asistencias") return <ShowAttendance />;
     }
+
+    if (activeSubOption === "Talleres" && isStudent) return <Workshops />; // ✅ Talleres solo para alumnos
 
     return null;
   };

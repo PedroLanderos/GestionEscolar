@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ScheduleApi.Application.DTOs;
 using ScheduleApi.Application.Interfaces;
 using ScheduleApi.Application.Mapper;
+using ScheduleApi.Application.Services;
 using ScheduleApi.Domain.Entities;
 using ScheduleApi.Infrastructure.Data;
 using System;
@@ -14,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace ScheduleApi.Infrastructure.Repositories
 {
-    public class ScheduleRepository(ScheduleDbContext context) : ISchedule
+    public class ScheduleRepository(ScheduleDbContext context, ISubject _subjectService) : ISchedule
     {
         public async Task<Response> AsignStudentToScheduleAsync(ScheduleToUserDTO dto)
         {
@@ -548,6 +549,30 @@ namespace ScheduleApi.Infrastructure.Repositories
         {
             try
             {
+                var tallerExistente = await context.SubjectToUsers
+                    .FirstOrDefaultAsync(t => t.UserId == userId);
+
+                if(tallerExistente is not null)
+                {
+                    var partes = courseId.Split('-');
+                    var codigoMateria = partes[0];
+
+                    var subject = await _subjectService.ObtenerMateriaPorCodigo(codigoMateria);
+
+                    var courseIdExistente = tallerExistente.CourseId;
+
+                    var codigo = courseIdExistente!.Split('-')[0];
+
+                    var nombreTallerActual = subject.Nombre.Split(' ')[0];
+                    var nombreTallerExistente = (await _subjectService.ObtenerMateriaPorCodigo(codigo)).Nombre.Split(' ')[0];
+
+                    if (!nombreTallerActual.Equals(nombreTallerExistente, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return new Response(false, "No se le puede asignar un taller no seriado al alumno.");
+                    }
+                }
+                
+
                 // Paso 1: Obtener el horario completo del alumno
                 var schedule = await GetScheduleForStudentAsync(userId);
                 if (schedule == null || !schedule.Any())
