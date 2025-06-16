@@ -206,7 +206,7 @@ namespace ClassroomApi.Presentation.Controllers
 
                 var inasistencias = await _asistenciaService.GetBy(a =>
                     a.Asistio == false &&
-                    a.Justificacion == null &&
+                    string.IsNullOrEmpty(a.Justificacion) &&
                     a.Fecha >= cicloEscolar.FechaInicio &&
                     a.Fecha <= cicloEscolar.FechaFin
                 );
@@ -220,6 +220,7 @@ namespace ClassroomApi.Presentation.Controllers
                 return StatusCode(500, $"Error al obtener las inasistencias: {ex.Message}");
             }
         }
+
 
         [HttpPost("profesor/{idProfesor}/fecha/{fecha}")]
         public async Task<IActionResult> ObtenerAsistenciasPorFechaYAlumnos(

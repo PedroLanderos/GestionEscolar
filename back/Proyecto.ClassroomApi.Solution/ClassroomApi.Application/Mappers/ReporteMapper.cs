@@ -13,7 +13,7 @@ namespace ClassroomApi.Application.Mapper
             return new ReporteDTO(
                 Id: entity.Id,
                 Fecha: entity.Fecha,
-                IdAlumno: entity.IdAlumno,
+                IdAlumno: entity.IdAlumno!,
                 Grupo: entity.Grupo,
                 CicloEscolar: entity.CicloEscolar,
                 IdHorario: entity.idHorario,

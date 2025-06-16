@@ -128,7 +128,9 @@ const MainPage = () => {
           <>
             <li onClick={() => { resetState(); setActiveSubOption("Calificaciones"); }}>Calificaciones</li>
             <li onClick={() => { resetState(); setActiveSubOption("Asistencias"); }}>Asistencias</li>
-            <li className="submenu" onClick={() => setActiveSubOption("Reportes")}>- Reportes</li>
+            
+
+            <li onClick={() => setActiveSubOption("Reportes")}>Reportes</li>
             {activeSubOption === "Reportes" && (
               <>
                 <li className="submenu" onClick={() => setReportesModo("ciclo")}>-- Ciclo Escolar</li>
@@ -140,10 +142,6 @@ const MainPage = () => {
         {isStudent && (
           <li onClick={() => { resetState(); setActiveSubOption("Talleres"); }}>Talleres</li>
         )}
-        <li>Asistencias</li>
-        <li>Sanciones</li>
-        <li>Datos Académicos</li>
-        <li className="submenu">- Kárdex</li>
       </ul>
     );
   };
@@ -194,7 +192,13 @@ const MainPage = () => {
         return <AttendanceRegister claseProfesor={attendanceData.claseProfesor} horarioId={attendanceData.horarioId} onBack={() => setAttendanceData(null)} />;
       }
       if (gradesData) {
-        return <SetGrades claseProfesor={gradesData.claseProfesor} horario={gradesData.horario} onBack={() => setGradesData(null)} />;
+        return (
+          <SetGrades
+            materiaProfesor={gradesData.claseProfesor}
+            horarioId={gradesData.horario}
+            onBack={() => setGradesData(null)}
+          />
+        );
       }
       if (activeSubOption === "ClasesDelMaestro") {
         return (
@@ -212,7 +216,7 @@ const MainPage = () => {
       if (activeSubOption === "Asistencias") return <ShowAttendance />;
     }
 
-    if (activeSubOption === "Talleres" && isStudent) return <Workshops />; // ✅ Talleres solo para alumnos
+    if (activeSubOption === "Talleres" && isStudent) return <Workshops />; 
 
     return null;
   };

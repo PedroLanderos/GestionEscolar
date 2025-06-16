@@ -117,14 +117,14 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
                     b.Property<string>("Grupo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IdAlumno")
-                        .HasColumnType("int");
+                    b.Property<string>("IdAlumno")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Tipo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("idHorario")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("idHorario")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

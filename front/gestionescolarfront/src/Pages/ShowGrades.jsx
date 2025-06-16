@@ -8,104 +8,85 @@ const ShowGrades = () => {
   const userId = auth.user?.id;
   const userRole = auth.user?.role?.toLowerCase();
 
-  const [grades, setGrades] = useState([]);
+  const [calificaciones, setCalificaciones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeCycle, setActiveCycle] = useState(null);
-  const [materias, setMaterias] = useState([]);  // Nuevo estado para materias
+  const [cicloActual, setCicloActual] = useState(null);
 
   useEffect(() => {
-    if (!userId) return;
-
-    const fetchGrades = async () => {
+    const fetchCalificaciones = async () => {
       setLoading(true);
       setError(null);
-      try {
-        // 1. Obtener ciclo activo
-        const cycleRes = await axios.get("http://localhost:5004/api/CicloEscolar/actual");
-        const cicloActual = cycleRes.data?.id;
-        setActiveCycle(cicloActual);
 
-        if (!cicloActual) {
-          setError("No se encontró un ciclo escolar activo.");
-          setGrades([]);
+      try {
+        // 1. Obtener ciclo escolar actual
+        const resCiclo = await axios.get("http://localhost:5004/api/CicloEscolar/actual");
+        const cicloId = resCiclo.data?.id;
+
+        if (!cicloId) {
+          setError("No se encontró un ciclo escolar actual.");
           setLoading(false);
           return;
         }
 
-        // Si es tutor, obtener el id del alumno (hijo)
+        setCicloActual(cicloId);
+        console.log("📘 Ciclo escolar actual:", cicloId);
+
+        // 2. Determinar ID del alumno (si es tutor, buscar hijo)
         let alumnoId = userId;
+
         if (userRole === "tutor" || userRole === "padre") {
-          try {
-            const res = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
-            if (res.data && res.data.id) {
-              alumnoId = res.data.id;
-            } else {
-              setError("No se encontró alumno asociado al tutor");
-              setLoading(false);
-              return;
-            }
-          } catch (error) {
-            setError("Error al obtener alumno para tutor");
+          const resAlumno = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
+          if (resAlumno.data?.id) {
+            alumnoId = resAlumno.data.id;
+          } else {
+            setError("No se encontró un alumno asociado al tutor.");
             setLoading(false);
             return;
           }
         }
 
-        // 2. Obtener las materias del alumno
-        const resMaterias = await axios.get(`http://localhost:5004/api/Subject/alumno/${alumnoId}`);
-        setMaterias(resMaterias.data); // Guardar las materias aunque no haya calificaciones
-
-        // 3. Obtener calificaciones por alumno y ciclo
-        const gradesRes = await axios.get(
-          `http://localhost:5004/api/calificacion/alumno/${alumnoId}/ciclo/${cicloActual}`
+        // 3. Obtener calificaciones del alumno para el ciclo
+        const resCalificaciones = await axios.get(
+          `http://localhost:5004/api/calificacion/alumno/${alumnoId}/ciclo/${cicloId}`
         );
+        console.log("📄 Calificaciones:", resCalificaciones.data);
 
-        const gradesData = gradesRes.data;
-
-        // Si las calificaciones se obtienen, mezclarlas con las materias
-        const mergedGrades = materias.map((materia) => {
-          const grade = gradesData.find((g) => g.idMateria === materia.codigo);
-          return {
-            ...materia,
-            calificacionFinal: grade ? grade.calificacionFinal : "-",
-            comentarios: grade ? grade.comentarios : "-",
-          };
-        });
-
-        setGrades(mergedGrades);  // Actualizar el estado con las materias y calificaciones
+        setCalificaciones(resCalificaciones.data || []);
       } catch (err) {
-        console.error("Error al obtener calificaciones:", err);
-        setError("Error al cargar las calificaciones. Intente nuevamente.");
+        console.error("❌ Error obteniendo calificaciones:", err);
+        setError("Error al obtener calificaciones.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchGrades();
-  }, [userId, userRole, materias]);
+    if (userId) {
+      fetchCalificaciones();
+    }
+  }, [userId, userRole]);
 
   if (loading) return <p>Cargando calificaciones...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!grades.length) return <p>No se encontraron calificaciones para el ciclo escolar actual.</p>;
+  if (calificaciones.length === 0) return <p>No se encontraron calificaciones para el ciclo actual.</p>;
 
   return (
     <div className="users-table-container">
-      <h2>Calificaciones - Ciclo Escolar {activeCycle}</h2>
+      <h2>Calificaciones - Ciclo {cicloActual}</h2>
       <table>
         <thead>
           <tr>
             <th>ID Materia</th>
-            <th>Calificación Final</th>
+            <th>Calificación</th>
             <th>Comentarios</th>
           </tr>
         </thead>
         <tbody>
-          {grades.map((grade) => (
-            <tr key={grade.id}>
-              <td>{grade.nombre}</td>
-              <td>{grade.calificacionFinal}</td>
-              <td>{grade.comentarios || "-"}</td>
+          {calificaciones.map((calif) => (
+            <tr key={calif.id}>
+              <td>{calif.idMateria}</td>
+              <td>{calif.calificacionFinal}</td>
+              <td>{calif.comentarios || "-"}</td>
             </tr>
           ))}
         </tbody>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassroomApi.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ClassroomDbContext))]
-    [Migration("20250518213046_latestmigration")]
-    partial class latestmigration
+    [Migration("20250615234525_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -53,6 +53,56 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
                     b.ToTable("Asistencias");
                 });
 
+            modelBuilder.Entity("ClassroomApi.Domain.Entities.Calificacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CalificacionFinal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Comentarios")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdAlumno")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdCiclo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdMateria")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Calificaciones");
+                });
+
+            modelBuilder.Entity("ClassroomApi.Domain.Entities.CicloEscolar", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("EsActual")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("FechaFin")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaInicio")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaRegistroCalificaciones")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CiclosEscolares");
+                });
+
             modelBuilder.Entity("ClassroomApi.Domain.Entities.Reporte", b =>
                 {
                     b.Property<int>("Id")
@@ -70,14 +120,14 @@ namespace ClassroomApi.Infrastructure.Data.Migrations
                     b.Property<string>("Grupo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("IdAlumno")
-                        .HasColumnType("int");
+                    b.Property<string>("IdAlumno")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Tipo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("idHorario")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("idHorario")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

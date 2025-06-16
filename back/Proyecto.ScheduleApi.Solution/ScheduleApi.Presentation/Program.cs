@@ -1,6 +1,7 @@
 using ScheduleApi.Infrastructure.Data;
 using ScheduleApi.Infrastructure.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using ScheduleApi.Application.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +11,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
+    
+builder.Services.AddApplicationService(builder.Configuration);
 builder.Services.AddInfrastructureService(builder.Configuration);
 
 builder.Services.AddCors(options =>

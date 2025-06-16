@@ -7,9 +7,9 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
   const { auth } = useContext(AuthContext);
   const teacherId = auth.user?.id;
 
-  const [classes, setClasses] = useState([]); // [{id, nombre, horarios: [{id, grado, grupo}]}]
+  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedHorarios, setSelectedHorarios] = useState({}); // Guardará el string "1A", "2B", etc.
+  const [selectedHorarios, setSelectedHorarios] = useState({});
 
   useEffect(() => {
     if (!teacherId) return;
@@ -66,10 +66,11 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
 
         setClasses(materias);
 
-        // Inicializar el horario seleccionado por materia con el string grado+grupo del primer horario válido
         const initialSelected = {};
         materias.forEach(m => {
-          if (m.horarios.length > 0) initialSelected[m.id] = `${m.horarios[0].grado}${m.horarios[0].grupo}`;
+          if (m.horarios.length > 0) {
+            initialSelected[m.id] = `${m.horarios[0].grado}${m.horarios[0].grupo}`;
+          }
         });
         setSelectedHorarios(initialSelected);
       } catch (error) {
@@ -86,7 +87,7 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
   const handleHorarioChange = (materiaId, horarioString) => {
     setSelectedHorarios(prev => ({
       ...prev,
-      [materiaId]: horarioString, // Guarda "1A", "2B", etc.
+      [materiaId]: horarioString,
     }));
   };
 
@@ -130,13 +131,14 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
                   <td>
                     <button
                       onClick={() => {
-                        const horario = selectedHorarios[clase.id];
-                        if (!horario) {
-                          alert("Selecciona un horario antes de registrar asistencia.");
+                        const horarioStr = selectedHorarios[clase.id];
+                        if (!horarioStr) {
+                          alert("Selecciona un horario antes de continuar.");
                           return;
                         }
+
                         if (typeof onRegistrarAsistencia === "function") {
-                          onRegistrarAsistencia(`${clase.id}-${teacherId}`, horario);
+                          onRegistrarAsistencia(`${clase.id}-${teacherId}`, horarioStr);
                         }
                       }}
                     >
@@ -144,13 +146,14 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
                     </button>
                     <button
                       onClick={() => {
-                        const horario = selectedHorarios[clase.id];
-                        if (!horario) {
-                          alert("Selecciona un horario antes de registrar calificación.");
+                        const horarioStr = selectedHorarios[clase.id];
+                        if (!horarioStr) {
+                          alert("Selecciona un horario antes de continuar.");
                           return;
                         }
+
                         if (typeof onRegistrarCalificacion === "function") {
-                          onRegistrarCalificacion(`${clase.id}-${teacherId}`, horario);
+                          onRegistrarCalificacion(`${clase.id}-${teacherId}`, horarioStr);
                         }
                       }}
                     >
