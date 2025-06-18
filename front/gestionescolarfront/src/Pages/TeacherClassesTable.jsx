@@ -16,28 +16,40 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
 
     const fetchTeacherClassesAndSchedules = async () => {
       setLoading(true);
+      console.log("🔍 Obteniendo clases para el profesor:", teacherId);
       try {
         const scheduleRes = await axios.get(`http://localhost:5002/api/Schedule/horarioDocente/${teacherId}`);
+        console.log("📦 Datos crudos de horarios del backend:", scheduleRes.data);
 
         const materiasMap = new Map();
         scheduleRes.data.forEach((item) => {
           const codigoMateria = item.idMateria.split("-")[0];
-          if (!materiasMap.has(codigoMateria)) {
-            materiasMap.set(codigoMateria, {
-              id: codigoMateria,
+          const idMateriaCompleto = `${codigoMateria}-${teacherId}`;
+
+          if (!materiasMap.has(idMateriaCompleto)) {
+            materiasMap.set(idMateriaCompleto, {
+              id: idMateriaCompleto,
+              codigoBase: codigoMateria,
               horariosIds: new Set(),
             });
           }
-          materiasMap.get(codigoMateria).horariosIds.add(item.idHorario);
+
+          if (item.idHorario) {
+            materiasMap.get(idMateriaCompleto).horariosIds.add(item.idHorario);
+          }
         });
+
+        console.log("🗺️ Materias agrupadas:", materiasMap);
 
         const materias = await Promise.all(
           Array.from(materiasMap.values()).map(async (materia) => {
             let nombre = "Nombre no disponible";
             try {
-              const res = await axios.get(`http://localhost:5001/api/Subject/obtenerPorCodigo/${materia.id}`);
+              const res = await axios.get(`http://localhost:5001/api/Subject/obtenerPorCodigo/${materia.codigoBase}`);
               nombre = res.data.nombre || nombre;
-            } catch {}
+            } catch (err) {
+              console.warn(`⚠️ No se pudo obtener nombre para ${materia.codigoBase}`, err);
+            }
 
             const horarios = await Promise.all(
               Array.from(materia.horariosIds).map(async (idHorario) => {
@@ -48,13 +60,14 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
                     grado: resHorario.data.grado,
                     grupo: resHorario.data.grupo,
                   };
-                } catch {
+                } catch (err) {
+                  console.warn(`⚠️ No se pudo obtener horario con id ${idHorario}`, err);
                   return null;
                 }
               })
             );
 
-            const horariosValidos = horarios.filter(h => h !== null);
+            const horariosValidos = horarios.filter((h) => h !== null);
 
             return {
               id: materia.id,
@@ -64,15 +77,18 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
           })
         );
 
+        console.log("📘 Materias finalizadas:", materias);
+
         setClasses(materias);
 
         const initialSelected = {};
-        materias.forEach(m => {
+        materias.forEach((m) => {
           if (m.horarios.length > 0) {
             initialSelected[m.id] = `${m.horarios[0].grado}${m.horarios[0].grupo}`;
           }
         });
         setSelectedHorarios(initialSelected);
+        console.log("✅ Horarios seleccionados inicialmente:", initialSelected);
       } catch (error) {
         console.error("❌ Error al obtener las clases y horarios del maestro:", error);
         setClasses([]);
@@ -85,10 +101,11 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
   }, [teacherId]);
 
   const handleHorarioChange = (materiaId, horarioString) => {
-    setSelectedHorarios(prev => ({
+    setSelectedHorarios((prev) => ({
       ...prev,
       [materiaId]: horarioString,
     }));
+    console.log(`🔄 Horario cambiado para ${materiaId}:`, horarioString);
   };
 
   return (
@@ -117,28 +134,29 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
                   <td>{clase.id}</td>
                   <td>{clase.nombre}</td>
                   <td>
-                    <select
-                      value={selectedHorarios[clase.id] || (clase.horarios[0] && `${clase.horarios[0].grado}${clase.horarios[0].grupo}`)}
-                      onChange={(e) => handleHorarioChange(clase.id, e.target.value)}
-                    >
-                      {clase.horarios.map((horario) => (
-                        <option key={horario.id} value={`${horario.grado}${horario.grupo}`}>
-                          {`${horario.grado}${horario.grupo}`}
-                        </option>
-                      ))}
-                    </select>
+                    {clase.horarios.length > 0 ? (
+                      <select
+                        value={selectedHorarios[clase.id] || `${clase.horarios[0].grado}${clase.horarios[0].grupo}`}
+                        onChange={(e) => handleHorarioChange(clase.id, e.target.value)}
+                      >
+                        {clase.horarios.map((horario) => (
+                          <option key={horario.id} value={`${horario.grado}${horario.grupo}`}>
+                            {`${horario.grado}${horario.grupo}`}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span>Taller</span>
+                    )}
                   </td>
                   <td>
                     <button
                       onClick={() => {
-                        const horarioStr = selectedHorarios[clase.id];
-                        if (!horarioStr) {
-                          alert("Selecciona un horario antes de continuar.");
-                          return;
-                        }
-
+                        const horarioStr =
+                          clase.horarios.length > 0 ? selectedHorarios[clase.id] : null;
+                        console.log("🟩 Registrar asistencia:", { claseId: clase.id, horarioStr });
                         if (typeof onRegistrarAsistencia === "function") {
-                          onRegistrarAsistencia(`${clase.id}-${teacherId}`, horarioStr);
+                          onRegistrarAsistencia(clase.id, horarioStr);
                         }
                       }}
                     >
@@ -146,14 +164,11 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
                     </button>
                     <button
                       onClick={() => {
-                        const horarioStr = selectedHorarios[clase.id];
-                        if (!horarioStr) {
-                          alert("Selecciona un horario antes de continuar.");
-                          return;
-                        }
-
+                        const horarioStr =
+                          clase.horarios.length > 0 ? selectedHorarios[clase.id] : null;
+                        console.log("🟨 Registrar calificación:", { claseId: clase.id, horarioStr });
                         if (typeof onRegistrarCalificacion === "function") {
-                          onRegistrarCalificacion(`${clase.id}-${teacherId}`, horarioStr);
+                          onRegistrarCalificacion(clase.id, horarioStr);
                         }
                       }}
                     >

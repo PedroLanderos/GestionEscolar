@@ -45,5 +45,6 @@ namespace ScheduleApi.Application.Interfaces
 
         Task<Response> AsignarTallerEnEspaciosLibresAsync(string userId, string courseId);
         Task<Response> DeleteWorkshopsByStudentAsync(string userId);
+        Task<IEnumerable<string>> GetStudentIdsByWorkshopAsync(string materiaProfesor);
     }
 }

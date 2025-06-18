@@ -3,6 +3,8 @@ using ScheduleApi.Application.DTOs;
 using ScheduleApi.Application.Interfaces;
 using Llaveremos.SharedLibrary.Responses;
 using System.Threading.Tasks;
+using Llaveremos.SharedLibrary.Logs;
+using ScheduleApi.Infrastructure.Repositories;
 
 namespace ScheduleApi.Presentation.Controllers
 {
@@ -196,5 +198,19 @@ namespace ScheduleApi.Presentation.Controllers
             return result.Flag ? Ok(result) : BadRequest(result);
         }
 
+        [HttpGet("alumnosPorTaller/{materiaProfesor}")]
+        public async Task<IActionResult> GetAlumnosPorTaller(string materiaProfesor)
+        {
+            try
+            {
+                var alumnos = await scheduleService.GetStudentIdsByWorkshopAsync(materiaProfesor);
+                return Ok(alumnos);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, "Error al obtener alumnos del taller.");
+            }
+        }
     }
 }

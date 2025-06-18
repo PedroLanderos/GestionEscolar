@@ -708,5 +708,26 @@ namespace ScheduleApi.Infrastructure.Repositories
             }
         }
 
+        //obtener alumnos inscritos a un taller
+        public async Task<IEnumerable<string>> GetStudentIdsByWorkshopAsync(string materiaProfesor)
+        {
+            try
+            {
+                // Buscar todos los registros en SubjectToUsers que coincidan con el ID del taller (materia-profesor)
+                var estudiantes = await context.SubjectToUsers
+                    .Where(t => t.CourseId == materiaProfesor)
+                    .Select(t => t.UserId)
+                    .ToListAsync();
+
+                return estudiantes!;
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                throw new Exception("Error al obtener alumnos inscritos en el taller");
+            }
+        }
+
+
     }
 }

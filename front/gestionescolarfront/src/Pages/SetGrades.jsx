@@ -10,22 +10,32 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
   const [cicloActual, setCicloActual] = useState(null);
 
   useEffect(() => {
-    if (!materiaProfesor || !horarioId) {
-      console.warn("⚠️ No se recibió materiaProfesor u horarioId");
-      return;
-    }
+    if (!materiaProfesor) return;
 
     const fetchData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const resIds = await axios.get("http://localhost:5002/api/Schedule/alumnosPorMateriaHorario", {
-          params: { materiaProfesor, horario: horarioId },
-        });
-        const alumnoIds = resIds.data;
+        console.log("📥 materiaProfesor:", materiaProfesor);
+        console.log("📥 horarioId:", horarioId);
+
+        let resIds;
+        if (!horarioId || horarioId === "null" || horarioId === "Taller") {
+          console.log("🔍 Obteniendo alumnos por taller...");
+          resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorTaller/${materiaProfesor}`);
+        } else {
+          console.log("🔍 Obteniendo alumnos por materia y horario...");
+          resIds = await axios.get("http://localhost:5002/api/Schedule/alumnosPorMateriaHorario", {
+            params: { materiaProfesor, horario: horarioId },
+          });
+        }
+
+        const alumnoIds = Array.from(new Set(resIds.data));
+        console.log("📦 IDs únicos de alumnos:", alumnoIds);
 
         if (!alumnoIds.length) {
+          console.warn("⚠️ No se encontraron IDs de alumnos.");
           setAlumnos([]);
           setLoading(false);
           return;
@@ -33,26 +43,31 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
 
         const resAlumnos = await axios.post("http://localhost:5000/api/usuario/obtenerusuariosporids", alumnoIds);
         const alumnosData = resAlumnos.data;
+        console.log("👥 Alumnos recibidos:", alumnosData);
+
+        if (!alumnosData || alumnosData.length === 0) {
+          console.warn("⚠️ No se encontraron datos de alumnos.");
+          setAlumnos([]);
+          setLoading(false);
+          return;
+        }
 
         const resCiclo = await axios.get("http://localhost:5004/api/CicloEscolar/actual");
         const ciclo = resCiclo.data?.id || null;
-
-        if (!ciclo) {
-          console.error("❌ No se encontró un ciclo escolar activo.");
-        }
-
+        if (!ciclo) console.error("❌ No se encontró un ciclo escolar activo.");
+        console.log("📅 Ciclo escolar actual:", ciclo);
         setCicloActual(ciclo);
 
         const resExistentes = await axios.post(
           `http://localhost:5004/api/calificacion/existentes/clase/${materiaProfesor}`,
           alumnoIds
         );
-
         const califExistentes = resExistentes.data || [];
+        console.log("📄 Calificaciones existentes:", califExistentes);
 
         const initialCalificaciones = {};
-        alumnosData.forEach((a) => {
-          const existente = califExistentes.find((c) => c.idAlumno === a.id);
+        alumnosData.forEach(a => {
+          const existente = califExistentes.find(c => c.idAlumno === a.id);
           initialCalificaciones[a.id] = {
             calificacionFinal: existente?.calificacionFinal ?? "",
             comentarios: existente?.comentarios ?? "",
@@ -76,7 +91,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
   const handleCalificacionChange = (id, value) => {
     const val = value === "" ? "" : Number(value);
     if (val === "" || (val >= 0 && val <= 10)) {
-      setCalificaciones((prev) => ({
+      setCalificaciones(prev => ({
         ...prev,
         [id]: { ...prev[id], calificacionFinal: val },
       }));
@@ -84,7 +99,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
   };
 
   const handleComentariosChange = (id, text) => {
-    setCalificaciones((prev) => ({
+    setCalificaciones(prev => ({
       ...prev,
       [id]: { ...prev[id], comentarios: text },
     }));
@@ -97,11 +112,9 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
     }
 
     try {
-      for (const a of alumnos) {
+      const requests = alumnos.map(a => {
         const calif = calificaciones[a.id];
-
-        // 🚫 Saltar si no se ha ingresado calificación
-        if (calif.calificacionFinal === "" || calif.calificacionFinal === null) continue;
+        if (calif.calificacionFinal === "" || calif.calificacionFinal === null) return null;
 
         const payload = {
           id: calif.id || 0,
@@ -112,14 +125,15 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
           idCiclo: cicloActual,
         };
 
-        if (calif.id && calif.id > 0) {
-          await axios.put(`http://localhost:5004/api/calificacion/${calif.id}`, payload);
-        } else {
-          await axios.post("http://localhost:5004/api/calificacion", payload);
-        }
-      }
+        console.log("💾 Enviando payload:", payload);
 
-      alert("Calificaciones guardadas correctamente.");
+        return calif.id && calif.id > 0
+          ? axios.put(`http://localhost:5004/api/calificacion/${calif.id}`, payload)
+          : axios.post("http://localhost:5004/api/calificacion", payload);
+      }).filter(Boolean);
+
+      await Promise.all(requests);
+      alert("✅ Calificaciones guardadas correctamente.");
       if (onBack) onBack();
     } catch (err) {
       console.error("❌ Error guardando calificaciones:", err);
@@ -133,7 +147,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
 
   return (
     <div className="users-table-container">
-      <h2>Registrar Calificaciones - {materiaProfesor} - Horario {horarioId}</h2>
+      <h2>Registrar Calificaciones - {materiaProfesor} - Horario {horarioId || "Taller"}</h2>
       <table>
         <thead>
           <tr>
@@ -143,7 +157,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
           </tr>
         </thead>
         <tbody>
-          {alumnos.map((alumno) => (
+          {alumnos.map(alumno => (
             <tr key={alumno.id}>
               <td>{alumno.nombreCompleto}</td>
               <td>
@@ -153,7 +167,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
                   max="10"
                   step="0.1"
                   value={calificaciones[alumno.id]?.calificacionFinal || ""}
-                  onChange={(e) => handleCalificacionChange(alumno.id, e.target.value)}
+                  onChange={e => handleCalificacionChange(alumno.id, e.target.value)}
                   placeholder="Ej: 8.5"
                 />
               </td>
@@ -161,7 +175,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
                 <input
                   type="text"
                   value={calificaciones[alumno.id]?.comentarios || ""}
-                  onChange={(e) => handleComentariosChange(alumno.id, e.target.value)}
+                  onChange={e => handleComentariosChange(alumno.id, e.target.value)}
                   placeholder="Comentarios (opcional)"
                 />
               </td>
@@ -169,6 +183,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
           ))}
         </tbody>
       </table>
+
       <button onClick={handleGuardar} style={{ marginTop: 10 }}>
         Guardar Calificaciones
       </button>

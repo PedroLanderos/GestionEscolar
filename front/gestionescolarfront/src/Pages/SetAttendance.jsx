@@ -7,47 +7,71 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
   const [loading, setLoading] = useState(true);
   const [asistencias, setAsistencias] = useState({});
   const [error, setError] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10)); // Fecha por defecto es hoy
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0, 10));
 
   useEffect(() => {
-    if (!claseProfesor || !horarioId) return;
+    if (!claseProfesor) return;
 
     const fetchAsistencias = async () => {
       setLoading(true);
       setError(null);
-      try {
-        // Obtener IDs de alumnos inscritos
-        const resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorMateriaHorario`, {
-          params: { materiaProfesor: claseProfesor, horario: horarioId },
-        });
-        const alumnoIds = resIds.data;
 
-        if (!alumnoIds.length) {
+      try {
+        console.log("📥 ClaseProfesor:", claseProfesor);
+        console.log("📥 HorarioId:", horarioId);
+
+        let resIds;
+        if (!horarioId || horarioId === "null" || horarioId === "Taller") {
+          console.log("🔍 Obteniendo alumnos por taller...");
+          resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorTaller/${claseProfesor}`);
+        } else {
+          console.log("🔍 Obteniendo alumnos por materia y horario...");
+          resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorMateriaHorario`, {
+            params: { materiaProfesor: claseProfesor, horario: horarioId },
+          });
+        }
+
+        console.log("📦 IDs obtenidos:", resIds.data);
+
+        const alumnoIds = Array.from(new Set(resIds.data));
+        console.log("📋 IDs únicos:", alumnoIds);
+
+        if (!alumnoIds || alumnoIds.length === 0) {
+          console.warn("⚠️ No se encontraron IDs de alumnos.");
           setAlumnos([]);
           setLoading(false);
           return;
         }
 
-        // Obtener datos de los alumnos
+        console.log("🔄 Obteniendo datos de alumnos...");
         const resAlumnos = await axios.post("http://localhost:5000/api/usuario/obtenerusuariosporids", alumnoIds);
         const alumnosData = resAlumnos.data;
+        console.log("👥 Datos de alumnos recibidos:", alumnosData);
 
-        // Inicializar el estado de asistencias
+        if (!alumnosData || alumnosData.length === 0) {
+          console.warn("⚠️ No se encontraron datos de alumnos.");
+          setAlumnos([]);
+          setLoading(false);
+          return;
+        }
+
         const initialAsistencias = {};
-        alumnosData.forEach((a) => {
+        alumnosData.forEach(a => {
           initialAsistencias[a.id] = { asistio: false, justificacion: "" };
         });
 
         setAlumnos(alumnosData);
         setAsistencias(initialAsistencias);
 
-        // Ahora buscamos si ya existen asistencias para esta fecha
-        const resAsistencias = await axios.post("http://localhost:5004/api/asistencias/profesor/" + claseProfesor + "/fecha/" + selectedDate, alumnoIds);
-        
-        // Si ya hay asistencias, las ponemos en el estado
-        if (resAsistencias.data && resAsistencias.data.length > 0) {
+        console.log("📅 Buscando asistencias previas...");
+        const resAsistencias = await axios.post(
+          `http://localhost:5004/api/asistencias/profesor/${claseProfesor}/fecha/${selectedDate}`,
+          alumnoIds
+        );
+
+        if (resAsistencias.data?.length > 0) {
           const asistenciasMap = {};
-          resAsistencias.data.forEach((asistencia) => {
+          resAsistencias.data.forEach(asistencia => {
             asistenciasMap[asistencia.idAlumno] = {
               asistio: asistencia.asistio,
               justificacion: asistencia.justificacion || "",
@@ -55,9 +79,12 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
             };
           });
           setAsistencias(asistenciasMap);
+          console.log("✅ Asistencias anteriores cargadas:", asistenciasMap);
+        } else {
+          console.log("ℹ️ No hay asistencias anteriores registradas.");
         }
       } catch (err) {
-        console.error("Error cargando datos de alumnos o asistencias:", err);
+        console.error("❌ Error cargando datos de alumnos o asistencias:", err);
         setError("Error cargando datos, intenta más tarde.");
       } finally {
         setLoading(false);
@@ -67,50 +94,43 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
     fetchAsistencias();
   }, [claseProfesor, horarioId, selectedDate]);
 
-  const handleCheckboxChange = (id) => {
-    setAsistencias((prev) => ({
+  const handleCheckboxChange = id => {
+    setAsistencias(prev => ({
       ...prev,
       [id]: { ...prev[id], asistio: !prev[id].asistio },
     }));
   };
 
   const handleJustificacionChange = (id, text) => {
-    setAsistencias((prev) => ({
+    setAsistencias(prev => ({
       ...prev,
       [id]: { ...prev[id], justificacion: text },
     }));
   };
 
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
-  };
+  const handleDateChange = e => setSelectedDate(e.target.value);
 
   const handleGuardar = async () => {
     try {
-      const requests = alumnos.map((a) => {
+      const requests = alumnos.map(a => {
         const asistencia = asistencias[a.id];
         const payload = {
-          id: asistencia.id || 0,  // Si la asistencia no tiene ID, es nueva
-          fecha: selectedDate + "T00:00:00", // Fecha completa con hora
+          id: asistencia.id || 0,
+          fecha: selectedDate + "T00:00:00",
           asistio: asistencia.asistio,
           justificacion: asistencia.justificacion,
           idAlumno: a.id,
-          idProfesor: claseProfesor, // idMateria-idProfesor
+          idProfesor: claseProfesor,
         };
-
-        if (asistencia.id) {
-          // Si ya existe una asistencia (ID presente), se debe actualizar
-          return axios.put("http://localhost:5004/api/asistencias", payload);
-        } else {
-          // Si no existe (ID no presente), se debe crear
-          return axios.post("http://localhost:5004/api/asistencias", payload);
-        }
+        return asistencia.id
+          ? axios.put("http://localhost:5004/api/asistencias", payload)
+          : axios.post("http://localhost:5004/api/asistencias", payload);
       });
 
       await Promise.all(requests);
-      alert("Asistencias guardadas correctamente.");
+      alert("✅ Asistencias guardadas correctamente.");
     } catch (err) {
-      console.error("Error guardando asistencias:", err);
+      console.error("❌ Error guardando asistencias:", err);
       alert("Error al guardar asistencias. Intenta nuevamente.");
     }
   };
@@ -121,11 +141,11 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
 
   return (
     <div className="users-table-container">
-      <h2>Registrar Asistencia - {claseProfesor} - {horarioId}</h2>
-      
+      <h2>Registrar Asistencia - {claseProfesor} - {horarioId || "Taller"}</h2>
+
       <label>Seleccionar Fecha</label>
       <input type="date" value={selectedDate} onChange={handleDateChange} />
-      
+
       <table>
         <thead>
           <tr>
@@ -136,12 +156,10 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
           </tr>
         </thead>
         <tbody>
-          {alumnos.map((alumno) => (
+          {alumnos.map(alumno => (
             <tr key={alumno.id}>
               <td>{alumno.nombreCompleto}</td>
-              <td>
-                <input type="date" value={selectedDate} disabled />
-              </td>
+              <td><input type="date" value={selectedDate} disabled /></td>
               <td>
                 <input
                   type="checkbox"
@@ -153,7 +171,7 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
                 <input
                   type="text"
                   value={asistencias[alumno.id]?.justificacion || ""}
-                  onChange={(e) => handleJustificacionChange(alumno.id, e.target.value)}
+                  onChange={e => handleJustificacionChange(alumno.id, e.target.value)}
                   placeholder="Justificación (opcional)"
                 />
               </td>
@@ -161,6 +179,7 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
           ))}
         </tbody>
       </table>
+
       <button onClick={handleGuardar} style={{ marginTop: 10 }}>
         Guardar Asistencias
       </button>
