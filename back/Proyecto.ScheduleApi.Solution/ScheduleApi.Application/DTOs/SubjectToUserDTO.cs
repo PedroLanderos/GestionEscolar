@@ -5,7 +5,7 @@ namespace ScheduleApi.Application.DTOs
 {
     public class SubjectToUserDTO
     {
-        public string? Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         public string? UserId { get; set; } 

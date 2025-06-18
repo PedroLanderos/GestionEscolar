@@ -12,8 +12,8 @@ using ScheduleApi.Infrastructure.Data;
 namespace ScheduleApi.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ScheduleDbContext))]
-    [Migration("20250512170401_SecondMigration")]
-    partial class SecondMigration
+    [Migration("20250617022025_workshops II")]
+    partial class workshopsII
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,6 +44,25 @@ namespace ScheduleApi.Infrastructure.Data.Migrations
                     b.ToTable("Schedules");
                 });
 
+            modelBuilder.Entity("ScheduleApi.Domain.Entities.ScheduleToUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IdSchedule")
+                        .HasColumnType("int");
+
+                    b.Property<string>("IdUser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ScheduleToUsers");
+                });
+
             modelBuilder.Entity("ScheduleApi.Domain.Entities.SubjectToSchedule", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +86,31 @@ namespace ScheduleApi.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("SubjectToSchedules");
+                });
+
+            modelBuilder.Entity("ScheduleApi.Domain.Entities.SubjectToUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Dia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HoraInicio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubjectToUsers");
                 });
 #pragma warning restore 612, 618
         }

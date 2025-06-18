@@ -213,15 +213,40 @@ namespace ScheduleApi.Infrastructure.Repositories
         {
             try
             {
-                var results = await context.SubjectToSchedules.Where(s => s.IdMateria != null && s.IdMateria.EndsWith($"-{idUsuario}")).ToListAsync();
-                return SubjectToScheduleMapper.FromEntityList(results);
+                var listaFinal = new List<SubjectToScheduleDTO>();
+
+                // Materias en horarios grupales
+                var clasesGrupales = await context.SubjectToSchedules
+                    .Where(s => s.IdMateria != null && s.IdMateria.EndsWith($"-{idUsuario}"))
+                    .ToListAsync();
+
+                listaFinal.AddRange(SubjectToScheduleMapper.FromEntityList(clasesGrupales));
+
+                // Talleres individuales asignados directamente al docente
+                var talleres = await context.SubjectToUsers
+                    .Where(t => t.CourseId != null && t.CourseId.EndsWith($"-{idUsuario}"))
+                    .ToListAsync();
+
+                var talleresConvertidos = talleres.Select(t => new SubjectToScheduleDTO
+                {
+                    Id = t.Id,
+                    IdMateria = t.CourseId,
+                    Dia = t.Dia,
+                    HoraInicio = t.HoraInicio,
+                    IdHorario = null // porque no es parte de un horario grupal
+                });
+
+                listaFinal.AddRange(talleresConvertidos);
+
+                return listaFinal;
             }
             catch (Exception ex)
             {
                 LogException.LogExceptions(ex);
-                throw new Exception("Error al iobtener el horario del docente en el repositorio");
+                throw new Exception("Error al obtener el horario del docente (materias + talleres)");
             }
         }
+
 
         public async Task<IEnumerable<ScheduleDTO>> GetSchedules()
         {
@@ -348,19 +373,40 @@ namespace ScheduleApi.Infrastructure.Repositories
                 var asignacion = await context.ScheduleToUsers
                     .FirstOrDefaultAsync(a => a.IdUser == idUsuario);
 
-                if (asignacion == null)
-                    return new List<SubjectToScheduleDTO>();
+                var listaFinal = new List<SubjectToScheduleDTO>();
 
-                // Usar método existente para obtener las materias
-                var materias = await GetFullSchedule(asignacion.IdSchedule);
-                return SubjectToScheduleMapper.FromEntityList(materias.ToList());
+                // Obtener materias normales del horario
+                if (asignacion != null)
+                {
+                    var materias = await GetFullSchedule(asignacion.IdSchedule);
+                    listaFinal.AddRange(SubjectToScheduleMapper.FromEntityList(materias.ToList()));
+                }
+
+                // Obtener talleres individuales
+                var talleres = await context.SubjectToUsers
+                    .Where(t => t.UserId == idUsuario)
+                    .ToListAsync();
+
+                var talleresConvertidos = talleres.Select(t => new SubjectToScheduleDTO
+                {
+                    Id = t.Id,
+                    IdMateria = t.CourseId,
+                    Dia = t.Dia,
+                    HoraInicio = t.HoraInicio,
+                    IdHorario = null // Talleres no están ligados a un horario grupal
+                });
+
+                listaFinal.AddRange(talleresConvertidos);
+
+                return listaFinal;
             }
             catch (Exception ex)
             {
                 LogException.LogExceptions(ex);
-                throw new Exception("Error al obtener el horario del alumno en el repositorio");
+                throw new Exception("Error al obtener el horario completo del alumno (materias + talleres)");
             }
         }
+
 
         public async Task<IEnumerable<string>> GetStudentIdsBySubjectAndScheduleAsync(string materiaProfesor, string horario)
         {
@@ -552,7 +598,7 @@ namespace ScheduleApi.Infrastructure.Repositories
                 var tallerExistente = await context.SubjectToUsers
                     .FirstOrDefaultAsync(t => t.UserId == userId);
 
-                if(tallerExistente is not null)
+                if (tallerExistente is not null)
                 {
                     var partes = courseId.Split('-');
                     var codigoMateria = partes[0];
@@ -560,7 +606,6 @@ namespace ScheduleApi.Infrastructure.Repositories
                     var subject = await _subjectService.ObtenerMateriaPorCodigo(codigoMateria);
 
                     var courseIdExistente = tallerExistente.CourseId;
-
                     var codigo = courseIdExistente!.Split('-')[0];
 
                     var nombreTallerActual = subject.Nombre.Split(' ')[0];
@@ -571,7 +616,6 @@ namespace ScheduleApi.Infrastructure.Repositories
                         return new Response(false, "No se le puede asignar un taller no seriado al alumno.");
                     }
                 }
-                
 
                 // Paso 1: Obtener el horario completo del alumno
                 var schedule = await GetScheduleForStudentAsync(userId);
@@ -580,51 +624,38 @@ namespace ScheduleApi.Infrastructure.Repositories
                     return new Response(false, "El alumno no tiene un horario asignado.");
                 }
 
-                // Paso 2: Definir los días de la semana y las horas en que buscaremos los espacios vacíos
+                // Paso 2: Definir los días y horas del horario escolar
                 var dias = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes" };
-                var horas = new[] { "8:00-9:30", "9:30-11:00", "11:00-12:30", "12:30-2:00" }; // 4 franjas horarias
-                var disponibilidad = new bool[4, 5]; // Matriz de 4 filas (horas) x 5 columnas (días)
+                var horas = new[] { "08:00", "09:30", "11:00", "12:30" }; // Corregido
 
-                // Inicializar la matriz con 'false' (disponible)
-                for (int i = 0; i < 4; i++)
-                {
-                    for (int j = 0; j < 5; j++)
-                    {
-                        disponibilidad[i, j] = false;
-                    }
-                }
+                var disponibilidad = new bool[4, 5]; // 4 franjas horarias x 5 días
 
-                // Paso 3: Marcar las celdas de la matriz según el horario del alumno
+                // Paso 3: Marcar ocupados
                 foreach (var clase in schedule)
                 {
-                    int diaIndex = Array.IndexOf(dias, clase.Dia); // Encontrar el índice del día
-                    int horaIndex = Array.IndexOf(horas, clase.HoraInicio); // Encontrar el índice de la hora
+                    int diaIndex = Array.IndexOf(dias, clase.Dia);
+                    int horaIndex = Array.IndexOf(horas, clase.HoraInicio?.PadLeft(5, '0')); // por si viene "8:00"
 
                     if (diaIndex != -1 && horaIndex != -1)
                     {
-                        disponibilidad[horaIndex, diaIndex] = true; // Marcar el espacio como ocupado (true)
+                        disponibilidad[horaIndex, diaIndex] = true;
                     }
                 }
 
-                // Paso 4: Buscar espacios vacíos en la matriz y asignar talleres en esos lugares
+                // Paso 4: Buscar espacios vacíos
                 var espaciosLibres = new List<SubjectToUserDTO>();
-
-                for (int i = 0; i < 4; i++) // Recorremos las horas
+                for (int i = 0; i < 4; i++) // Horas
                 {
-                    for (int j = 0; j < 5; j++) // Recorremos los días
+                    for (int j = 0; j < 5; j++) // Días
                     {
-                        if (!disponibilidad[i, j]) // Si el espacio está vacío
+                        if (!disponibilidad[i, j])
                         {
-                            var dia = dias[j];
-                            var horaInicio = horas[i];
-
-                            // Crear una asignación del taller para este espacio libre
                             espaciosLibres.Add(new SubjectToUserDTO
                             {
                                 UserId = userId,
                                 CourseId = courseId,
-                                Dia = dia,
-                                HoraInicio = horaInicio
+                                Dia = dias[j],
+                                HoraInicio = horas[i] // ya en formato correcto
                             });
                         }
                     }
@@ -635,10 +666,10 @@ namespace ScheduleApi.Infrastructure.Repositories
                     return new Response(false, "No hay espacios libres para asignar el taller.");
                 }
 
-                // Paso 5: Crear las asignaciones de taller en los espacios vacíos encontrados
+                // Paso 5: Asignar talleres
                 foreach (var espacio in espaciosLibres)
                 {
-                    var response = await CreateWorkshopAsync(espacio); // Usamos el método para crear los talleres
+                    var response = await CreateWorkshopAsync(espacio);
                     if (!response.Flag)
                     {
                         return new Response(false, "Error al asignar un taller.");
@@ -651,6 +682,29 @@ namespace ScheduleApi.Infrastructure.Repositories
             {
                 LogException.LogExceptions(ex);
                 return new Response(false, "Error al asignar el taller en los espacios libres.");
+            }
+        }
+
+        public async Task<Response> DeleteWorkshopsByStudentAsync(string userId)
+        {
+            try
+            {
+                var talleres = await context.SubjectToUsers
+                    .Where(t => t.UserId == userId)
+                    .ToListAsync();
+
+                if (!talleres.Any())
+                    return new Response(false, "No se encontraron talleres asignados para este alumno.");
+
+                context.SubjectToUsers.RemoveRange(talleres);
+                await context.SaveChangesAsync();
+
+                return new Response(true, "Taller(es) eliminados correctamente para el alumno.");
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return new Response(false, "Error al eliminar los talleres del alumno.");
             }
         }
 

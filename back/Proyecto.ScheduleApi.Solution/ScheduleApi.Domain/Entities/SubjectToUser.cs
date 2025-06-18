@@ -10,7 +10,7 @@ namespace ScheduleApi.Domain.Entities
     public class SubjectToUser
     {
         [Key]
-        public string? Id { get; set; }
+        public int Id { get; set; }
         public string? UserId { get;set; }
         public string? CourseId { get; set; } //combinacion de materia y profesor
         public string? HoraInicio { get; set; }

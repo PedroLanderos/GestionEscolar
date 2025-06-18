@@ -19,33 +19,22 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
       setLoading(true);
       setError(null);
 
-      console.log("🔄 Iniciando carga de datos para calificaciones...");
-      console.log("📘 MateriaProfesor:", materiaProfesor);
-      console.log("📘 HorarioId:", horarioId);
-
       try {
-        // 1. Obtener IDs de alumnos
         const resIds = await axios.get("http://localhost:5002/api/Schedule/alumnosPorMateriaHorario", {
           params: { materiaProfesor, horario: horarioId },
         });
         const alumnoIds = resIds.data;
-        console.log("🧑‍🎓 IDs de alumnos obtenidos:", alumnoIds);
 
         if (!alumnoIds.length) {
-          console.warn("⚠️ No hay alumnos para esta materia y horario.");
           setAlumnos([]);
           setLoading(false);
           return;
         }
 
-        // 2. Obtener datos de alumnos
         const resAlumnos = await axios.post("http://localhost:5000/api/usuario/obtenerusuariosporids", alumnoIds);
         const alumnosData = resAlumnos.data;
-        console.log("📄 Datos de alumnos:", alumnosData);
 
-        // 3. Obtener ciclo escolar actual
         const resCiclo = await axios.get("http://localhost:5004/api/CicloEscolar/actual");
-        console.log("📘 Respuesta de ciclo actual:", resCiclo.data);
         const ciclo = resCiclo.data?.id || null;
 
         if (!ciclo) {
@@ -54,16 +43,27 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
 
         setCicloActual(ciclo);
 
-        // Inicializar estado de calificaciones
+        const resExistentes = await axios.post(
+          `http://localhost:5004/api/calificacion/existentes/clase/${materiaProfesor}`,
+          alumnoIds
+        );
+
+        const califExistentes = resExistentes.data || [];
+
         const initialCalificaciones = {};
-        alumnosData.forEach(a => {
-          initialCalificaciones[a.id] = { calificacionFinal: "", comentarios: "" };
+        alumnosData.forEach((a) => {
+          const existente = califExistentes.find((c) => c.idAlumno === a.id);
+          initialCalificaciones[a.id] = {
+            calificacionFinal: existente?.calificacionFinal ?? "",
+            comentarios: existente?.comentarios ?? "",
+            id: existente?.id ?? 0,
+          };
         });
 
         setAlumnos(alumnosData);
         setCalificaciones(initialCalificaciones);
       } catch (err) {
-        console.error("❌ Error cargando alumnos o ciclo escolar:", err);
+        console.error("❌ Error cargando alumnos o calificaciones:", err);
         setError("Error cargando datos, intenta más tarde.");
       } finally {
         setLoading(false);
@@ -76,7 +76,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
   const handleCalificacionChange = (id, value) => {
     const val = value === "" ? "" : Number(value);
     if (val === "" || (val >= 0 && val <= 10)) {
-      setCalificaciones(prev => ({
+      setCalificaciones((prev) => ({
         ...prev,
         [id]: { ...prev[id], calificacionFinal: val },
       }));
@@ -84,7 +84,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
   };
 
   const handleComentariosChange = (id, text) => {
-    setCalificaciones(prev => ({
+    setCalificaciones((prev) => ({
       ...prev,
       [id]: { ...prev[id], comentarios: text },
     }));
@@ -93,28 +93,30 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
   const handleGuardar = async () => {
     if (!cicloActual) {
       alert("No se pudo determinar el ciclo escolar actual.");
-      console.warn("❌ No se guardó nada: cicloActual es null");
       return;
     }
-
-    console.log("💾 Iniciando guardado de calificaciones...");
-    console.log("🧾 Ciclo escolar actual:", cicloActual);
 
     try {
       for (const a of alumnos) {
         const calif = calificaciones[a.id];
+
+        // 🚫 Saltar si no se ha ingresado calificación
+        if (calif.calificacionFinal === "" || calif.calificacionFinal === null) continue;
+
         const payload = {
-          id: 0,
+          id: calif.id || 0,
           idMateria: materiaProfesor,
           idAlumno: a.id,
-          calificacionFinal: calif.calificacionFinal === "" ? null : calif.calificacionFinal,
+          calificacionFinal: calif.calificacionFinal,
           comentarios: calif.comentarios,
           idCiclo: cicloActual,
         };
 
-        console.log(`📤 Enviando calificación para ${a.nombreCompleto} (${a.id}):`, payload);
-
-        await axios.post("http://localhost:5004/api/calificacion", payload);
+        if (calif.id && calif.id > 0) {
+          await axios.put(`http://localhost:5004/api/calificacion/${calif.id}`, payload);
+        } else {
+          await axios.post("http://localhost:5004/api/calificacion", payload);
+        }
       }
 
       alert("Calificaciones guardadas correctamente.");

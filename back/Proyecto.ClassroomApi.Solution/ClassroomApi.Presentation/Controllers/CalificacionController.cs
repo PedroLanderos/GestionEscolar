@@ -1,9 +1,12 @@
 ﻿using ClassroomApi.Application.DTOs;
 using ClassroomApi.Application.Interfaces;
+using ClassroomApi.Application.Mapper;
+using Llaveremos.SharedLibrary.Logs;
 using Llaveremos.SharedLibrary.Responses;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ClassroomApi.Presentation.Controllers
@@ -13,9 +16,11 @@ namespace ClassroomApi.Presentation.Controllers
     public class CalificacionController : ControllerBase
     {
         private readonly ICalificacion calificacionService;
+        private readonly ICicloEscolar _cicloEscolarService;
 
-        public CalificacionController(ICalificacion calificacionService)
+        public CalificacionController(ICalificacion calificacionService, ICicloEscolar cicloEscolarService)
         {
+            this._cicloEscolarService = cicloEscolarService;
             this.calificacionService = calificacionService;
         }
 
@@ -207,6 +212,34 @@ namespace ClassroomApi.Presentation.Controllers
             {
                 return StatusCode(500, $"Error al obtener calificaciones por alumno y ciclo: {ex.Message}");
             }
+        }
+
+        //endpoint para ver si un grupo de alumnos de cierta clase y de cierto periodo escolar ya tienen calificacion
+        [HttpPost("existentes/clase/{idClase}")]
+        public async Task<IActionResult> ObtenerCalificacionPorGrupoYPeriodo(string idClase, [FromBody] List<string> idAlumnos)
+        {
+            try
+            {
+                var cicloEscolar = await  _cicloEscolarService.GetBy(x => x.EsActual == true);
+                if (cicloEscolar == null)
+                    return BadRequest("No se encontró un ciclo escolar activo.");
+
+                var calificaciones = await calificacionService.GetManyBy(
+                    a => 
+                    idAlumnos.Contains(a.IdAlumno!) &&
+                    a.IdMateria == idClase && 
+                    a.IdCiclo == cicloEscolar.Id
+                    );
+
+                var dtoList = calificaciones.Select(CalificacionMapper.FromEntity).ToList();
+                return Ok(dtoList);
+            }
+            catch (Exception ex)
+            {
+                LogException.LogExceptions(ex);
+                return StatusCode(500, "Error al obtener calif por grupo y ciclo en controlador");
+            }
+
         }
     }
 }

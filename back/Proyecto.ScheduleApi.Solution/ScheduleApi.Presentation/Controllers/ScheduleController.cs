@@ -189,5 +189,12 @@ namespace ScheduleApi.Presentation.Controllers
             return result.Flag ? Ok(result) : BadRequest(result);
         }
 
+        [HttpDelete("eliminarTalleresDeAlumno/{userId}")]
+        public async Task<IActionResult> DeleteStudentWorkshops(string userId)
+        {
+            var result = await scheduleService.DeleteWorkshopsByStudentAsync(userId);
+            return result.Flag ? Ok(result) : BadRequest(result);
+        }
+
     }
 }

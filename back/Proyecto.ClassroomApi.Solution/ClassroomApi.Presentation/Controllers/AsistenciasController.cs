@@ -238,7 +238,7 @@ namespace ClassroomApi.Presentation.Controllers
 
                 // Filtramos las asistencias por fecha, profesor y el conjunto de alumnos
                 var asistencias = await _asistenciaService.GetBy(a =>
-                    idAlumnos.Contains(a.IdAlumno) &&   // Filtramos por los alumnos proporcionados
+                    idAlumnos.Contains(a.IdAlumno!) &&   // Filtramos por los alumnos proporcionados
                     a.IdProfesor == idProfesor &&        // Filtramos por el profesor
                     a.Fecha.Date == fecha.Date &&        // Filtramos por la fecha exacta
                     a.Fecha >= cicloEscolar.FechaInicio &&  // Aseguramos que la fecha esté dentro del ciclo escolar

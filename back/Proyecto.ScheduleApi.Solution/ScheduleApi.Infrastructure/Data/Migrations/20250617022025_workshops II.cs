@@ -5,23 +5,25 @@
 namespace ScheduleApi.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class ThirdMigration : Migration
+    public partial class workshopsII : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ScheduleToUsers",
+                name: "SubjectToUsers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdSchedule = table.Column<int>(type: "int", nullable: false),
-                    IdUser = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CourseId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HoraInicio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Dia = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ScheduleToUsers", x => x.Id);
+                    table.PrimaryKey("PK_SubjectToUsers", x => x.Id);
                 });
         }
 
@@ -29,7 +31,7 @@ namespace ScheduleApi.Infrastructure.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ScheduleToUsers");
+                name: "SubjectToUsers");
         }
     }
 }

@@ -111,3 +111,10 @@
   font-size: 0.85rem;
   max-width: 250px;
 }
+
+.taller-cell {
+  background-color: #fdf0c2; /* amarillo claro */
+  color: #333;
+  font-weight: bold;
+}
+

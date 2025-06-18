@@ -47,9 +47,19 @@ const ShowSchedule = () => {
       try {
         const res = await axios.get(endpoint);
         const asignacionesMap = {};
+
         res.data.forEach((a) => {
-          asignacionesMap[`${a.dia}-${a.horaInicio}`] = a;
+          let horaKey = a.horaInicio;
+
+          // Ajustar hora para talleres en formato "8:00-9:30" → "08:00"
+          if (horaKey.includes("-")) {
+            horaKey = horaKey.split("-")[0].padStart(5, "0");
+          }
+
+          const key = `${a.dia}-${horaKey}`;
+          asignacionesMap[key] = a;
         });
+
         setAsignaciones(asignacionesMap);
       } catch (err) {
         console.error("❌ Error al obtener el horario:", err);
@@ -60,6 +70,16 @@ const ShowSchedule = () => {
   }, [auth]);
 
   const showTooltip = async (subjectId, event) => {
+    if (!subjectId.includes("-")) {
+      setTooltip({
+        visible: true,
+        content: `Taller: ${subjectId}`,
+        x: event.clientX + 10,
+        y: event.clientY + 10,
+      });
+      return;
+    }
+
     const [subjectCode, userId] = subjectId.split("-");
 
     try {
@@ -110,16 +130,21 @@ const ShowSchedule = () => {
                   {days.map((day) => {
                     const key = `${day}-${horaInicio}`;
                     const asignacion = asignaciones[key];
+                    const isTaller = asignacion?.idHorario === null;
 
                     return (
                       <td
                         key={key}
-                        className="droppable-cell"
+                        className={`droppable-cell ${isTaller ? "taller-cell" : ""}`}
                         onMouseEnter={(e) => asignacion?.idMateria && showTooltip(asignacion.idMateria, e)}
                         onMouseMove={(e) => tooltip.visible && setTooltip(prev => ({ ...prev, x: e.clientX + 10, y: e.clientY + 10 }))}
                         onMouseLeave={hideTooltip}
                       >
-                        {asignacion?.idMateria || ""}
+                        {asignacion?.idMateria
+                          ? isTaller
+                            ? `Taller: ${asignacion.idMateria}`
+                            : asignacion.idMateria
+                          : ""}
                       </td>
                     );
                   })}

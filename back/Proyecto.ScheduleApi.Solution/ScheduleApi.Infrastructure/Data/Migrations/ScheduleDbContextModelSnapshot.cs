@@ -84,6 +84,31 @@ namespace ScheduleApi.Infrastructure.Data.Migrations
 
                     b.ToTable("SubjectToSchedules");
                 });
+
+            modelBuilder.Entity("ScheduleApi.Domain.Entities.SubjectToUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CourseId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Dia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HoraInicio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubjectToUsers");
+                });
 #pragma warning restore 612, 618
         }
     }
