@@ -25,7 +25,7 @@ import ShowReport from "./ShowReports";
 import ShowAssignments from "./ShowAssignments";
 import ShowSanctions from "./ShowSanctions";
 import ShowAbsences from "./ShowAbsences";
-import Workshops from "./Workshops"; // ✅ Importación nueva
+import Workshops from "./Workshops";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -42,7 +42,7 @@ const MainPage = () => {
   const isAdmin = auth.user?.role === "Administrador";
   const isTeacher = auth.user?.role === "Docente";
   const isStudent = auth.user?.role === "Alumno";
-  const isTutor = auth.user?.role === "Tutor";
+  const isTutor = auth.user?.role === "Padre";
 
   const [activeSection, setActiveSection] = useState(isAdmin ? "Administrador" : "Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
@@ -128,8 +128,6 @@ const MainPage = () => {
           <>
             <li onClick={() => { resetState(); setActiveSubOption("Calificaciones"); }}>Calificaciones</li>
             <li onClick={() => { resetState(); setActiveSubOption("Asistencias"); }}>Asistencias</li>
-            
-
             <li onClick={() => setActiveSubOption("Reportes")}>Reportes</li>
             {activeSubOption === "Reportes" && (
               <>
@@ -137,10 +135,8 @@ const MainPage = () => {
                 <li className="submenu" onClick={() => setReportesModo("semana")}>-- Semanal</li>
               </>
             )}
+            <li onClick={() => { resetState(); setActiveSubOption("Talleres"); }}>Talleres</li>
           </>
-        )}
-        {isStudent && (
-          <li onClick={() => { resetState(); setActiveSubOption("Talleres"); }}>Talleres</li>
         )}
       </ul>
     );
@@ -214,9 +210,8 @@ const MainPage = () => {
     if ((isStudent || isTutor)) {
       if (activeSubOption === "Calificaciones") return <ShowGrades />;
       if (activeSubOption === "Asistencias") return <ShowAttendance />;
+      if (activeSubOption === "Talleres") return <Workshops />;
     }
-
-    if (activeSubOption === "Talleres" && isStudent) return <Workshops />; 
 
     return null;
   };

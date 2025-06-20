@@ -8,11 +8,12 @@ const API_BASE = "http://localhost:5004/api";
 
 const ShowReport = ({ modo, onBack }) => {
   const { auth } = useContext(AuthContext);
+  const userId = auth.user?.id;
+  const userRole = auth.user?.role?.toLowerCase();
+
   const [reportes, setReportes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState("");
-
-  const userId = auth.user?.id;
 
   const obtenerLunesSemana = () => {
     const hoy = new Date();
@@ -28,13 +29,29 @@ const ShowReport = ({ modo, onBack }) => {
   const cargarReportes = async () => {
     setLoading(true);
     setMensaje("");
+
     try {
+      let alumnoId = userId;
+
+      if (userRole === "tutor" || userRole === "padre") {
+        console.log("👨‍👧 Usuario es tutor. Buscando alumno asociado...");
+        const resAlumno = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
+        if (resAlumno.data?.id) {
+          alumnoId = resAlumno.data.id;
+          console.log("✅ Alumno asociado encontrado:", alumnoId);
+        } else {
+          setMensaje("No se encontró un alumno asociado al tutor.");
+          setLoading(false);
+          return;
+        }
+      }
+
       if (modo === "ciclo") {
         const ciclo = await axios.get(`${API_BASE}/CicloEscolar/actual`);
         const cicloId = ciclo.data.id;
 
         const response = await axios.get(
-          `${API_BASE}/reporte/ciclo/${cicloId}/alumno/${userId}`
+          `${API_BASE}/reporte/ciclo/${cicloId}/alumno/${alumnoId}`
         );
         setReportes(response.data);
       } else if (modo === "semana") {
@@ -42,12 +59,12 @@ const ShowReport = ({ modo, onBack }) => {
         const fin = obtenerHoy();
 
         const response = await axios.get(
-          `${API_BASE}/reporte/alumno/${userId}/fechas?inicio=${inicio}&fin=${fin}`
+          `${API_BASE}/reporte/alumno/${alumnoId}/fechas?inicio=${inicio}&fin=${fin}`
         );
         setReportes(response.data);
       }
     } catch (error) {
-      console.error(error);
+      console.error("❌ Error cargando reportes:", error);
       setMensaje("No se encontraron reportes o hubo un error.");
     } finally {
       setLoading(false);
@@ -62,6 +79,7 @@ const ShowReport = ({ modo, onBack }) => {
     <div className="users-table-container">
       <button onClick={onBack} style={{ marginBottom: "1rem" }}>← Regresar</button>
       <h2>Reportes {modo === "ciclo" ? "del Ciclo Escolar" : "Semanales"}</h2>
+
       {loading ? (
         <p>Cargando reportes...</p>
       ) : mensaje ? (
