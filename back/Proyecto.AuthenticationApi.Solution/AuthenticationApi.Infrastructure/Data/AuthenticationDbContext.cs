@@ -12,6 +12,7 @@ namespace AuthenticationApi.Infrastructure.Data
     {
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<SolicitudAlta> SolicitudesAltas { get; set; }
+        public DbSet<SolicitudContrasena> SolicitudesContrasena { get; set; }
 
     }
 }

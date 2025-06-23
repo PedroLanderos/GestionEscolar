@@ -21,6 +21,7 @@ namespace AuthenticationApi.Infrastructure.DependencyInjection
 
             services.AddScoped<IUser, UsuarioRepository>();
             services.AddScoped<ISolicitudRepository, SolicitudRepository>();
+            services.AddScoped<ISolicitudContrasena, SolicitudContrasenaRepository>();
 
             return services;
         }
