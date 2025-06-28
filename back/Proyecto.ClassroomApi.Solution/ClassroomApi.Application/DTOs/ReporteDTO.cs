@@ -17,8 +17,6 @@ namespace ClassroomApi.Application.DTOs
 
         string? CicloEscolar,
 
-        int IdHorario,
-
         [Required]
         string Tipo 
     );

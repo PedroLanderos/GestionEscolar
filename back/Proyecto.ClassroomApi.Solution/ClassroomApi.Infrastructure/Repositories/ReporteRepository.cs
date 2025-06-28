@@ -14,12 +14,17 @@ using System.Threading.Tasks;
 
 namespace ClassroomApi.Infrastructure.Repositories
 {
-    public class ReporteRepository(ClassroomDbContext context) : IReporte
+    public class ReporteRepository(ClassroomDbContext context, ICicloEscolar _ciclo) : IReporte
     {
         public async Task<Response> CrearReporte(ReporteDTO dto)
         {
             try
             {
+                //obtener el ciclo actual
+                var cicloActual = await _ciclo.GetBy(s => s.EsActual == true); 
+                
+                //obtener los datos del horario
+
                 var entity = ReporteMapper.ToEntity(dto);
                 await context.Reportes.AddAsync(entity);
                 await context.SaveChangesAsync();
@@ -45,7 +50,6 @@ namespace ClassroomApi.Infrastructure.Repositories
                 existing.IdAlumno = dto.IdAlumno;
                 existing.Grupo = dto.Grupo;
                 existing.CicloEscolar = dto.CicloEscolar;
-                existing.idHorario = dto.IdHorario;
                 existing.Tipo = dto.Tipo;
 
                 context.Reportes.Update(existing);

@@ -34,11 +34,9 @@ const ShowReport = ({ modo, onBack }) => {
       let alumnoId = userId;
 
       if (userRole === "tutor" || userRole === "padre") {
-        console.log("👨‍👧 Usuario es tutor. Buscando alumno asociado...");
         const resAlumno = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
         if (resAlumno.data?.id) {
           alumnoId = resAlumno.data.id;
-          console.log("✅ Alumno asociado encontrado:", alumnoId);
         } else {
           setMensaje("No se encontró un alumno asociado al tutor.");
           setLoading(false);
@@ -50,17 +48,13 @@ const ShowReport = ({ modo, onBack }) => {
         const ciclo = await axios.get(`${API_BASE}/CicloEscolar/actual`);
         const cicloId = ciclo.data.id;
 
-        const response = await axios.get(
-          `${API_BASE}/reporte/ciclo/${cicloId}/alumno/${alumnoId}`
-        );
+        const response = await axios.get(`${API_BASE}/reporte/ciclo/${cicloId}/alumno/${alumnoId}`);
         setReportes(response.data);
       } else if (modo === "semana") {
         const inicio = obtenerLunesSemana();
         const fin = obtenerHoy();
 
-        const response = await axios.get(
-          `${API_BASE}/reporte/alumno/${alumnoId}/fechas?inicio=${inicio}&fin=${fin}`
-        );
+        const response = await axios.get(`${API_BASE}/reporte/alumno/${alumnoId}/fechas?inicio=${inicio}&fin=${fin}`);
         setReportes(response.data);
       }
     } catch (error) {
@@ -91,8 +85,7 @@ const ShowReport = ({ modo, onBack }) => {
               <th>Fecha</th>
               <th>Tipo</th>
               <th>Grupo</th>
-              <th>Ciclo</th>
-              <th>ID Horario</th>
+              <th>Ciclo Escolar</th>
             </tr>
           </thead>
           <tbody>
@@ -102,7 +95,6 @@ const ShowReport = ({ modo, onBack }) => {
                 <td>{r.tipo}</td>
                 <td>{r.grupo || "N/A"}</td>
                 <td>{r.cicloEscolar}</td>
-                <td>{r.idHorario}</td>
               </tr>
             ))}
           </tbody>

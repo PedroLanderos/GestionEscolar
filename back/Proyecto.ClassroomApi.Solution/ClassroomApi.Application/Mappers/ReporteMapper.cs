@@ -16,7 +16,6 @@ namespace ClassroomApi.Application.Mapper
                 IdAlumno: entity.IdAlumno!,
                 Grupo: entity.Grupo,
                 CicloEscolar: entity.CicloEscolar,
-                IdHorario: entity.idHorario,
                 Tipo: entity.Tipo!
             );
         }
@@ -30,7 +29,6 @@ namespace ClassroomApi.Application.Mapper
                 IdAlumno = dto.IdAlumno,
                 Grupo = dto.Grupo,
                 CicloEscolar = dto.CicloEscolar,
-                idHorario = dto.IdHorario,
                 Tipo = dto.Tipo
             };
         }

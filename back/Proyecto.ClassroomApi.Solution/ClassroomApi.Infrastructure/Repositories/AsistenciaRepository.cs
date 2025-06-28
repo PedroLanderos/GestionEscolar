@@ -49,7 +49,6 @@ namespace ClassroomApi.Infrastructure.Repositories
                             IdAlumno: dto.IdAlumno!,
                             Grupo: gradoGrupo,
                             CicloEscolar: ciclo.Id,
-                            IdHorario: horario.Id,
                             Tipo: "Inasistencia"
                         );
 
