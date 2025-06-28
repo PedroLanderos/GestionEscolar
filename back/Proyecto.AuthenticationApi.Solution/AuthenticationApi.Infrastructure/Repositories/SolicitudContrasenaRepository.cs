@@ -27,9 +27,17 @@ namespace AuthenticationApi.Infrastructure.Repositories
                     Procesada = false
                 };
 
+                //encontrar si hay alguna solicitud con la misma id y sin procesar
+                var solicitudExistente = await _context.SolicitudesContrasena.FirstOrDefaultAsync(s => s.UserId == userId && s.Procesada == false);
+
+                if(solicitudExistente is not null)
+                    return new Response(false, "Ya existe una solicitud de recuperacion de contrasena para este usuario que no ha sido procesada");
+
                 var response = await _context.SolicitudesContrasena.AddAsync(solicitud);
+                await _context.SaveChangesAsync();
 
                 if (response is null) return new Response(false, "Error creando la solicitud de recuperacion de contrasena");
+
 
                 return new Response(true, "Solicitud de recuperacion de contrasena creada correctamente");
             }
@@ -80,7 +88,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
         {
             try
             {
-                var solicitud = await _context.SolicitudesContrasena.FindAsync(userId);
+                var solicitud = await _context.SolicitudesContrasena.FirstOrDefaultAsync(s => s.UserId == userId && s.Procesada == false);
 
                 if (solicitud is null)
                     return new Response(false, "Solicitud no encontrada");
@@ -97,6 +105,7 @@ namespace AuthenticationApi.Infrastructure.Repositories
                 //actualizar la contrasena del usuario
                 usuario.Contrasena = BCrypt.Net.BCrypt.HashPassword(password);
                 _context.Usuarios.Update(usuario);
+                solicitud.Procesada = true;
                 await _context.SaveChangesAsync();
 
                 //enviar correo al usuario con la nueva contrasena
@@ -125,8 +134,6 @@ namespace AuthenticationApi.Infrastructure.Repositories
                     LogException.LogExceptions(ex);
                     return new Response(true, "contrasena modificada, pero no se pudo enviar el correo.");
                 }
-
-                solicitud.Procesada = true;
 
                 return new Response(true, "Solicitud procesada y correo enviado con la nueva contrasena.");
 

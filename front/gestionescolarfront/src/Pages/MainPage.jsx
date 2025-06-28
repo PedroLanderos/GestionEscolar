@@ -1,6 +1,8 @@
+// 👇 SE MANTIENEN TODOS LOS IMPORTS ORIGINALES
 import React, { useState, useContext, useEffect } from "react";
 import "./CSS/MainPage.css";
 import RegisterRequest from "./RegisterRequest";
+import PasswordResetRequests from "./PasswordResetRequests"; // ✅ NUEVO IMPORT
 import Register from "./Register";
 import AddTeacher from "./AddTeacher";
 import UsersTable from "./UsersTable";
@@ -92,6 +94,7 @@ const MainPage = () => {
       return (
         <ul>
           <li onClick={() => { resetState(); setActiveSubOption("Solicitudes"); }}>Solicitudes de registro</li>
+          <li onClick={() => { resetState(); setActiveSubOption("SolicitudesContrasena"); }}>Solicitudes de contraseña</li> {/* ✅ NUEVA OPCIÓN */}
           <li onClick={() => { resetState(); setActiveSubOption("AgregarAlumno"); }}>Agregar alumno</li>
           <li onClick={() => { resetState(); setActiveSubOption("AgregarProfesor"); }}>Agregar profesor</li>
           <li onClick={() => { resetState(); setActiveSubOption("AgregarMateria"); }}>Agregar materia</li>
@@ -160,7 +163,10 @@ const MainPage = () => {
       if (assignSchedule) return <AssignSchedule schedule={assignSchedule} onClose={() => setAssignSchedule(null)} />;
       if (editingSubject) return <AddSubject subject={editingSubject} onSuccess={() => { setEditingSubject(null); setActiveSubOption("Materias"); }} />;
       if (registerData) return <Register data={registerData} />;
+
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
+      if (activeSubOption === "SolicitudesContrasena") return <PasswordResetRequests />; // ✅ NUEVO RENDER
+
       if (activeSubOption === "AgregarAlumno") return <Register />;
       if (activeSubOption === "AgregarProfesor") return <AddTeacher />;
       if (activeSubOption === "VerUsuarios" && userType) {

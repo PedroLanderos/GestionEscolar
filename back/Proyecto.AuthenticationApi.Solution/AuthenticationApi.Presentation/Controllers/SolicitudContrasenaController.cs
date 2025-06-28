@@ -35,7 +35,7 @@ namespace AuthenticationApi.Presentation.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var response = await _solicitudContrasenaRepository.CrearSolicitud(userId);
+            var response = await _solicitudContrasenaRepository.ProcesarSolicitud(userId);
             return Ok(response);
         }
         [HttpGet("MostrarSolicitudesSinProcesar")]

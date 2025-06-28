@@ -78,7 +78,7 @@ const LoginSignup = () => {
       });
 
       if (response.data.flag) {
-        setErrorCount(0); // Reiniciar contador al login exitoso
+        setErrorCount(0);
         login(response.data.message);
         navigate("/MenuPrincipal");
       } else {
@@ -91,7 +91,6 @@ const LoginSignup = () => {
         }
       }
     } catch (error) {
-      // Manejo específico para 401 (Unauthorized)
       if (error.response && error.response.status === 401) {
         const nuevosIntentos = errorCount + 1;
         setErrorCount(nuevosIntentos);
@@ -141,20 +140,42 @@ const LoginSignup = () => {
 
   const handleRecovery = async () => {
     if (!recoveryId.trim()) return alert("Ingresa un ID válido.");
+    setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${AUTH_API}/usuario/recuperarContrasena`,
-        JSON.stringify(recoveryId),
-        { headers: { "Content-Type": "application/json" } }
-      );
+      const usuarioRes = await axios.get(`${AUTH_API}/usuario/obtenerUsuarioPorId/${recoveryId}`);
+      const usuario = usuarioRes.data;
 
-      alert(response.data.message);
+      if (!usuario || !usuario.rol) {
+        alert("⚠️ Usuario no encontrado.");
+        return;
+      }
+
+      const rol = usuario.rol.toLowerCase();
+
+      if (rol === "alumno" || rol === "docente") {
+        // Usar el nuevo flujo de recuperación
+        const solicitudRes = await axios.post(`${AUTH_API}/SolicitudContrasena/CrearSolicitud/${recoveryId}`);
+        alert(solicitudRes.data.message);
+      } else if (rol === "padre" || rol === "administrador") {
+        // Usar el flujo anterior
+        const response = await axios.post(
+          `${AUTH_API}/usuario/recuperarContrasena`,
+          JSON.stringify(recoveryId),
+          { headers: { "Content-Type": "application/json" } }
+        );
+        alert(response.data.message);
+      } else {
+        alert("⚠️ Este tipo de usuario no puede recuperar la contraseña automáticamente.");
+      }
+
       setShowRecovery(false);
       setRecoveryId("");
     } catch (error) {
-      alert("❌ Error al intentar recuperar la contraseña.");
-      console.error(error);
+      console.error("❌ Error al recuperar contraseña:", error);
+      alert("Error al intentar recuperar la contraseña.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -279,7 +300,9 @@ const LoginSignup = () => {
               onChange={(e) => setRecoveryId(e.target.value)}
               required
             />
-            <button onClick={handleRecovery}>Enviar nueva contraseña</button>
+            <button onClick={handleRecovery} disabled={loading}>
+              {loading ? "Enviando..." : "Enviar nueva contraseña"}
+            </button>
             <button onClick={() => setShowRecovery(false)}>Cancelar</button>
           </div>
         </div>
