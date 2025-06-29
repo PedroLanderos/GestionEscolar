@@ -1,8 +1,7 @@
-// 👇 SE MANTIENEN TODOS LOS IMPORTS ORIGINALES
 import React, { useState, useContext, useEffect } from "react";
 import "./CSS/MainPage.css";
 import RegisterRequest from "./RegisterRequest";
-import PasswordResetRequests from "./PasswordResetRequests"; // ✅ NUEVO IMPORT
+import PasswordResetRequests from "./PasswordResetRequests";
 import Register from "./Register";
 import AddTeacher from "./AddTeacher";
 import UsersTable from "./UsersTable";
@@ -28,6 +27,7 @@ import ShowAssignments from "./ShowAssignments";
 import ShowSanctions from "./ShowSanctions";
 import ShowAbsences from "./ShowAbsences";
 import Workshops from "./Workshops";
+import ShowAllReports from "./ShowAllReports"; // ✅ NUEVO IMPORT
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -94,7 +94,7 @@ const MainPage = () => {
       return (
         <ul>
           <li onClick={() => { resetState(); setActiveSubOption("Solicitudes"); }}>Solicitudes de registro</li>
-          <li onClick={() => { resetState(); setActiveSubOption("SolicitudesContrasena"); }}>Solicitudes de contraseña</li> {/* ✅ NUEVA OPCIÓN */}
+          <li onClick={() => { resetState(); setActiveSubOption("SolicitudesContrasena"); }}>Solicitudes de contraseña</li>
           <li onClick={() => { resetState(); setActiveSubOption("AgregarAlumno"); }}>Agregar alumno</li>
           <li onClick={() => { resetState(); setActiveSubOption("AgregarProfesor"); }}>Agregar profesor</li>
           <li onClick={() => { resetState(); setActiveSubOption("AgregarMateria"); }}>Agregar materia</li>
@@ -110,6 +110,7 @@ const MainPage = () => {
           <li onClick={() => { resetState(); setActiveSubOption("EliminarAsignaciones"); }}>Eliminar asignaciones</li>
           <li onClick={() => { resetState(); setActiveSubOption("VerSanciones"); }}>Ver sanciones</li>
           <li onClick={() => { resetState(); setActiveSubOption("VerInasistencias"); }}>Ver inasistencias</li>
+          <li onClick={() => { resetState(); setActiveSubOption("VerReportes"); }}>Ver todos los reportes</li> {/* ✅ NUEVA OPCIÓN */}
         </ul>
       );
     }
@@ -165,8 +166,7 @@ const MainPage = () => {
       if (registerData) return <Register data={registerData} />;
 
       if (activeSubOption === "Solicitudes") return <RegisterRequest onRegisterClick={setRegisterData} />;
-      if (activeSubOption === "SolicitudesContrasena") return <PasswordResetRequests />; // ✅ NUEVO RENDER
-
+      if (activeSubOption === "SolicitudesContrasena") return <PasswordResetRequests />;
       if (activeSubOption === "AgregarAlumno") return <Register />;
       if (activeSubOption === "AgregarProfesor") return <AddTeacher />;
       if (activeSubOption === "VerUsuarios" && userType) {
@@ -182,6 +182,7 @@ const MainPage = () => {
       if (activeSubOption === "EliminarAsignaciones") return <ShowAssignments />;
       if (activeSubOption === "VerSanciones") return <ShowSanctions />;
       if (activeSubOption === "VerInasistencias") return <ShowAbsences />;
+      if (activeSubOption === "VerReportes") return <ShowAllReports />; // ✅ NUEVO RENDER
     }
 
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;

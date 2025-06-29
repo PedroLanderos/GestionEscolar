@@ -1,27 +1,28 @@
+// src/components/CreateReport.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CSS/Register.css";
 
-const CreateReport = ({ onBack }) => {
+const CreateReport = ({ onBack, initialData = null }) => {
   const [formData, setFormData] = useState({
+    id: 0,
     fecha: new Date().toISOString().split("T")[0],
     idAlumno: "",
     grupo: "",
-    cicloEscolar: "", // será asignado automáticamente
+    cicloEscolar: "",
     tipo: "Inasistencia",
   });
 
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  // 🔄 Obtener ciclo escolar actual al cargar
   useEffect(() => {
     const fetchCiclo = async () => {
       try {
         const response = await axios.get("http://localhost:5004/api/CicloEscolar/actual");
         const ciclo = response.data?.id;
         if (ciclo) {
-          setFormData(prev => ({ ...prev, cicloEscolar: ciclo }));
+          setFormData((prev) => ({ ...prev, cicloEscolar: ciclo }));
         } else {
           setError("No se encontró un ciclo escolar activo.");
         }
@@ -32,7 +33,14 @@ const CreateReport = ({ onBack }) => {
     };
 
     fetchCiclo();
-  }, []);
+
+    if (initialData) {
+      setFormData({
+        ...initialData,
+        fecha: new Date(initialData.fecha).toISOString().split("T")[0],
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,25 +52,34 @@ const CreateReport = ({ onBack }) => {
     setSuccess("");
     setError("");
 
+    const payload = {
+      ...formData,
+      fecha: new Date(formData.fecha).toISOString(),
+    };
+
     try {
-      const payload = {
-        id: 0,
-        ...formData,
-        fecha: new Date(formData.fecha).toISOString(),
-      };
+      if (formData.id && formData.id > 0) {
+        // Modo edición
+        await axios.put(`http://localhost:5004/api/reporte/${formData.id}`, payload);
+        setSuccess("✅ Reporte actualizado correctamente.");
+      } else {
+        // Modo creación
+        await axios.post("http://localhost:5004/api/reporte", payload);
+        setSuccess("✅ Reporte creado exitosamente.");
+      }
 
-      await axios.post("http://localhost:5004/api/reporte", payload);
-
-      setSuccess("✅ Reporte creado exitosamente.");
-      setFormData({
-        fecha: new Date().toISOString().split("T")[0],
-        idAlumno: "",
-        grupo: "",
-        cicloEscolar: formData.cicloEscolar, // mantenemos el ciclo ya obtenido
-        tipo: "Inasistencia",
-      });
+      if (!initialData) {
+        setFormData({
+          id: 0,
+          fecha: new Date().toISOString().split("T")[0],
+          idAlumno: "",
+          grupo: "",
+          cicloEscolar: formData.cicloEscolar,
+          tipo: "Inasistencia",
+        });
+      }
     } catch (err) {
-      console.error("❌ Error al crear el reporte:", err);
+      console.error("❌ Error al guardar el reporte:", err);
       setError("❌ Ocurrió un error al guardar el reporte.");
     }
   };
@@ -70,7 +87,7 @@ const CreateReport = ({ onBack }) => {
   return (
     <div className="register-container">
       <div className="register-content">
-        <h2>Crear Reporte</h2>
+        <h2>{formData.id ? "Editar Reporte" : "Crear Reporte"}</h2>
         <form onSubmit={handleSubmit}>
           <label>Fecha</label>
           <input
@@ -99,7 +116,6 @@ const CreateReport = ({ onBack }) => {
             required
           />
 
-          {/* 👇 Campo oculto o automático para el ciclo escolar */}
           <input
             type="hidden"
             name="cicloEscolar"
@@ -113,13 +129,15 @@ const CreateReport = ({ onBack }) => {
             <option value="Conducta">Conducta</option>
           </select>
 
-          <button type="submit">Guardar Reporte</button>
+          <button type="submit">
+            {formData.id ? "Actualizar Reporte" : "Guardar Reporte"}
+          </button>
           <button type="button" className="back-button" onClick={onBack}>
             Volver
           </button>
 
-          {success && <p style={{ color: "green", marginTop: "1rem", textAlign: "center" }}>{success}</p>}
-          {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
+          {success && <p style={{ color: "green", marginTop: "1rem" }}>{success}</p>}
+          {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
         </form>
       </div>
     </div>
