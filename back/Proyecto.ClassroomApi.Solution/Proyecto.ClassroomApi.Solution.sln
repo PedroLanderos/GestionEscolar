@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proyecto.SharedLibrary", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassroomApi.Presentation", "ClassroomApi.Presentation\ClassroomApi.Presentation.csproj", "{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest.ClassroomApi", "UnitTest.ClassroomApi\UnitTest.ClassroomApi.csproj", "{0CDEACC3-8EF5-4CA2-92C0-73EF2804BD3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CFB64B3-1D18-9FDB-606C-672C66ECDF04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CDEACC3-8EF5-4CA2-92C0-73EF2804BD3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CDEACC3-8EF5-4CA2-92C0-73EF2804BD3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CDEACC3-8EF5-4CA2-92C0-73EF2804BD3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CDEACC3-8EF5-4CA2-92C0-73EF2804BD3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
