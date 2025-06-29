@@ -1,0 +1,236 @@
+{
+	"info": {
+		"_postman_id": "8195a1c3-60f1-404d-971d-3abe0032725b",
+		"name": "sanciones caja negra",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37283507"
+	},
+	"item": [
+		{
+			"name": "sanciones caja negra Copy",
+			"item": [
+				{
+					"name": "Crear sancion",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 400\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);\r",
+									"});\r",
+									"pm.test(\"Respuesta contiene estructura esperada\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"flag\");\r",
+									"    pm.expect(jsonData).to.have.property(\"message\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 0,\n  \"tipoSancion\": \"Vandalismo\",\n  \"descripcion\": \"Pintó las paredes del aula\",\n  \"fecha\": \"2025-06-29T00:00:00\",\n  \"idProfesor\": \"BA272989\",\n  \"idAlumno\": \"CPAM202020H\"\n}\n"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/sancion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las sanciones",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);\r",
+									"});\r",
+									"pm.test(\"Respuesta es una lista\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por tipo Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);\r",
+									"});\r",
+									"pm.test(\"Respuesta es una lista\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/tipo/Vandalismo",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"tipo",
+								"Vandalismo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por alumno Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);\r",
+									"});\r",
+									"pm.test(\"Respuesta es una lista de sanciones del alumno\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    if (jsonData.length > 0) {\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"id\");\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"tipoSancion\");\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"idAlumno\", \"CPAM202020H\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/alumno/CPAM202020H",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"alumno",
+								"CPAM202020H"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por profesor Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);\r",
+									"});\r",
+									"pm.test(\"Respuesta es una lista de sanciones del profesor\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    if (jsonData.length > 0) {\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"id\");\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"tipoSancion\");\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"idProfesor\", \"BA272989\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/profesor/BA272989",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"profesor",
+								"BA272989"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
