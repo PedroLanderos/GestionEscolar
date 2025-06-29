@@ -165,9 +165,10 @@ namespace ClassroomApi.Presentation.Controllers
         {
             try
             {
-                var reportes = await reporteService.GetBy(r =>
-                    r.Tipo != null &&
-                    r.Tipo.Equals(tipo, StringComparison.OrdinalIgnoreCase));
+                // Client-side filtering
+                var reportes = (await reporteService.GetBy(r => r.Tipo != null))
+                    .Where(r => r.Tipo!.Equals(tipo, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
                 if (!reportes.Any())
                     return NotFound($"No se encontraron reportes del tipo '{tipo}'");
@@ -180,6 +181,7 @@ namespace ClassroomApi.Presentation.Controllers
                 return StatusCode(500, $"Error al obtener reportes por tipo '{tipo}': {ex.Message}");
             }
         }
+
 
         [HttpGet("ciclo/{cicloEscolar}/alumno/{idAlumno}")]
         public async Task<IActionResult> ObtenerPorCicloYAlumno(string cicloEscolar, string idAlumno)
