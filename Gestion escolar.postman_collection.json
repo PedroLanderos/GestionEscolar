@@ -1,0 +1,2681 @@
+{
+	"info": {
+		"_postman_id": "ffe72c5f-94da-4ca5-bbc8-ebfdf32bf1af",
+		"name": "Gestion escolar",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37283507"
+	},
+	"item": [
+		{
+			"name": "Email",
+			"item": [
+				{
+					"name": "Send email",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombreAlumno\": \"Juan Pérez\",\r\n  \"curpAlumno\": \"JUAP990101HDFRNS09\",\r\n  \"grado\": 2,\r\n  \"nombrePadre\": \"Carlos Pérez\",\r\n  \"telefono\": \"5512345678\",\r\n  \"correoPadre\": \"developerpjlc@gmail.com\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "POST http://localhost:5000/api/solicitud/enviar",
+							"protocol": "POST http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"solicitud",
+								"enviar"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Administrador",
+			"item": [
+				{
+					"name": "authentication api",
+					"item": [
+						{
+							"name": "Registrar Administrador",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"ADMIN001\",\r\n  \"nombreCompleto\": \"Pedro Landeros\",\r\n  \"correo\": \"admin@gmail.com\",\r\n  \"contrasena\": \"1234\",\r\n  \"curp\": \"ADMINCURP01\",\r\n  \"cuentaBloqueada\": false,\r\n  \"dadoDeBaja\": false,\r\n  \"rol\": \"Administrador\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/registrarAdministrador",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"registrarAdministrador"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Registrar alumno",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"CJUAP990101\",               \r\n  \"nombreCompleto\": \"Pedro Landeros Cortes\",\r\n  \"correo\": \"developerpjlc@gmail.com\",\r\n  \"curp\": \"LACP041220HDFNRDA1\",\r\n  \"cuentaBloqueada\": false,\r\n  \"dadoDeBaja\": false,       \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/registrarAlumno",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"registrarAlumno"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Agregar docente",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"id\": \"BA\",\r\n  \"nombreCompleto\": \"Docente Prueba 1\",\r\n  \"correo\": \"docente@gmail.com\",\r\n  \"contrasena\": \"1234\",\r\n  \"curp\": \"DOCENTE10101001ABC\",\r\n  \"cuentaBloqueada\": false,\r\n  \"dadoDeBaja\": false,\r\n  \"rol\": \"Docente\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/registrarDocente",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"registrarDocente"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener usuario por id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/obtenerUsuarioPorId/ADMIN001",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"obtenerUsuarioPorId",
+										"ADMIN001"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Obtener a todos los usuarios",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/obtenerUsuarios",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"obtenerUsuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener a todos los alumnos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/obtenerAlumnos",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"obtenerAlumnos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener a todos los profesores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/obtenerDocentes",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"obtenerDocentes"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener a todos los tutores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/obtenerTutores",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"obtenerTutores"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener a todos los administradores",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/obtenerAdministradores",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"obtenerAdministradores"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener alumnos por grado",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/filtrarPorGrado/2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"filtrarPorGrado",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener usuarios por ids",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n  \"ADMIN001\",\r\n  \"BA405172\",\r\n  \"CLACP041220\",\r\n  \"YAHSIWIW92OAB\",\r\n  \"MAC1292U1UVPJ\"\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5000/api/usuario/obtenerusuariosporids/",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"usuario",
+										"obtenerusuariosporids",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "asignar materias a profesores",
+					"item": [
+						{
+							"name": "obtener todas las asignaciones",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5001/api/subjectassignment/obtenerAsignaciones",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5001",
+									"path": [
+										"api",
+										"subjectassignment",
+										"obtenerAsignaciones"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "obtener todas las asignaciones Copy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:5001/api/subjectassignment/obtenerAsignaciones",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5001",
+									"path": [
+										"api",
+										"subjectassignment",
+										"obtenerAsignaciones"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "crear asignacion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\":\"1\",\r\n    \"subjectId\": \"MAT101\",\r\n    \"userId\": \"BB510005\"     \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://localhost:5001/api/subjectassignment/crearAsignacion",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "5001",
+									"path": [
+										"api",
+										"subjectassignment",
+										"crearAsignacion"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Request",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "asignar horarios",
+					"item": [
+						{
+							"name": "crear asignacion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 1,\r\n    \"idUser\": \"abcababc\",\r\n    \"idSchedule\": 1\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:5002/api/Schedule/asignarAlumnoHorario",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"api",
+										"Schedule",
+										"asignarAlumnoHorario"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "actualizar asignacion",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "localhost:5002/api/Schedule/actualizarAsignacionAlumno",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"api",
+										"Schedule",
+										"actualizarAsignacionAlumno"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "eliminar asignacion",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "localhost:5002/api/Schedule/eliminarAsignacionAlumno/1",
+									"host": [
+										"localhost"
+									],
+									"port": "5002",
+									"path": [
+										"api",
+										"Schedule",
+										"eliminarAsignacionAlumno",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Obtener solicitudes de registro",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/solicitud/obtenerSolicitudes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"solicitud",
+								"obtenerSolicitudes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener solicitudes de registro sin procesar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/solicitud/obtenerSolicitudesSinProcesar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"solicitud",
+								"obtenerSolicitudesSinProcesar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "editar solicitud",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/solicitud/editarSolicitud",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"solicitud",
+								"editarSolicitud"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identificador\": \"CLACJ292827\",\r\n    \"password\": \"Q2k8jk%nd[\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/usuario/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"usuario",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Materias",
+			"item": [
+				{
+					"name": "Crear materia",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"nombre\": \"Matemáticas\",\r\n  \"codigo\": \"MAT101\",\r\n  \"tipo\": \"Teórica\",\r\n  \"grado\": 1,\r\n  \"esObligatoria\": true,\r\n  \"estaActiva\": true,\r\n  \"fechaCreacion\": \"2025-05-11T10:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/Subject/crearMateria",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"Subject",
+								"crearMateria"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Editar Materia",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\":1,\r\n    \"nombre\": \"Quimica\",\r\n    \"codigo\": \"Q101\",\r\n    \"tipo\": \"Teórica\",\r\n    \"grado\": 3,\r\n    \"esObligatoria\": true,\r\n    \"estaActiva\": true,\r\n    \"fechaCreacion\": \"2025-05-11T10:00:00\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/editarMateria",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"editarMateria"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener materia por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener materia por codigo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/obtenerPorCodigo/abcbcb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"obtenerPorCodigo",
+								"abcbcb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener talleres por grado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/talleresPorGrado/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"talleresPorGrado",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las materias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/obtenerMaterias",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"obtenerMaterias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener materias primer grado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/materiasPorGrado/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"materiasPorGrado",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener materias segundo grado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/materiasPorGrado/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"materiasPorGrado",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener materias tercer grado",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/materiasPorGrado/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"materiasPorGrado",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "obtener talleres",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5001/api/Subject/materiasPorGrado/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5001",
+							"path": [
+								"api",
+								"Subject",
+								"materiasPorGrado",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Horarios",
+			"item": [
+				{
+					"name": "Crear Horario Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 0,\n    \"grado\": 3,\n    \"grupo\": \"B\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5002/api/Schedule/crearHorario",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"crearHorario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Horario por ID Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5002/api/Schedule/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Horario Copy",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"grado\": 4,\n    \"grupo\": \"C\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5002/api/Schedule/actualizarHorario",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"actualizarHorario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Horario Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5002/api/Schedule/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Asignar Materia a Horario Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 0,\n    \"idMateria\": \"E101\",\n    \"idHorario\": 1,\n    \"horaInicio\": \"12:30\",\n    \"dia\": \"Lunes\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5002/api/Schedule/asginarMateriaHorario",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"asginarMateriaHorario"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Asignación Copy",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 1,\n    \"idMateria\": \"CA456\",\n    \"idHorario\": 1,\n    \"horaInicio\": \"08:00\",\n    \"dia\": \"Martes\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5002/api/Schedule/actualizarAsignacion",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"actualizarAsignacion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Asignación Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5002/api/Schedule/eliminarAsignacion/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"eliminarAsignacion",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Horario Completo Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5002/api/Schedule/obtenerHorarioCompleto/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"obtenerHorarioCompleto",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "obtener horario de docente",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5002/api/Schedule/horarioDocente/abc123",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"horarioDocente",
+								"abc123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "obtener horario del alumno",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5002/api/Schedule/horarioAlumno/abc123",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"horarioAlumno",
+								"abc123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "alumnos por materia y horario",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "asignar taller a espacios libres en horario",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 0,\n    \"idMateria\": \"E101\",\n    \"idHorario\": 1,\n    \"horaInicio\": \"12:30\",\n    \"dia\": \"Lunes\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5002/api/Schedule/asignarTallerEspaciosLibres/userid/courseid",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"asignarTallerEspaciosLibres",
+								"userid",
+								"courseid"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "obtener talleres por alumno",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 0,\n    \"idMateria\": \"E101\",\n    \"idHorario\": 1,\n    \"horaInicio\": \"12:30\",\n    \"dia\": \"Lunes\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5002/api/Schedule/obtenerTalleresPorUsuario/CPAM202020H",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"obtenerTalleresPorUsuario",
+								"CPAM202020H"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "eliminar talleres de un alumno",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 0,\n    \"idMateria\": \"E101\",\n    \"idHorario\": 1,\n    \"horaInicio\": \"12:30\",\n    \"dia\": \"Lunes\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5002/api/Schedule/eliminarTalleresDeAlumno/CPAM202020H",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"eliminarTalleresDeAlumno",
+								"CPAM202020H"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "obtener alumnos por taller",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": 0,\n    \"idMateria\": \"E101\",\n    \"idHorario\": 1,\n    \"horaInicio\": \"12:30\",\n    \"dia\": \"Lunes\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5002/api/Schedule/obtenerTalleresPorUsuario/CPAM202020H",
+							"host": [
+								"localhost"
+							],
+							"port": "5002",
+							"path": [
+								"api",
+								"Schedule",
+								"obtenerTalleresPorUsuario",
+								"CPAM202020H"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "reportes",
+			"item": [
+				{
+					"name": "Obtener todos los reportes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/reporte",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"reporte"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener reporte por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/reporte/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear reporte",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 0,\n  \"fecha\": \"2025-05-01T08:00:00\",\n  \"idAlumno\": \"CPAM202020H\",\n  \"grupo\": \"1A\",\n  \"cicloEscolar\": \"2024-2025\",\n  \"idHorario\": 1,\n  \"tipo\": \"Inasistencia\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/reporte",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar reporte",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"fecha\": \"2025-05-02T08:00:00\",\n  \"idAlumno\": 123,\n  \"grupo\": \"2A\",\n  \"cicloEscolar\": \"2024-2025\",\n  \"idHorario\": \"H001\",\n  \"tipo\": \"Conducta\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/reporte/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar reporte",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/reporte/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener por grupo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/reporte/grupo/2A",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte",
+								"grupo",
+								"2A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener por grupo y fechas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/reporte/grupo/2A/fechas?inicio=2025-05-01&fin=2025-05-31",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte",
+								"grupo",
+								"2A",
+								"fechas"
+							],
+							"query": [
+								{
+									"key": "inicio",
+									"value": "2025-05-01"
+								},
+								{
+									"key": "fin",
+									"value": "2025-05-31"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener por ciclo escolar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/reporte/ciclo/2024-2025",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte",
+								"ciclo",
+								"2024-2025"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener por alumno",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/reporte/alumno/123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte",
+								"alumno",
+								"123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener por tipo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/reporte/tipo/Inasistencia",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"reporte",
+								"tipo",
+								"Inasistencia"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sanciones",
+			"item": [
+				{
+					"name": "Crear Sanción",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 0,\n  \"tipoSancion\": \"Retraso\",\n  \"descripcion\": \"Llegó tarde a clase\",\n  \"fecha\": \"2024-05-10T08:00:00\",\n  \"idProfesor\": 1,\n  \"idAlumno\": \"CPAM202020H\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/sancion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Sanción",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"tipoSancion\": \"Falta\",\n  \"descripcion\": \"No asistió sin justificación\",\n  \"fecha\": \"2024-05-12T08:00:00\",\n  \"idProfesor\": 2,\n  \"idAlumno\": 5\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/sancion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Sanción",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"tipoSancion\": \"Falta\",\n  \"descripcion\": \"No asistió sin justificación\",\n  \"fecha\": \"2024-05-12T08:00:00\",\n  \"idProfesor\": 2,\n  \"idAlumno\": 5\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/sancion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las sanciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanción por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por tipo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/tipo/Falta",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"tipo",
+								"Falta"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por alumno",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/alumno/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"alumno",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por profesor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/profesor/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"profesor",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por rango de fecha",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/fecha?fechaInicio=2024-01-01&fechaFin=2024-12-31",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"fecha"
+							],
+							"query": [
+								{
+									"key": "fechaInicio",
+									"value": "2024-01-01"
+								},
+								{
+									"key": "fechaFin",
+									"value": "2024-12-31"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Asistencias",
+			"item": [
+				{
+					"name": "Crear Asistencia",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 0,\n  \"fecha\": \"2024-06-01T08:00:00\",\n  \"asistio\": false,\n  \"justificacion\": \"Enfermedad\",\n  \"idAlumno\": \"ALU123\",\n  \"idProfesor\": \"PROF456\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5004/api/asistencias",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Asistencia",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"fecha\": \"2024-06-01T08:00:00\",\n  \"asistio\": true,\n  \"justificacion\": \"\",\n  \"idAlumno\": \"ALU123\",\n  \"idProfesor\": \"PROF456\"\n}"
+						},
+						"url": {
+							"raw": "localhost:5004/api/asistencias",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Asistencia",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:5004/api/asistencias/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las asistencias",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5004/api/asistencias",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "obtener las inasistencias por ciclo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5004/api/asistencias",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener asistencia por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5004/api/asistencias/1",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener asistencias por alumno",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5004/api/asistencias/alumno/ALU123",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias",
+								"alumno",
+								"ALU123"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener asistencias por profesor y fecha",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5004/api/asistencias/profesor/PROF456/fecha/2024-06-01",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias",
+								"profesor",
+								"PROF456",
+								"fecha",
+								"2024-06-01"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener asistencias por profesor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5004/api/asistencias/profesor/PROF456",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias",
+								"profesor",
+								"PROF456"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener asistencias justificadas por alumno",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:5004/api/asistencias/alumno/ALU123/justificadas",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"asistencias",
+								"alumno",
+								"ALU123",
+								"justificadas"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Calificaciones",
+			"item": [
+				{
+					"name": "Obtener todas las calificaciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener calificación por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear calificación",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 0,\n  \"idMateria\": \"MAT001\",\n  \"idAlumno\": \"ALU123\",\n  \"calificacionFinal\": 8.5,\n  \"comentarios\": \"Buen trabajo\",\n  \"idCiclo\": \"2025A\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar calificación",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"idMateria\": \"MAT001\",\n  \"idAlumno\": \"ALU123\",\n  \"calificacionFinal\": 9.0,\n  \"comentarios\": \"Mejorado\",\n  \"idCiclo\": \"2025A\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar calificación",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener calificaciones aprobatorias de materia",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/aprobatorias/materia/MAT001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"aprobatorias",
+								"materia",
+								"MAT001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener calificaciones reprobatorias de materia",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/reprobatorias/materia/MAT001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"reprobatorias",
+								"materia",
+								"MAT001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las calificaciones de materia",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/materia/MAT001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"materia",
+								"MAT001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener calificaciones por ciclo escolar",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/ciclo/2025A",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"ciclo",
+								"2025A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener calificaciones por ciclo y materia",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/ciclo/2025A/materia/MAT001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"ciclo",
+								"2025A",
+								"materia",
+								"MAT001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "obtener por alumno y ciclo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/ciclo/2025A/materia/MAT001",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"ciclo",
+								"2025A",
+								"materia",
+								"MAT001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las calificaciones Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\"CPAM202020H\"]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/calificacion/existentes/clase/ESP101-BA272989",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"calificacion",
+								"existentes",
+								"clase",
+								"ESP101-BA272989"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ciclo escolar",
+			"item": [
+				{
+					"name": "Obtener todos los ciclos escolares",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/CicloEscolar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"CicloEscolar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener ciclo escolar por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/CicloEscolar/2025A",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"CicloEscolar",
+								"2025A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear ciclo escolar",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"2025A\",\n  \"fechaRegistroCalificaciones\": \"2025-05-20T00:00:00\",\n  \"fechaInicio\": \"2025-01-15T00:00:00\",\n  \"fechaFin\": \"2025-06-15T00:00:00\",\n  \"esActual\": true\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/CicloEscolar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"CicloEscolar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar ciclo escolar",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"2025A\",\n  \"fechaRegistroCalificaciones\": \"2025-05-21T00:00:00\",\n  \"fechaInicio\": \"2025-01-15T00:00:00\",\n  \"fechaFin\": \"2025-06-16T00:00:00\",\n  \"esActual\": false\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/CicloEscolar/2025A",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"CicloEscolar",
+								"2025A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar ciclo escolar",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/CicloEscolar/2025A",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"CicloEscolar",
+								"2025A"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener ciclo escolar por fecha de inicio",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/CicloEscolar/fecha-inicio/2025-01-15",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"CicloEscolar",
+								"fecha-inicio",
+								"2025-01-15"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener ciclo escolar actual",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/CicloEscolar/actual",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"CicloEscolar",
+								"actual"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recuperar contrasena",
+			"item": [
+				{
+					"name": "crear solicitud",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/SolicitudContrasena/CrearSolicitud/CPAM202020H",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"SolicitudContrasena",
+								"CrearSolicitud",
+								"CPAM202020H"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "procesar solicitud",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/SolicitudContrasena/ProcesarSolicitud/CPAM202020H",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"SolicitudContrasena",
+								"ProcesarSolicitud",
+								"CPAM202020H"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "mostrar soliciitudes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/SolicitudContrasena/MostrarSolicitudesSinProcesar",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"SolicitudContrasena",
+								"MostrarSolicitudesSinProcesar"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "sanciones caja negra",
+			"item": [
+				{
+					"name": "Crear sancion",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 400\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);\r",
+									"});\r",
+									"pm.test(\"Respuesta contiene estructura esperada\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"flag\");\r",
+									"    pm.expect(jsonData).to.have.property(\"message\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 0,\n  \"tipoSancion\": \"Vandalismo\",\n  \"descripcion\": \"Pintó las paredes del aula\",\n  \"fecha\": \"2025-06-29T00:00:00\",\n  \"idProfesor\": \"BA272989\",\n  \"idAlumno\": \"CPAM202020H\"\n}\n"
+						},
+						"url": {
+							"raw": "http://localhost:5004/api/sancion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener todas las sanciones",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);\r",
+									"});\r",
+									"pm.test(\"Respuesta es una lista\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por tipo Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);\r",
+									"});\r",
+									"pm.test(\"Respuesta es una lista\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/tipo/Vandalismo",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"tipo",
+								"Vandalismo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por alumno Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);\r",
+									"});\r",
+									"pm.test(\"Respuesta es una lista de sanciones del alumno\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    if (jsonData.length > 0) {\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"id\");\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"tipoSancion\");\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"idAlumno\", \"CPAM202020H\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/alumno/CPAM202020H",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"alumno",
+								"CPAM202020H"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener sanciones por profesor Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Código de estado 200 o 500\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 500]);\r",
+									"});\r",
+									"pm.test(\"Respuesta es una lista de sanciones del profesor\", function () {\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"    if (jsonData.length > 0) {\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"id\");\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"tipoSancion\");\r",
+									"        pm.expect(jsonData[0]).to.have.property(\"idProfesor\", \"BA272989\");\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5004/api/sancion/profesor/BA272989",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5004",
+							"path": [
+								"api",
+								"sancion",
+								"profesor",
+								"BA272989"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
