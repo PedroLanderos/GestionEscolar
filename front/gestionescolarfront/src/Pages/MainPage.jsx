@@ -28,11 +28,11 @@ import ShowAssignments from "./ShowAssignments";
 import ShowSanctions from "./ShowSanctions";
 import ShowAbsences from "./ShowAbsences";
 import Workshops from "./Workshops";
-import ShowAllReports from "./ShowAllReports"; // ✅ NUEVO IMPORT
+import ShowAllReports from "./ShowAllReports";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const CICLO_API = "http://localhost:5004/api"; // ajusta si tienes otro archivo config
+const CICLO_API = "http://localhost:5004/api";
 
 const MainPage = () => {
   const { auth } = useContext(AuthContext);
@@ -63,6 +63,20 @@ const MainPage = () => {
   const [attendanceData, setAttendanceData] = useState(null);
   const [gradesData, setGradesData] = useState(null);
   const [activeCycleData, setActiveCycleData] = useState(null);
+
+  // Saludo personalizado
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    let greet = "Hola";
+
+    if (hour >= 6 && hour < 12) greet = "¡Buenos días";
+    else if (hour >= 12 && hour < 19) greet = "¡Buenas tardes";
+    else greet = "¡Buenas noches";
+
+    setGreeting(greet);
+  }, []);
 
   const handleUserView = (type) => {
     resetState();
@@ -184,6 +198,17 @@ const MainPage = () => {
   };
 
   const renderMainContent = () => {
+    if (activeSection === "Inicio") {
+      return (
+        <div className="welcome-message" style={{ padding: "1.5rem", fontSize: "1.3rem" }}>
+          <h1>{greeting}, {auth.user?.name || "Usuario"}!</h1>
+          <p>
+            Bienvenido{(isAdmin || isTeacher) ? " al sistema de gestión escolar." : ", esperamos que tengas un excelente día de estudios."}
+          </p>
+        </div>
+      );
+    }
+
     if (gradesModo && (isStudent || isTutor)) {
       return (
         <ShowGrades
@@ -288,14 +313,87 @@ const MainPage = () => {
     return null;
   };
 
+  // Accesos rápidos personalizados según rol
+  const renderQuickAccess = () => {
+    if (isAdmin) {
+      // Para administrador NO mostrar accesos rápidos
+      return null;
+    }
+
+    if (isStudent || isTutor || isTeacher) {
+      return (
+        <ul>
+          <li
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              resetState();
+              setActiveSubOption("Horario");
+            }}
+          >
+            Horario
+          </li>
+          <li
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              resetState();
+              setActiveSubOption("DatosPersonales");
+            }}
+          >
+            Datos personales
+          </li>
+          <li
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              resetState();
+              if (isStudent || isTutor) {
+                setReportesModo("semana");
+                setActiveSubOption("Reportes");
+              } else if (isTeacher) {
+                setActiveSubOption("CrearReporte");
+              }
+            }}
+          >
+            Reportes
+          </li>
+        </ul>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <>
       <div className="top-nav">
         <ul>
-          <li className={`nav-item ${activeSection === "Inicio" ? "active-orange" : ""}`} onClick={() => { resetState(); setActiveSection("Inicio"); }}>Inicio</li>
-          <li className={`nav-item ${activeSection === "Alumnos" ? "active-orange" : ""}`} onClick={() => { resetState(); setActiveSection("Alumnos"); }}>Alumnos</li>
+          <li
+            className={`nav-item ${activeSection === "Inicio" ? "active-orange" : ""}`}
+            onClick={() => {
+              resetState();
+              setActiveSection("Inicio");
+            }}
+          >
+            Inicio
+          </li>
+          <li
+            className={`nav-item ${activeSection === "Alumnos" ? "active-orange" : ""}`}
+            onClick={() => {
+              resetState();
+              setActiveSection("Alumnos");
+            }}
+          >
+            Alumnos
+          </li>
           {isAdmin && (
-            <li className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`} onClick={() => { resetState(); setActiveSection("Administrador"); }}>Administrador</li>
+            <li
+              className={`nav-item ${activeSection === "Administrador" ? "active-orange" : ""}`}
+              onClick={() => {
+                resetState();
+                setActiveSection("Administrador");
+              }}
+            >
+              Administrador
+            </li>
           )}
         </ul>
       </div>
@@ -305,11 +403,7 @@ const MainPage = () => {
         <main className="main-content">{renderMainContent()}</main>
         <aside className="sidebar-right">
           <h4>Accesos rápidos</h4>
-          <ul>
-            <li><a href="#">Agenda escolar</a></li>
-            <li><a href="#">Horarios de clase</a></li>
-            <li><a href="#">Horarios de ETS</a></li>
-          </ul>
+          {renderQuickAccess()}
         </aside>
       </div>
     </>
