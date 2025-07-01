@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./CSS/AssignSubject.css"; 
+import "./CSS/AssignSubject.css";
 
 const AssignSchedule = ({ schedule, onClose }) => {
   const [students, setStudents] = useState([]);
@@ -16,7 +16,7 @@ const AssignSchedule = ({ schedule, onClose }) => {
         setStudents(res.data);
       } catch (err) {
         console.error("Error al cargar alumnos", err);
-        setError("Error al cargar alumnos.");
+        setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
       }
     };
 
@@ -35,7 +35,7 @@ const AssignSchedule = ({ schedule, onClose }) => {
 
   const handleAssign = async () => {
     if (selectedStudents.length === 0) {
-      setError("Selecciona al menos un alumno.");
+      setError("Los datos ingresados no son válidos"); // ERR1
       setMessage("");
       return;
     }
@@ -49,17 +49,17 @@ const AssignSchedule = ({ schedule, onClose }) => {
         axios.post("http://localhost:5002/api/Schedule/asignarAlumnoHorario", {
           id: 1,
           idUser,
-          idSchedule: schedule.id
+          idSchedule: schedule.id,
         })
       );
 
       await Promise.all(requests);
 
-      setMessage("Asignación realizada exitosamente.");
+      setMessage("Elemento registrado exitosamente."); // MSG3
       setSelectedStudents([]);
     } catch (err) {
       console.error("Error al asignar horario", err);
-      setError("Error al asignar el horario.");
+      setError("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     } finally {
       setLoading(false);
     }
@@ -88,7 +88,7 @@ const AssignSchedule = ({ schedule, onClose }) => {
 
       <button onClick={handleAssign} disabled={loading || students.length === 0}>
         {loading ? "Asignando..." : "Asignar Horario"}
-        </button>
+      </button>
       <button onClick={onClose} style={{ marginTop: "10px", backgroundColor: "#999" }}>
         Cancelar
       </button>

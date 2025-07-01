@@ -20,15 +20,18 @@ const titleMap = {
 const UsersTable = ({ userType, onSelectUser }) => {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
+      setError("");
       try {
         const res = await axios.get(endpointMap[userType]);
         setUsuarios(res.data);
       } catch (error) {
-        console.error("❌ Error al obtener usuarios:", error);
+        console.error("No se pudieron obtener los usuarios.");
+        setError("No se pudieron obtener los usuarios.");
       } finally {
         setLoading(false);
       }
@@ -40,13 +43,14 @@ const UsersTable = ({ userType, onSelectUser }) => {
   }, [userType]);
 
   const handleDelete = async (id) => {
-    const confirm = window.confirm("¿Estás seguro que quieres eliminar a este usuario?");
-    if (!confirm) return;
+    const confirmDelete = window.confirm("¿Estás seguro que quieres eliminar a este usuario?");
+    if (!confirmDelete) return;
     try {
       await axios.delete(`${AUTH_API}/usuario/eliminarUsuario/${id}`);
       setUsuarios(usuarios.filter((u) => u.id !== id));
     } catch (error) {
-      console.error("❌ Error al eliminar usuario:", error);
+      console.error("Error al eliminar usuario.");
+      alert("Error al eliminar usuario.");
     }
   };
 
@@ -55,6 +59,8 @@ const UsersTable = ({ userType, onSelectUser }) => {
       <h2>Usuarios - {titleMap[userType] || "Sin tipo"}</h2>
       {loading ? (
         <p>Cargando usuarios...</p>
+      ) : error ? (
+        <p style={{ color: "red" }}>{error}</p>
       ) : (
         <table>
           <thead>
@@ -71,23 +77,29 @@ const UsersTable = ({ userType, onSelectUser }) => {
             </tr>
           </thead>
           <tbody>
-            {usuarios.map((u) => (
-              <tr key={u.id}>
-                <td>{u.id}</td>
-                <td>{u.nombreCompleto}</td>
-                <td>{u.correo}</td>
-                <td>{u.curp}</td>
-                <td>{u.cuentaBloqueada ? "Sí" : "No"}</td>
-                <td>{u.dadoDeBaja ? "Sí" : "No"}</td>
-                <td>{new Date(u.ultimaSesion).toLocaleDateString()}</td>
-                <td>{u.rol}</td>
-                <td>
-                  <button onClick={() => onSelectUser(u.id, "view")}>Ver</button>
-                  <button onClick={() => onSelectUser(u.id, "edit")}>Editar</button>
-                  <button onClick={() => handleDelete(u.id)}>Eliminar</button>
-                </td>
+            {usuarios.length > 0 ? (
+              usuarios.map((u) => (
+                <tr key={u.id}>
+                  <td>{u.id}</td>
+                  <td>{u.nombreCompleto}</td>
+                  <td>{u.correo}</td>
+                  <td>{u.curp}</td>
+                  <td>{u.cuentaBloqueada ? "Sí" : "No"}</td>
+                  <td>{u.dadoDeBaja ? "Sí" : "No"}</td>
+                  <td>{new Date(u.ultimaSesion).toLocaleDateString()}</td>
+                  <td>{u.rol}</td>
+                  <td>
+                    <button onClick={() => onSelectUser(u.id, "view")}>Ver</button>
+                    <button onClick={() => onSelectUser(u.id, "edit")}>Editar</button>
+                    <button onClick={() => handleDelete(u.id)}>Eliminar</button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="9">No hay usuarios registrados.</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       )}

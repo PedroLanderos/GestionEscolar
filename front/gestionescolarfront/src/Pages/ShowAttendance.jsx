@@ -14,7 +14,7 @@ const ShowAttendance = () => {
 
   useEffect(() => {
     if (!userId) {
-      setError("No autorizado para ver esta sección.");
+      setError("Acción no permitida. No tiene los permisos suficientes."); // ERR4
       setLoading(false);
       return;
     }
@@ -26,27 +26,27 @@ const ShowAttendance = () => {
       try {
         let alumnoId = userId;
 
-        // Si es tutor, obtener id de alumno (hijo)
+        // Si es tutor o padre, obtener id de alumno (hijo)
         if (userRole === "tutor" || userRole === "padre") {
           try {
             const res = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
             if (res.data && res.data.id) {
               alumnoId = res.data.id;
             } else {
-              setError("No se encontró alumno asociado al tutor");
+              setError("No hay suficientes datos registrados para usar esta opción. Por favor, registre más datos e intente nuevamente."); // ERR2
               setLoading(false);
               return;
             }
-          } catch (error) {
-            setError("Error al obtener alumno para tutor");
+          } catch {
+            setError("Los datos ingresados no son válidos"); // ERR1
             setLoading(false);
             return;
           }
         }
 
-        // Solo alumnos y tutores pueden ver asistencias
+        // Solo alumnos, tutores y padres pueden ver asistencias
         if (!(userRole === "alumno" || userRole === "tutor" || userRole === "padre")) {
-          setError("No autorizado para ver esta sección.");
+          setError("Acción no permitida. No tiene los permisos suficientes."); // ERR4
           setLoading(false);
           return;
         }
@@ -55,7 +55,7 @@ const ShowAttendance = () => {
         setAsistencias(res.data);
       } catch (err) {
         console.error("Error al obtener asistencias:", err);
-        setError("Error al cargar asistencias. Intenta más tarde.");
+        setError("Error de conexión al servidor. Intenta nuevamente."); // ERR6
       } finally {
         setLoading(false);
       }
@@ -66,7 +66,7 @@ const ShowAttendance = () => {
 
   if (loading) return <p>Cargando asistencias...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (asistencias.length === 0) return <p>No se encontraron asistencias registradas.</p>;
+  if (asistencias.length === 0) return <p>No existen datos para esta sección. Por favor, intente más tarde.</p>; // ERR3
 
   return (
     <div className="users-table-container">
@@ -85,7 +85,7 @@ const ShowAttendance = () => {
             <tr key={asistencia.id}>
               <td>{new Date(asistencia.fecha).toLocaleDateString()}</td>
               <td>{asistencia.asistio ? "Sí" : "No"}</td>
-              <td>{asistencia.justificacion || "-"}</td>
+              <td>{asistencia.justificacion || "No existen datos para esta sección. Por favor, intente más tarde." /* ERR3 */}</td>
               <td>{asistencia.idProfesor}</td>
             </tr>
           ))}

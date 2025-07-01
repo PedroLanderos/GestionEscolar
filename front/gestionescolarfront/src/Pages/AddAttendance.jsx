@@ -35,7 +35,7 @@ const AddAttendance = ({ onBack }) => {
       };
 
       await axios.post("http://localhost:5004/api/asistencias", payload);
-      setSuccess("✅ Asistencia registrada correctamente.");
+      setSuccess("Elemento registrado exitosamente."); // MSG3
       setFormData({
         fecha: new Date().toISOString().split("T")[0],
         asistio: true,
@@ -44,8 +44,8 @@ const AddAttendance = ({ onBack }) => {
         idProfesor: ""
       });
     } catch (err) {
-      console.error("❌ Error al registrar la asistencia:", err);
-      setError("❌ Ocurrió un error al guardar la asistencia.");
+      console.error("Error al registrar la asistencia:", err);
+      setError("Los datos ingresados no son válidos"); // ERR1
     }
   };
 

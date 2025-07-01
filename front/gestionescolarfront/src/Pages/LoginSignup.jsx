@@ -60,7 +60,7 @@ const LoginSignup = () => {
         };
 
         await axios.put(`${AUTH_API}/usuario/editarUsuario`, updateDto);
-        alert("🚫 Cuenta bloqueada por intentos fallidos.");
+        alert("El usuario no podrá ejecutar la acción hasta que tenga los permisos adecuados."); // ERR4 (permiso)
       }
     } catch (error) {
       console.error("Error al bloquear usuario:", error);
@@ -84,7 +84,7 @@ const LoginSignup = () => {
       } else {
         const nuevosIntentos = errorCount + 1;
         setErrorCount(nuevosIntentos);
-        alert("❌ " + response.data.message);
+        alert("Los datos ingresados no son válidos"); // ERR1
 
         if (nuevosIntentos >= 3) {
           await bloquearUsuario();
@@ -94,17 +94,14 @@ const LoginSignup = () => {
       if (error.response && error.response.status === 401) {
         const nuevosIntentos = errorCount + 1;
         setErrorCount(nuevosIntentos);
-        const mensaje =
-          (error.response.data && error.response.data.message) ||
-          "Credenciales inválidas";
-        alert("❌ " + mensaje);
+        alert("Los datos ingresados no son válidos"); // ERR1
 
         if (nuevosIntentos >= 3) {
           await bloquearUsuario();
         }
       } else {
         console.error("Error al iniciar sesión:", error);
-        alert("Ocurrió un error al intentar iniciar sesión.");
+        alert("Error de conexión al servidor. Intenta nuevamente."); // ERR6
       }
     } finally {
       setLoading(false);
@@ -121,7 +118,7 @@ const LoginSignup = () => {
         grado: parseInt(requestData.grado),
       });
 
-      alert(response.data.message);
+      alert("Elemento registrado exitosamente."); // MSG3
       setRequestData({
         nombreAlumno: "",
         curpAlumno: "",
@@ -131,15 +128,15 @@ const LoginSignup = () => {
         correoPadre: "",
       });
     } catch (error) {
-      console.error("❌ Error al enviar solicitud:", error);
-      alert("Ocurrió un error al enviar la solicitud.");
+      console.error("Error al enviar solicitud:", error);
+      alert("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     } finally {
       setLoading(false);
     }
   };
 
   const handleRecovery = async () => {
-    if (!recoveryId.trim()) return alert("Ingresa un ID válido.");
+    if (!recoveryId.trim()) return alert("Los datos ingresados no son válidos"); // ERR1
     setLoading(true);
 
     try {
@@ -147,33 +144,31 @@ const LoginSignup = () => {
       const usuario = usuarioRes.data;
 
       if (!usuario || !usuario.rol) {
-        alert("⚠️ Usuario no encontrado.");
+        alert("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
         return;
       }
 
       const rol = usuario.rol.toLowerCase();
 
       if (rol === "alumno" || rol === "docente") {
-        // Usar el nuevo flujo de recuperación
         const solicitudRes = await axios.post(`${AUTH_API}/SolicitudContrasena/CrearSolicitud/${recoveryId}`);
-        alert(solicitudRes.data.message);
+        alert("Elemento registrado exitosamente."); // MSG3
       } else if (rol === "padre" || rol === "administrador") {
-        // Usar el flujo anterior
         const response = await axios.post(
           `${AUTH_API}/usuario/recuperarContrasena`,
           JSON.stringify(recoveryId),
           { headers: { "Content-Type": "application/json" } }
         );
-        alert(response.data.message);
+        alert("Elemento registrado exitosamente."); // MSG3
       } else {
-        alert("⚠️ Este tipo de usuario no puede recuperar la contraseña automáticamente.");
+        alert("El usuario no podrá continuar hasta que se resuelva el problema de conexión."); // ERR6
       }
 
       setShowRecovery(false);
       setRecoveryId("");
     } catch (error) {
-      console.error("❌ Error al recuperar contraseña:", error);
-      alert("Error al intentar recuperar la contraseña.");
+      console.error("Error al recuperar contraseña:", error);
+      alert("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     } finally {
       setLoading(false);
     }

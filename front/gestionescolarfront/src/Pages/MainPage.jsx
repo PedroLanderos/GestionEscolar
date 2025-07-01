@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+import axios from "axios";
 import "./CSS/MainPage.css";
 import RegisterRequest from "./RegisterRequest";
 import PasswordResetRequests from "./PasswordResetRequests";
@@ -31,6 +32,8 @@ import ShowAllReports from "./ShowAllReports"; // ✅ NUEVO IMPORT
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+const CICLO_API = "http://localhost:5004/api"; // ajusta si tienes otro archivo config
+
 const MainPage = () => {
   const { auth } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -49,6 +52,7 @@ const MainPage = () => {
   const [activeSection, setActiveSection] = useState(isAdmin ? "Administrador" : "Alumnos");
   const [activeSubOption, setActiveSubOption] = useState(null);
   const [reportesModo, setReportesModo] = useState(null);
+  const [gradesModo, setGradesModo] = useState(null);
   const [registerData, setRegisterData] = useState(null);
   const [userType, setUserType] = useState(null);
   const [selectedSchedule, setSelectedSchedule] = useState(null);
@@ -58,6 +62,7 @@ const MainPage = () => {
   const [userMode, setUserMode] = useState(null);
   const [attendanceData, setAttendanceData] = useState(null);
   const [gradesData, setGradesData] = useState(null);
+  const [activeCycleData, setActiveCycleData] = useState(null);
 
   const handleUserView = (type) => {
     resetState();
@@ -87,6 +92,23 @@ const MainPage = () => {
     setAttendanceData(null);
     setGradesData(null);
     setReportesModo(null);
+    setGradesModo(null);
+    setActiveCycleData(null);
+  };
+
+  const cargarCicloActivo = async () => {
+    try {
+      const res = await axios.get(`${CICLO_API}/CicloEscolar/actual`);
+      if (res.status === 200 && res.data) {
+        setActiveCycleData(res.data);
+      } else {
+        setActiveCycleData(null);
+      }
+    } catch (error) {
+      console.error("Error al cargar ciclo escolar activo:", error);
+      setActiveCycleData(null);
+    }
+    setActiveSubOption("CicloEscolarActivo");
   };
 
   const renderSidebarContent = () => {
@@ -107,10 +129,11 @@ const MainPage = () => {
           <li onClick={() => handleUserView("tutores")}>Tutores</li>
           <li onClick={() => handleUserView("administradores")}>Administradores</li>
           <li onClick={() => { resetState(); setActiveSubOption("RegistrarCicloEscolar"); }}>Registrar ciclo escolar</li>
+          <li onClick={() => { resetState(); cargarCicloActivo(); }}>Ciclo Escolar Activo</li>
           <li onClick={() => { resetState(); setActiveSubOption("EliminarAsignaciones"); }}>Eliminar asignaciones</li>
           <li onClick={() => { resetState(); setActiveSubOption("VerSanciones"); }}>Ver sanciones</li>
           <li onClick={() => { resetState(); setActiveSubOption("VerInasistencias"); }}>Ver inasistencias</li>
-          <li onClick={() => { resetState(); setActiveSubOption("VerReportes"); }}>Ver todos los reportes</li> {/* ✅ NUEVA OPCIÓN */}
+          <li onClick={() => { resetState(); setActiveSubOption("VerReportes"); }}>Ver todos los reportes</li>
         </ul>
       );
     }
@@ -130,7 +153,21 @@ const MainPage = () => {
         )}
         {(isStudent || isTutor) && (
           <>
-            <li onClick={() => { resetState(); setActiveSubOption("Calificaciones"); }}>Calificaciones</li>
+            <li
+              onClick={() => {
+                resetState();
+                setActiveSubOption("Calificaciones");
+                setGradesModo(null);
+              }}
+            >
+              Calificaciones
+            </li>
+            {activeSubOption === "Calificaciones" && (
+              <>
+                <li className="submenu" onClick={() => setGradesModo("ciclo")}>-- Por ciclo escolar</li>
+                <li className="submenu" onClick={() => setGradesModo("historial")}>-- Historial completo</li>
+              </>
+            )}
             <li onClick={() => { resetState(); setActiveSubOption("Asistencias"); }}>Asistencias</li>
             <li onClick={() => setActiveSubOption("Reportes")}>Reportes</li>
             {activeSubOption === "Reportes" && (
@@ -147,6 +184,18 @@ const MainPage = () => {
   };
 
   const renderMainContent = () => {
+    if (gradesModo && (isStudent || isTutor)) {
+      return (
+        <ShowGrades
+          modo={gradesModo}
+          onBack={() => {
+            setGradesModo(null);
+            setActiveSubOption(null);
+          }}
+        />
+      );
+    }
+
     if (reportesModo && (isStudent || isTutor)) {
       return (
         <ShowReport
@@ -179,10 +228,23 @@ const MainPage = () => {
       if (activeSubOption === "AgregarHorario") return <AddSchedule />;
       if (activeSubOption === "VerHorarios") return <Schedules onViewSchedule={setSelectedSchedule} onAssignSchedule={setAssignSchedule} />;
       if (activeSubOption === "RegistrarCicloEscolar") return <AddSchoolYear />;
+      if (activeSubOption === "CicloEscolarActivo")
+        return (
+          <AddSchoolYear
+            initialData={activeCycleData}
+            onSuccess={() => {
+              cargarCicloActivo();
+            }}
+            onBack={() => {
+              resetState();
+              setActiveSubOption(null);
+            }}
+          />
+        );
       if (activeSubOption === "EliminarAsignaciones") return <ShowAssignments />;
       if (activeSubOption === "VerSanciones") return <ShowSanctions />;
       if (activeSubOption === "VerInasistencias") return <ShowAbsences />;
-      if (activeSubOption === "VerReportes") return <ShowAllReports />; // ✅ NUEVO RENDER
+      if (activeSubOption === "VerReportes") return <ShowAllReports />;
     }
 
     if (activeSubOption === "DatosPersonales") return <User id={auth.user?.id} mode="view" onBack={resetState} />;
@@ -214,10 +276,13 @@ const MainPage = () => {
       }
     }
 
-    if ((isStudent || isTutor)) {
-      if (activeSubOption === "Calificaciones") return <ShowGrades />;
+    if (isStudent || isTutor) {
       if (activeSubOption === "Asistencias") return <ShowAttendance />;
       if (activeSubOption === "Talleres") return <Workshops />;
+    }
+
+    if ((isStudent || isTutor) && activeSubOption === "Calificaciones" && !gradesModo) {
+      return <p>Por favor, selecciona una opción de calificaciones en el menú lateral.</p>;
     }
 
     return null;

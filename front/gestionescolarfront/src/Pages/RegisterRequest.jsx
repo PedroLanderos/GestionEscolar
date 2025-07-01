@@ -11,10 +11,10 @@ const RegisterRequest = ({ onRegisterClick }) => {
   const fetchRequests = async () => {
     try {
       const response = await axios.get(`${AUTH_API}/solicitud/obtenerSolicitudesSinProcesar`);
-      setRequests(response.data); 
+      setRequests(response.data);
     } catch (err) {
-      console.error("❌ Error al obtener solicitudes:", err);
-      setError("Error al obtener las solicitudes.");
+      console.error("Error al obtener solicitudes:", err);
+      setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
     } finally {
       setLoading(false);
     }

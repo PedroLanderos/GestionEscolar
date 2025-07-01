@@ -9,12 +9,14 @@ const Subjects = ({ onEdit }) => {
   const [error, setError] = useState(null);
 
   const fetchSubjects = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await axios.get(`${SUBJ_API}/Subject/obtenerMaterias`);
       setSubjects(response.data);
     } catch (error) {
       console.error("Error al obtener materias:", error);
-      setError("Error al obtener las materias");
+      setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
     } finally {
       setLoading(false);
     }
@@ -61,7 +63,7 @@ const Subjects = ({ onEdit }) => {
       )}
 
       {!loading && !error && subjects.length === 0 && (
-        <p>No hay materias registradas.</p>
+        <p>No existen datos para esta sección. Por favor, intente más tarde.</p> // ERR3
       )}
     </div>
   );

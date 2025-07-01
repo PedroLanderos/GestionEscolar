@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { AUTH_API } from "../Config/apiConfig";
-import "./CSS/UsersTable.css"; // Reutilizamos el mismo CSS
+import "./CSS/UsersTable.css";
 
 const ShowAssignments = () => {
   const [assignments, setAssignments] = useState([]);
@@ -9,16 +9,16 @@ const ShowAssignments = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // Obtener asignaciones
   useEffect(() => {
     const fetchAssignments = async () => {
       setLoading(true);
+      setError("");
       try {
         const res = await axios.get("http://localhost:5001/api/subjectassignment/obtenerAsignaciones");
         setAssignments(res.data);
       } catch (error) {
-        console.error("❌ Error al obtener asignaciones:", error);
-        setError("Error al cargar asignaciones.");
+        console.error("Error al obtener asignaciones:", error);
+        setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
       } finally {
         setLoading(false);
       }
@@ -27,17 +27,16 @@ const ShowAssignments = () => {
     fetchAssignments();
   }, []);
 
-  // Función para eliminar asignación
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta asignación?");
+    const confirmDelete = window.confirm("¿Está seguro que desea eliminar esta asignación?");
     if (confirmDelete) {
       try {
         await axios.delete(`http://localhost:5001/api/subjectassignment/eliminarAsignacion/${id}`);
-        setMessage("Asignación eliminada correctamente.");
-        setAssignments(assignments.filter((assignment) => assignment.id !== id)); // Eliminar de la lista local
+        setMessage("Elemento registrado exitosamente."); // MSG3 usado como confirmación
+        setAssignments(assignments.filter((assignment) => assignment.id !== id));
       } catch (error) {
-        console.error("❌ Error al eliminar la asignación", error);
-        setError("Error al eliminar la asignación.");
+        console.error("Error al eliminar la asignación", error);
+        setError("Error de conexión al servidor. Intenta nuevamente."); // ERR6
       }
     }
   };
@@ -63,8 +62,8 @@ const ShowAssignments = () => {
             {assignments.length > 0 ? (
               assignments.map((assignment) => (
                 <tr key={assignment.id}>
-                  <td>{assignment.userId }</td>
-                  <td>{assignment.subjectId }</td>
+                  <td>{assignment.userId}</td>
+                  <td>{assignment.subjectId}</td>
                   <td>
                     <button onClick={() => handleDelete(assignment.id)}>Eliminar</button>
                   </td>
@@ -72,7 +71,7 @@ const ShowAssignments = () => {
               ))
             ) : (
               <tr>
-                <td colSpan="3">No hay asignaciones disponibles.</td>
+                <td colSpan="3">No existen datos para esta sección. Por favor, intente más tarde.</td> {/* ERR3 */}
               </tr>
             )}
           </tbody>

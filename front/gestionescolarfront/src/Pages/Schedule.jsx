@@ -25,7 +25,8 @@ const Schedule = ({ schedule, onBack }) => {
         const res = await axios.get(`http://localhost:5001/api/subjectassignment/obtenerAsignacionesPorGrado/${schedule.grado}`);
         setSubjects(res.data);
       } catch (error) {
-        console.error("❌ Error al obtener materias asignadas por grado:", error);
+        console.error("Error al obtener materias asignadas por grado:", error);
+        // Aquí podrías mostrar mensaje o manejar el error usando ERR3
       }
     };
 
@@ -38,7 +39,8 @@ const Schedule = ({ schedule, onBack }) => {
         });
         setAsignaciones(asignacionesMap);
       } catch (err) {
-        console.error("❌ Error al cargar horario:", err);
+        console.error("Error al cargar horario:", err);
+        // Aquí podrías mostrar mensaje o manejar el error usando ERR3
       }
     };
 
@@ -79,7 +81,8 @@ const Schedule = ({ schedule, onBack }) => {
       });
       setAsignaciones(updatedMap);
     } catch (err) {
-      console.error("❌ Error al guardar asignación:", err);
+      console.error("Error al guardar asignación:", err);
+      // Aquí podrías mostrar mensaje o manejar el error usando ERR5 o ERR6
     }
   };
 
@@ -103,7 +106,8 @@ const Schedule = ({ schedule, onBack }) => {
       });
       setAsignaciones(updatedMap);
     } catch (error) {
-      console.error("❌ Error al eliminar asignación:", error);
+      console.error("Error al eliminar asignación:", error);
+      // Aquí podrías mostrar mensaje o manejar el error usando ERR5 o ERR6
     }
   };
 
@@ -126,7 +130,8 @@ const Schedule = ({ schedule, onBack }) => {
         y: event.clientY + 10,
       });
     } catch (error) {
-      console.error("❌ Error al cargar datos del tooltip:", error);
+      console.error("Error al cargar datos del tooltip:", error);
+      // Aquí podrías mostrar mensaje o manejar el error usando ERR3 o ERR6
     }
   };
 

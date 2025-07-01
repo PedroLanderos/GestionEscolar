@@ -23,18 +23,18 @@ const ShowSchedule = () => {
       const role = auth.user.role.toLowerCase();
       let userId = auth.user.id;
 
-      // Si es tutor, obtener id de su alumno (hijo)
+      // Si es tutor o padre, obtener id de su alumno
       if (role === "tutor" || role === "padre") {
         try {
           const res = await axios.get(`http://localhost:5000/api/usuario/obtenerAlumnoPorTutor/${userId}`);
           if (res.data && res.data.id) {
             userId = res.data.id;
           } else {
-            console.warn("No se encontró alumno asociado al tutor");
+            console.warn("No hay suficientes datos registrados para usar esta opción. Por favor, registre más datos e intente nuevamente."); // ERR2
             return;
           }
         } catch (error) {
-          console.error("Error al obtener alumno para tutor:", error);
+          console.error("Los datos ingresados no son válidos"); // ERR1
           return;
         }
       }
@@ -51,7 +51,6 @@ const ShowSchedule = () => {
         res.data.forEach((a) => {
           let horaKey = a.horaInicio;
 
-          // Ajustar hora para talleres en formato "8:00-9:30" → "08:00"
           if (horaKey.includes("-")) {
             horaKey = horaKey.split("-")[0].padStart(5, "0");
           }
@@ -62,7 +61,7 @@ const ShowSchedule = () => {
 
         setAsignaciones(asignacionesMap);
       } catch (err) {
-        console.error("❌ Error al obtener el horario:", err);
+        console.error("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
       }
     };
 
@@ -88,8 +87,8 @@ const ShowSchedule = () => {
         axios.get(`http://localhost:5000/api/usuario/obtenerUsuarioPorId/${userId}`),
       ]);
 
-      const nombreMateria = subjectRes.data?.nombre || "Materia desconocida";
-      const nombreDocente = userRes.data?.nombreCompleto || "Docente desconocido";
+      const nombreMateria = subjectRes.data?.nombre || "No existen datos para esta sección. Por favor, intente más tarde."; // ERR3
+      const nombreDocente = userRes.data?.nombreCompleto || "No existen datos para esta sección. Por favor, intente más tarde."; // ERR3
 
       setTooltip({
         visible: true,
@@ -98,7 +97,7 @@ const ShowSchedule = () => {
         y: event.clientY + 10,
       });
     } catch (error) {
-      console.error("❌ Error al cargar datos del tooltip:", error);
+      console.error("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
     }
   };
 

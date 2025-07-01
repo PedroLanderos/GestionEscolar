@@ -13,8 +13,8 @@ const Schedules = ({ onViewSchedule, onAssignSchedule }) => {
       const response = await axios.get(`${SCHEDULE_API}/Schedule/obtenerHorarios`);
       setSchedules(response.data);
     } catch (error) {
-      console.error("❌ Error al obtener horarios:", error);
-      setError("Error al obtener los horarios.");
+      console.error("Error al obtener horarios:", error);
+      setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
     } finally {
       setLoading(false);
     }
@@ -58,7 +58,7 @@ const Schedules = ({ onViewSchedule, onAssignSchedule }) => {
       )}
 
       {!loading && !error && schedules.length === 0 && (
-        <p>No hay horarios registrados.</p>
+        <p>No hay horarios registrados.</p> // Aquí no hay mensaje en tu tabla, así que queda así.
       )}
     </div>
   );

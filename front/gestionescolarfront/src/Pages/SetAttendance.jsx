@@ -17,39 +17,26 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
       setError(null);
 
       try {
-        console.log("📥 ClaseProfesor:", claseProfesor);
-        console.log("📥 HorarioId:", horarioId);
-
         let resIds;
         if (!horarioId || horarioId === "null" || horarioId === "Taller") {
-          console.log("🔍 Obteniendo alumnos por taller...");
           resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorTaller/${claseProfesor}`);
         } else {
-          console.log("🔍 Obteniendo alumnos por materia y horario...");
           resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorMateriaHorario`, {
             params: { materiaProfesor: claseProfesor, horario: horarioId },
           });
         }
 
-        console.log("📦 IDs obtenidos:", resIds.data);
-
         const alumnoIds = Array.from(new Set(resIds.data));
-        console.log("📋 IDs únicos:", alumnoIds);
-
         if (!alumnoIds || alumnoIds.length === 0) {
-          console.warn("⚠️ No se encontraron IDs de alumnos.");
           setAlumnos([]);
           setLoading(false);
           return;
         }
 
-        console.log("🔄 Obteniendo datos de alumnos...");
         const resAlumnos = await axios.post("http://localhost:5000/api/usuario/obtenerusuariosporids", alumnoIds);
         const alumnosData = resAlumnos.data;
-        console.log("👥 Datos de alumnos recibidos:", alumnosData);
 
         if (!alumnosData || alumnosData.length === 0) {
-          console.warn("⚠️ No se encontraron datos de alumnos.");
           setAlumnos([]);
           setLoading(false);
           return;
@@ -63,7 +50,6 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
         setAlumnos(alumnosData);
         setAsistencias(initialAsistencias);
 
-        console.log("📅 Buscando asistencias previas...");
         const resAsistencias = await axios.post(
           `http://localhost:5004/api/asistencias/profesor/${claseProfesor}/fecha/${selectedDate}`,
           alumnoIds
@@ -79,13 +65,10 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
             };
           });
           setAsistencias(asistenciasMap);
-          console.log("✅ Asistencias anteriores cargadas:", asistenciasMap);
-        } else {
-          console.log("ℹ️ No hay asistencias anteriores registradas.");
         }
       } catch (err) {
-        console.error("❌ Error cargando datos de alumnos o asistencias:", err);
-        setError("Error cargando datos, intenta más tarde.");
+        console.error("Error cargando datos de alumnos o asistencias:", err);
+        setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
       } finally {
         setLoading(false);
       }
@@ -128,16 +111,16 @@ const SetAttendance = ({ claseProfesor, horarioId }) => {
       });
 
       await Promise.all(requests);
-      alert("✅ Asistencias guardadas correctamente.");
+      alert("Elemento registrado exitosamente."); // MSG3
     } catch (err) {
-      console.error("❌ Error guardando asistencias:", err);
-      alert("Error al guardar asistencias. Intenta nuevamente.");
+      console.error("Error guardando asistencias:", err);
+      alert("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     }
   };
 
   if (loading) return <p>Cargando alumnos...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (alumnos.length === 0) return <p>No hay alumnos inscritos para esta clase y horario.</p>;
+  if (alumnos.length === 0) return <p>No existen datos para esta sección. Por favor, intente más tarde.</p>; // ERR3
 
   return (
     <div className="users-table-container">

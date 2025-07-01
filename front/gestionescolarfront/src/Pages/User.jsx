@@ -19,6 +19,9 @@ const User = ({ id, mode, onBack }) => {
     rol: "",
   });
 
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
@@ -36,7 +39,8 @@ const User = ({ id, mode, onBack }) => {
           rol: data.rol,
         });
       } catch (error) {
-        console.error("❌ Error al obtener usuario:", error);
+        console.error("Los datos ingresados no son válidos");
+        setError("Los datos ingresados no son válidos");
       }
     };
     fetchUsuario();
@@ -52,16 +56,19 @@ const User = ({ id, mode, onBack }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
     try {
       const payload = {
         ...usuario,
         ultimaSesion: new Date(usuario.ultimaSesion).toISOString(),
       };
       await axios.put(`${AUTH_API}/usuario/editarUsuario`, payload);
-      alert("✅ Usuario editado correctamente.");
+      setSuccess("Elemento actualizado exitosamente.");
       onBack();
     } catch (error) {
-      console.error("❌ Error al editar usuario:", error);
+      console.error("Estructura de datos incorrecta. Por favor, revise y vuelva a intentar.");
+      setError("Estructura de datos incorrecta. Por favor, revise y vuelva a intentar.");
     }
   };
 
@@ -72,89 +79,98 @@ const User = ({ id, mode, onBack }) => {
         <label>ID</label>
         <input name="id" value={usuario.id} disabled />
 
-        <label>Nombre Completo</label>
-        <input
-          name="nombreCompleto"
-          value={usuario.nombreCompleto}
-          onChange={handleChange}
-          disabled={isView}
-        />
-
-        <label>Correo</label>
-        <input
-          name="correo"
-          value={usuario.correo}
-          onChange={handleChange}
-          disabled={isView}
-        />
-
-        {isEdit && (
+        {(isEdit || isView) && (
           <>
-            <label>Contraseña (opcional)</label>
+            <label>Nombre Completo</label>
             <input
-              name="contrasena"
-              type="password"
-              value={usuario.contrasena}
+              name="nombreCompleto"
+              value={usuario.nombreCompleto}
               onChange={handleChange}
+              disabled={isView}
+            />
+
+            <label>Correo</label>
+            <input
+              name="correo"
+              value={usuario.correo}
+              onChange={handleChange}
+              disabled={isView}
             />
           </>
         )}
 
-        <label>CURP</label>
+        {/* En ambos modos se muestra contraseña editable */}
+        <label>Contraseña {isEdit ? "(opcional)" : ""}</label>
         <input
-          name="curp"
-          value={usuario.curp}
+          name="contrasena"
+          type="password"
+          value={usuario.contrasena}
           onChange={handleChange}
-          disabled={isView}
         />
 
-        <div className="checkbox-group">
-          <label>
+        {(isEdit || isView) && (
+          <>
+            <label>CURP</label>
             <input
-              type="checkbox"
-              name="cuentaBloqueada"
-              checked={usuario.cuentaBloqueada}
+              name="curp"
+              value={usuario.curp}
               onChange={handleChange}
               disabled={isView}
             />
-            Cuenta Bloqueada
-          </label>
-        </div>
 
-        <div className="checkbox-group">
-          <label>
+            <div className="checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  name="cuentaBloqueada"
+                  checked={usuario.cuentaBloqueada}
+                  onChange={handleChange}
+                  disabled={isView}
+                />
+                Cuenta Bloqueada
+              </label>
+            </div>
+
+            <div className="checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  name="dadoDeBaja"
+                  checked={usuario.dadoDeBaja}
+                  onChange={handleChange}
+                  disabled={isView}
+                />
+                Dado de Baja
+              </label>
+            </div>
+
+            <label>Última Sesión</label>
             <input
-              type="checkbox"
-              name="dadoDeBaja"
-              checked={usuario.dadoDeBaja}
+              name="ultimaSesion"
+              type="date"
+              value={usuario.ultimaSesion}
               onChange={handleChange}
               disabled={isView}
             />
-            Dado de Baja
-          </label>
-        </div>
 
-        <label>Última Sesión</label>
-        <input
-          name="ultimaSesion"
-          type="date"
-          value={usuario.ultimaSesion}
-          onChange={handleChange}
-          disabled={isView}
-        />
+            <label>Rol</label>
+            <input
+              name="rol"
+              value={usuario.rol}
+              onChange={handleChange}
+              disabled={isView}
+            />
+          </>
+        )}
 
-        <label>Rol</label>
-        <input
-          name="rol"
-          value={usuario.rol}
-          onChange={handleChange}
-          disabled={isView}
-        />
+        {(isEdit || isView) && <button type="submit">Guardar Cambios</button>}
 
-        {!isView && <button type="submit">Guardar Cambios</button>}
         <button type="button" onClick={onBack} className="back-button">
           Volver
         </button>
+
+        {success && <p style={{ color: "green", marginTop: "1rem" }}>{success}</p>}
+        {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
       </form>
     </div>
   );

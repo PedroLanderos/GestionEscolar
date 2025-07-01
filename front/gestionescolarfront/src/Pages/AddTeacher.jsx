@@ -1,11 +1,10 @@
-// src/Pages/AddTeacher.jsx
 import React, { useState } from "react";
 import axios from "axios";
 import "./CSS/Register.css";
 
 const AddTeacher = () => {
   const [formData, setFormData] = useState({
-    id: "BA", // Tú lo ajustas a BA o BB manualmente
+    id: "BA",
     nombreCompleto: "",
     correo: "",
     contrasena: "",
@@ -34,7 +33,7 @@ const AddTeacher = () => {
       });
 
       if (response.data.flag) {
-        setMessage("✅ Docente registrado exitosamente.");
+        setMessage("Elemento registrado exitosamente."); // MSG3
         setFormData({
           id: "BA",
           nombreCompleto: "",
@@ -43,11 +42,11 @@ const AddTeacher = () => {
           curp: "",
         });
       } else {
-        setMessage("❌ " + (response.data.message || "Error al registrar docente."));
+        setMessage("Los datos ingresados no son válidos"); // ERR1
       }
     } catch (error) {
-      console.error("❌ Error al registrar docente:", error);
-      setMessage("❌ Error de conexión al servidor.");
+      console.error("Error al registrar docente:", error);
+      setMessage("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     } finally {
       setLoading(false);
     }
@@ -78,7 +77,7 @@ const AddTeacher = () => {
           </button>
 
           {message && (
-            <p style={{ marginTop: "1rem", color: message.startsWith("✅") ? "green" : "red" }}>
+            <p style={{ marginTop: "1rem", color: message === "Elemento registrado exitosamente." ? "green" : "red" }}>
               {message}
             </p>
           )}

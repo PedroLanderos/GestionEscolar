@@ -1,38 +1,32 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./CSS/Register.css";
-import { CICLO_API } from "../Config/apiConfig"; // Define esta URL en tu config
+import { CICLO_API } from "../Config/apiConfig";
 
-const AddSchoolYear = ({ onSuccess }) => {
+const AddSchoolYear = ({ initialData = null, onSuccess, onBack }) => {
   const [formData, setFormData] = useState({
     id: "",
-    fechaRegistroCalificaciones: new Date().toISOString().slice(0,10),
-    fechaInicio: new Date().toISOString().slice(0,10),
-    fechaFin: new Date().toISOString().slice(0,10),
+    fechaRegistroCalificaciones: new Date().toISOString().slice(0, 10),
+    fechaInicio: new Date().toISOString().slice(0, 10),
+    fechaFin: new Date().toISOString().slice(0, 10),
     esActual: true,
   });
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [activeCycleExists, setActiveCycleExists] = useState(false);
 
-  // Cargar ciclo activo al montar para saber si existe alguno
+  // Cargar datos iniciales para editar
   useEffect(() => {
-    const fetchActiveCycle = async () => {
-      try {
-        const res = await axios.get(`${CICLO_API}/CicloEscolar/actual`);
-        if (res.status === 200 && res.data) {
-          setActiveCycleExists(true);
-        } else {
-          setActiveCycleExists(false);
-        }
-      } catch (error) {
-        // Si no hay ciclo activo o error, asumimos que no hay ciclo activo
-        setActiveCycleExists(false);
-      }
-    };
-    fetchActiveCycle();
-  }, []);
+    if (initialData) {
+      setFormData({
+        id: initialData.id || "",
+        fechaRegistroCalificaciones: initialData.fechaRegistroCalificaciones?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+        fechaInicio: initialData.fechaInicio?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+        fechaFin: initialData.fechaFin?.slice(0, 10) || new Date().toISOString().slice(0, 10),
+        esActual: true,
+      });
+    }
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -48,22 +42,17 @@ const AddSchoolYear = ({ onSuccess }) => {
     setMessage("");
 
     try {
-      if (activeCycleExists) {
-        // 1. Obtener ciclo activo (para desactivarlo)
-        const activeRes = await axios.get(`${CICLO_API}/CicloEscolar/actual`);
-        if (activeRes.status === 200 && activeRes.data) {
-          const activeCycle = activeRes.data;
-
-          // 2. Desactivar ciclo activo
-          await axios.put(`${CICLO_API}/CicloEscolar/${activeCycle.id}`, {
-            ...activeCycle,
-            esActual: false,
-          });
-        }
+      // Si estamos editando un ciclo activo existente, primero desactivamos el que esté activo
+      const resActual = await axios.get(`${CICLO_API}/CicloEscolar/actual`);
+      if (resActual.status === 200 && resActual.data && resActual.data.id !== formData.id) {
+        // Desactivar el ciclo actual diferente al que editamos
+        await axios.put(`${CICLO_API}/CicloEscolar/${resActual.data.id}`, {
+          ...resActual.data,
+          esActual: false,
+        });
       }
 
-      // 3. Crear nuevo ciclo marcado como activo
-      const newCycle = {
+      const cicloPayload = {
         id: formData.id,
         fechaRegistroCalificaciones: formData.fechaRegistroCalificaciones,
         fechaInicio: formData.fechaInicio,
@@ -71,25 +60,35 @@ const AddSchoolYear = ({ onSuccess }) => {
         esActual: true,
       };
 
-      const createRes = await axios.post(`${CICLO_API}/CicloEscolar`, newCycle);
-
-      if (createRes.data.flag) {
-        setMessage("✅ Ciclo escolar creado y activado correctamente.");
-        setFormData({
-          id: "",
-          fechaRegistroCalificaciones: new Date().toISOString().slice(0,10),
-          fechaInicio: new Date().toISOString().slice(0,10),
-          fechaFin: new Date().toISOString().slice(0,10),
-          esActual: true,
-        });
-        setActiveCycleExists(true); // Ahora hay un ciclo activo
-        if(onSuccess) onSuccess();
+      if (initialData) {
+        // Editar ciclo existente
+        const res = await axios.put(`${CICLO_API}/CicloEscolar/${formData.id}`, cicloPayload);
+        if (res.data.flag) {
+          setMessage("Elemento actualizado exitosamente.");
+          if (onSuccess) onSuccess();
+        } else {
+          setMessage("Los datos ingresados no son válidos");
+        }
       } else {
-        setMessage(`❌ Error: ${createRes.data.message || "No se pudo crear el ciclo escolar."}`);
+        // Crear nuevo ciclo
+        const res = await axios.post(`${CICLO_API}/CicloEscolar`, cicloPayload);
+        if (res.data.flag) {
+          setMessage("Elemento registrado exitosamente.");
+          setFormData({
+            id: "",
+            fechaRegistroCalificaciones: new Date().toISOString().slice(0, 10),
+            fechaInicio: new Date().toISOString().slice(0, 10),
+            fechaFin: new Date().toISOString().slice(0, 10),
+            esActual: true,
+          });
+          if (onSuccess) onSuccess();
+        } else {
+          setMessage("Los datos ingresados no son válidos");
+        }
       }
     } catch (error) {
-      console.error("❌ Error al crear ciclo escolar:", error);
-      setMessage("❌ Error al crear ciclo escolar. Revisa el servidor.");
+      console.error("Error al crear/actualizar ciclo escolar:", error);
+      setMessage("Error de conexión al servidor. Intenta nuevamente.");
     } finally {
       setLoading(false);
     }
@@ -98,7 +97,7 @@ const AddSchoolYear = ({ onSuccess }) => {
   return (
     <div className="register-container">
       <div className="register-content">
-        <h2>Registrar Nuevo Ciclo Escolar</h2>
+        <h2>{initialData ? "Modificar Ciclo Escolar Activo" : "Registrar Nuevo Ciclo Escolar"}</h2>
         <form onSubmit={handleSubmit}>
           <label>ID (ej: 2025A)</label>
           <input
@@ -107,6 +106,7 @@ const AddSchoolYear = ({ onSuccess }) => {
             value={formData.id}
             onChange={handleChange}
             required
+            disabled={!!initialData} // No dejar cambiar el ID al editar
           />
 
           <label>Fecha Registro Calificaciones</label>
@@ -142,17 +142,21 @@ const AddSchoolYear = ({ onSuccess }) => {
               name="esActual"
               checked={formData.esActual}
               onChange={handleChange}
-              disabled // siempre true para nuevo ciclo, no editable
+              disabled
             />
             <label>¿Ciclo escolar activo?</label>
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? "Guardando..." : "Registrar"}
+            {loading ? "Guardando..." : initialData ? "Actualizar" : "Registrar"}
+          </button>
+
+          <button type="button" onClick={onBack} style={{ marginLeft: "1rem" }}>
+            Volver
           </button>
 
           {message && (
-            <p style={{ marginTop: "1rem", color: message.startsWith("✅") ? "green" : "red" }}>
+            <p style={{ marginTop: "1rem", color: message.includes("exitosamente") ? "green" : "red" }}>
               {message}
             </p>
           )}

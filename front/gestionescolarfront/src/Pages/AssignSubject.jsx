@@ -17,7 +17,7 @@ const AssignSubject = () => {
         setTeachers(res.data);
       } catch (err) {
         console.error("Error al cargar docentes", err);
-        setError("Error al cargar docentes.");
+        setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
       }
     };
 
@@ -27,7 +27,7 @@ const AssignSubject = () => {
         setSubjects(res.data);
       } catch (err) {
         console.error("Error al cargar materias", err);
-        setError("Error al cargar materias.");
+        setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
       }
     };
 
@@ -37,25 +37,25 @@ const AssignSubject = () => {
 
   const handleAssign = async () => {
     if (!selectedTeacher || !selectedSubject) {
-      setError("Selecciona un docente y una materia.");
+      setError("Los datos ingresados no son válidos"); // ERR1
       setMessage("");
       return;
     }
 
     try {
       await axios.post("http://localhost:5001/api/subjectassignment/crearAsignacion", {
-        id: "1", // Este valor se reescribirá por el backend, pero debe enviarse
+        id: "1",
         subjectId: selectedSubject.codigo,
-        userId: selectedTeacher.id
+        userId: selectedTeacher.id,
       });
 
-      setMessage("Asignación realizada exitosamente.");
+      setMessage("Elemento registrado exitosamente."); // MSG3
       setError("");
       setSelectedTeacher(null);
       setSelectedSubject(null);
     } catch (err) {
       console.error("Error al asignar materia", err);
-      setError("Error al asignar la materia.");
+      setError("Error de conexión al servidor. Intenta nuevamente."); // ERR6
       setMessage("");
     }
   };

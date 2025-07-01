@@ -8,7 +8,7 @@ const AddSubject = ({ subject = null, onSuccess }) => {
     id: 0,
     nombre: "",
     codigo: "",
-    tipo: "Materia", // Cambié el valor inicial a "Materia"
+    tipo: "Materia",
     grado: 1,
     esObligatoria: true,
     estaActiva: true,
@@ -48,7 +48,7 @@ const AddSubject = ({ subject = null, onSuccess }) => {
 
     // Validar tipo antes de enviar
     if (formData.tipo !== "Materia" && formData.tipo !== "Taller") {
-      setMessage("❌ El tipo debe ser 'Materia' o 'Taller'.");
+      setMessage("Los datos ingresados no son válidos"); // ERR1
       setLoading(false);
       return;
     }
@@ -66,13 +66,17 @@ const AddSubject = ({ subject = null, onSuccess }) => {
       const res = await method(endpoint, payload);
 
       if (res.data.flag || res.data.success) {
-        setMessage(isEdit ? "✅ Materia actualizada exitosamente." : "✅ Materia registrada exitosamente.");
+        setMessage(
+          isEdit
+            ? "Elemento actualizado exitosamente."  // MSG2
+            : "Elemento registrado exitosamente."   // MSG3
+        );
         if (!isEdit) {
           setFormData({
             id: 0,
             nombre: "",
             codigo: "",
-            tipo: "Materia", // Reiniciar con valor válido
+            tipo: "Materia",
             grado: 1,
             esObligatoria: true,
             estaActiva: true,
@@ -81,11 +85,11 @@ const AddSubject = ({ subject = null, onSuccess }) => {
         }
         if (onSuccess) onSuccess();
       } else {
-        setMessage(`❌ ${res.data.message || "Error al guardar la materia."}`);
+        setMessage("Los datos ingresados no son válidos"); // ERR1
       }
     } catch (err) {
-      console.error("❌ Error:", err);
-      setMessage("❌ Error al guardar materia. Revisa el servidor.");
+      console.error("Error:", err);
+      setMessage("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     } finally {
       setLoading(false);
     }
@@ -156,7 +160,7 @@ const AddSubject = ({ subject = null, onSuccess }) => {
           </button>
 
           {message && (
-            <p style={{ marginTop: "1rem", color: message.startsWith("✅") ? "green" : "red" }}>
+            <p style={{ marginTop: "1rem", color: message === "Elemento registrado exitosamente." || message === "Elemento actualizado exitosamente." ? "green" : "red" }}>
               {message}
             </p>
           )}

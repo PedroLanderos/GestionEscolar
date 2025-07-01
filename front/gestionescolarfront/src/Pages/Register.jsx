@@ -17,25 +17,25 @@ const Register = ({ data }) => {
 
     try {
       const response = await axios.post("http://localhost:5000/api/usuario/registrarAlumno", {
-        id: "TEMP123", // Se sobrescribirá en backend
+        id: "TEMP123",
         nombreCompleto: nombre,
         correo,
-        contrasena: "temporal123!", // Se sobrescribirá en backend
+        contrasena: "temporal123!",
         curp,
         cuentaBloqueada: false,
         dadoDeBaja: false,
         ultimaSesion: new Date().toISOString(),
-        rol: "Alumno", // Se sobrescribirá en backend
+        rol: "Alumno",
       });
 
       if (response.data.success) {
-        setMessage("✅ Alumno registrado exitosamente.");
+        setMessage("Elemento registrado exitosamente."); // MSG3
       } else {
-        setMessage(`❌ ${response.data.message || "Error al registrar alumno."}`);
+        setMessage("Los datos ingresados no son válidos"); // ERR1
       }
     } catch (err) {
-      console.error("❌ Error al registrar alumno:", err);
-      setMessage("❌ Error al registrar alumno. Revisa el servidor.");
+      console.error("Error al registrar alumno:", err);
+      setMessage("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ const Register = ({ data }) => {
           </button>
 
           {message && (
-            <p style={{ marginTop: "1rem", color: message.startsWith("✅") ? "green" : "red" }}>
+            <p style={{ marginTop: "1rem", color: message === "Elemento registrado exitosamente." ? "green" : "red" }}>
               {message}
             </p>
           )}

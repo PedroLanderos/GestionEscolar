@@ -1,4 +1,3 @@
-// src/components/ShowReport.jsx
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../Context/AuthContext";
@@ -38,7 +37,7 @@ const ShowReport = ({ modo, onBack }) => {
         if (resAlumno.data?.id) {
           alumnoId = resAlumno.data.id;
         } else {
-          setMensaje("No se encontró un alumno asociado al tutor.");
+          setMensaje("No hay suficientes datos registrados para usar esta opción. Por favor, registre más datos e intente nuevamente."); // ERR2
           setLoading(false);
           return;
         }
@@ -58,8 +57,8 @@ const ShowReport = ({ modo, onBack }) => {
         setReportes(response.data);
       }
     } catch (error) {
-      console.error("❌ Error cargando reportes:", error);
-      setMensaje("No se encontraron reportes o hubo un error.");
+      console.error("Error cargando reportes:", error);
+      setMensaje("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
     } finally {
       setLoading(false);
     }
@@ -77,7 +76,7 @@ const ShowReport = ({ modo, onBack }) => {
       {loading ? (
         <p>Cargando reportes...</p>
       ) : mensaje ? (
-        <p>{mensaje}</p>
+        <p style={{ color: mensaje.includes("No existen") ? "red" : "black" }}>{mensaje}</p>
       ) : reportes.length > 0 ? (
         <table>
           <thead>
@@ -93,14 +92,14 @@ const ShowReport = ({ modo, onBack }) => {
               <tr key={r.id}>
                 <td>{new Date(r.fecha).toLocaleDateString()}</td>
                 <td>{r.tipo}</td>
-                <td>{r.grupo || "N/A"}</td>
+                <td>{r.grupo || "No existen datos para esta sección. Por favor, intente más tarde." /* ERR3 */}</td>
                 <td>{r.cicloEscolar}</td>
               </tr>
             ))}
           </tbody>
         </table>
       ) : (
-        <p>No hay reportes disponibles.</p>
+        <p>No existen datos para esta sección. Por favor, intente más tarde.</p> // ERR3
       )}
     </div>
   );

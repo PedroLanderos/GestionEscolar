@@ -15,7 +15,6 @@ const AddSanction = ({ onBack, initialData }) => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
-  // Si hay datos iniciales, los usamos para rellenar el formulario
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -39,22 +38,19 @@ const AddSanction = ({ onBack, initialData }) => {
 
     try {
       const payload = {
-        id: initialData ? initialData.id : 0, // Si es edición, usamos la ID de los datos iniciales
+        id: initialData ? initialData.id : 0,
         ...formData,
-        idAlumno: formData.idAlumno, // Dejamos idAlumno como string
-        idProfesor: auth.user?.id, // Dejamos idProfesor como string
-        // Ajustamos la fecha para tener el formato adecuado y la hora a las 08:00:00
-        fecha: new Date(formData.fecha).toISOString().split('T')[0] + 'T08:00:00',
+        idAlumno: formData.idAlumno,
+        idProfesor: auth.user?.id,
+        fecha: new Date(formData.fecha).toISOString().split("T")[0] + "T08:00:00",
       };
 
       if (initialData) {
-        // Si estamos editando, hacemos un PUT
         await axios.put("http://localhost:5004/api/sancion", payload);
-        setSuccess("✅ La sanción fue actualizada exitosamente.");
+        setSuccess("Elemento actualizado exitosamente."); // MSG2
       } else {
-        // Si estamos creando, hacemos un POST
         await axios.post("http://localhost:5004/api/sancion", payload);
-        setSuccess("✅ La sanción fue registrada exitosamente.");
+        setSuccess("Elemento registrado exitosamente."); // MSG3
       }
 
       setFormData({
@@ -64,8 +60,8 @@ const AddSanction = ({ onBack, initialData }) => {
         idAlumno: "",
       });
     } catch (err) {
-      console.error("❌ Error al guardar la sanción:", err);
-      setError("❌ Ocurrió un error al guardar la sanción.");
+      console.error("Error al guardar la sanción:", err);
+      setError("Los datos ingresados no son válidos"); // ERR1
     }
   };
 
@@ -121,8 +117,16 @@ const AddSanction = ({ onBack, initialData }) => {
             Volver
           </button>
 
-          {success && <p style={{ color: "green", marginTop: "1rem", textAlign: "center" }}>{success}</p>}
-          {error && <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>{error}</p>}
+          {success && (
+            <p style={{ color: "green", marginTop: "1rem", textAlign: "center" }}>
+              {success}
+            </p>
+          )}
+          {error && (
+            <p style={{ color: "red", marginTop: "1rem", textAlign: "center" }}>
+              {error}
+            </p>
+          )}
         </form>
       </div>
     </div>

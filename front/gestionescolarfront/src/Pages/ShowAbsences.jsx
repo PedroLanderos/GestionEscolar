@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./CSS/UsersTable.css"; // Reutilizamos el CSS de UsersTable
+import "./CSS/UsersTable.css";
 
 const ShowAbsences = () => {
   const [absences, setAbsences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Obtener inasistencias
   useEffect(() => {
     const fetchAbsences = async () => {
       setLoading(true);
@@ -15,8 +14,8 @@ const ShowAbsences = () => {
         const res = await axios.get("http://localhost:5004/api/asistencias/inasistencias/ciclo-escolar");
         setAbsences(res.data);
       } catch (error) {
-        console.error("❌ Error al obtener inasistencias:", error);
-        setError("Error al cargar las inasistencias.");
+        console.error("Error al obtener inasistencias:", error);
+        setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
       } finally {
         setLoading(false);
       }
@@ -25,37 +24,36 @@ const ShowAbsences = () => {
     fetchAbsences();
   }, []);
 
-  // Eliminar inasistencia
   const handleDelete = async (id) => {
-    const confirmDelete = window.confirm("¿Estás seguro de que deseas eliminar esta inasistencia?");
+    const confirmDelete = window.confirm("¿Está seguro que desea eliminar esta inasistencia?");
     if (confirmDelete) {
       try {
         await axios.delete(`http://localhost:5004/api/asistencias/${id}`);
-        setAbsences(absences.filter((absence) => absence.id !== id)); // Eliminar de la lista local
+        setAbsences(absences.filter((absence) => absence.id !== id));
       } catch (error) {
-        console.error("❌ Error al eliminar la inasistencia", error);
-        setError("Error al eliminar la inasistencia.");
+        console.error("Error al eliminar la inasistencia", error);
+        setError("Error de conexión al servidor. Intenta nuevamente."); // ERR6
       }
     }
   };
 
   return (
     <div className="users-table-container">
-      <h2>Absences of the Active School Cycle</h2>
+      <h2>Inasistencias del ciclo escolar activo</h2>
 
       {loading ? (
-        <p>Loading absences...</p>
+        <p>Cargando inasistencias...</p>
       ) : error ? (
         <p style={{ color: "red" }}>{error}</p>
       ) : (
         <table>
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Student</th>
-              <th>Teacher</th>
-              <th>Justification</th>
-              <th>Actions</th>
+              <th>Fecha</th>
+              <th>Alumno</th>
+              <th>Profesor</th>
+              <th>Justificación</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -65,15 +63,15 @@ const ShowAbsences = () => {
                   <td>{new Date(absence.fecha).toLocaleDateString()}</td>
                   <td>{absence.idAlumno}</td>
                   <td>{absence.idProfesor}</td>
-                  <td>{absence.justificacion || "No justification"}</td>
+                  <td>{absence.justificacion || "No existen datos para esta sección. Por favor, intente más tarde." /* ERR3 */}</td>
                   <td>
-                    <button onClick={() => handleDelete(absence.id)}>Delete</button>
+                    <button onClick={() => handleDelete(absence.id)}>Eliminar</button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5">No absences recorded.</td>
+                <td colSpan="5">No existen datos para esta sección. Por favor, intente más tarde.</td> {/* ERR3 */}
               </tr>
             )}
           </tbody>

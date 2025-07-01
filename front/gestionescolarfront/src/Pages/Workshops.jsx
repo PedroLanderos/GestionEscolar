@@ -31,7 +31,7 @@ const Workshops = () => {
 
         if (diferenciaDias < 14) {
           setPuedeInscribirse(false);
-          setMensaje("❌ Aún no es tiempo de inscribirse a talleres.");
+          setMensaje("ERR2: No hay suficientes datos registrados para usar esta opción. Por favor, registre más datos e intente nuevamente.");
           return;
         }
 
@@ -66,10 +66,16 @@ const Workshops = () => {
           })
         );
 
+        if(talleresEnriquecidos.length === 0) {
+          setMensaje("ERR3: No existen datos para esta sección. Por favor, intente más tarde.");
+        } else {
+          setMensaje(""); // Limpia mensaje si hay datos
+        }
+
         setTalleres(talleresEnriquecidos);
       } catch (err) {
         console.error(err);
-        setError("Error al cargar la información. Intenta nuevamente más tarde.");
+        setError("ERR6: Error de conexión al servidor. Intenta nuevamente.");
       } finally {
         setLoading(false);
       }
@@ -82,11 +88,11 @@ const Workshops = () => {
     try {
       const userId = auth.user?.id;
       await axios.post(`http://localhost:5002/api/Schedule/asignarTallerEspaciosLibres/${userId}/${courseId}`);
-      setMensaje("✅ Taller asignado exitosamente.");
+      setMensaje("MSG3: Elemento registrado exitosamente.");
       setError("");
     } catch (err) {
       console.error(err);
-      setError("❌ No se pudo asignar el taller.");
+      setError("ERR8: Error al guardar la información. Intente nuevamente.");
       setMensaje("");
     }
   };
@@ -110,7 +116,7 @@ const Workshops = () => {
     <div className="assign-container">
       <h2>Talleres Disponibles</h2>
 
-      {mensaje && <p className="success-message">{mensaje}</p>}
+      {mensaje && <p className={mensaje.startsWith("ERR") ? "error" : "success-message"}>{mensaje}</p>}
       {error && <p className="error">{error}</p>}
 
       {!puedeInscribirse ? (

@@ -10,16 +10,16 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedHorarios, setSelectedHorarios] = useState({});
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!teacherId) return;
 
     const fetchTeacherClassesAndSchedules = async () => {
       setLoading(true);
-      console.log("🔍 Obteniendo clases para el profesor:", teacherId);
+      setError(null);
       try {
         const scheduleRes = await axios.get(`http://localhost:5002/api/Schedule/horarioDocente/${teacherId}`);
-        console.log("📦 Datos crudos de horarios del backend:", scheduleRes.data);
 
         const materiasMap = new Map();
         scheduleRes.data.forEach((item) => {
@@ -39,8 +39,6 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
           }
         });
 
-        console.log("🗺️ Materias agrupadas:", materiasMap);
-
         const materias = await Promise.all(
           Array.from(materiasMap.values()).map(async (materia) => {
             let nombre = "Nombre no disponible";
@@ -48,7 +46,8 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
               const res = await axios.get(`http://localhost:5001/api/Subject/obtenerPorCodigo/${materia.codigoBase}`);
               nombre = res.data.nombre || nombre;
             } catch (err) {
-              console.warn(`⚠️ No se pudo obtener nombre para ${materia.codigoBase}`, err);
+              // Mensaje adaptado
+              console.warn("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
             }
 
             const horarios = await Promise.all(
@@ -61,7 +60,7 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
                     grupo: resHorario.data.grupo,
                   };
                 } catch (err) {
-                  console.warn(`⚠️ No se pudo obtener horario con id ${idHorario}`, err);
+                  console.warn("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
                   return null;
                 }
               })
@@ -77,7 +76,9 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
           })
         );
 
-        console.log("📘 Materias finalizadas:", materias);
+        if (materias.length === 0) {
+          setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
+        }
 
         setClasses(materias);
 
@@ -88,9 +89,9 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
           }
         });
         setSelectedHorarios(initialSelected);
-        console.log("✅ Horarios seleccionados inicialmente:", initialSelected);
       } catch (error) {
-        console.error("❌ Error al obtener las clases y horarios del maestro:", error);
+        console.error("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
+        setError("No existen datos para esta sección. Por favor, intente más tarde.");
         setClasses([]);
       } finally {
         setLoading(false);
@@ -105,7 +106,6 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
       ...prev,
       [materiaId]: horarioString,
     }));
-    console.log(`🔄 Horario cambiado para ${materiaId}:`, horarioString);
   };
 
   return (
@@ -113,6 +113,8 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
       <h2>Clases del maestro</h2>
       {loading ? (
         <p>Cargando clases...</p>
+      ) : error ? (
+        <p style={{ color: "red" }}>{error}</p>
       ) : (
         <table>
           <thead>
@@ -126,7 +128,7 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
           <tbody>
             {classes.length === 0 ? (
               <tr>
-                <td colSpan={4}>No se encontraron clases para este maestro.</td>
+                <td colSpan={4}>No existen datos para esta sección. Por favor, intente más tarde.</td> {/* ERR3 */}
               </tr>
             ) : (
               classes.map((clase) => (
@@ -154,7 +156,6 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
                       onClick={() => {
                         const horarioStr =
                           clase.horarios.length > 0 ? selectedHorarios[clase.id] : null;
-                        console.log("🟩 Registrar asistencia:", { claseId: clase.id, horarioStr });
                         if (typeof onRegistrarAsistencia === "function") {
                           onRegistrarAsistencia(clase.id, horarioStr);
                         }
@@ -166,7 +167,6 @@ const TeacherClassesTable = ({ onRegistrarAsistencia, onRegistrarCalificacion })
                       onClick={() => {
                         const horarioStr =
                           clase.horarios.length > 0 ? selectedHorarios[clase.id] : null;
-                        console.log("🟨 Registrar calificación:", { claseId: clase.id, horarioStr });
                         if (typeof onRegistrarCalificacion === "function") {
                           onRegistrarCalificacion(clase.id, horarioStr);
                         }

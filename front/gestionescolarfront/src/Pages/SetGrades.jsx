@@ -17,25 +17,17 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
       setError(null);
 
       try {
-        console.log("📥 materiaProfesor:", materiaProfesor);
-        console.log("📥 horarioId:", horarioId);
-
         let resIds;
         if (!horarioId || horarioId === "null" || horarioId === "Taller") {
-          console.log("🔍 Obteniendo alumnos por taller...");
           resIds = await axios.get(`http://localhost:5002/api/Schedule/alumnosPorTaller/${materiaProfesor}`);
         } else {
-          console.log("🔍 Obteniendo alumnos por materia y horario...");
           resIds = await axios.get("http://localhost:5002/api/Schedule/alumnosPorMateriaHorario", {
             params: { materiaProfesor, horario: horarioId },
           });
         }
 
         const alumnoIds = Array.from(new Set(resIds.data));
-        console.log("📦 IDs únicos de alumnos:", alumnoIds);
-
         if (!alumnoIds.length) {
-          console.warn("⚠️ No se encontraron IDs de alumnos.");
           setAlumnos([]);
           setLoading(false);
           return;
@@ -43,10 +35,8 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
 
         const resAlumnos = await axios.post("http://localhost:5000/api/usuario/obtenerusuariosporids", alumnoIds);
         const alumnosData = resAlumnos.data;
-        console.log("👥 Alumnos recibidos:", alumnosData);
 
         if (!alumnosData || alumnosData.length === 0) {
-          console.warn("⚠️ No se encontraron datos de alumnos.");
           setAlumnos([]);
           setLoading(false);
           return;
@@ -54,8 +44,6 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
 
         const resCiclo = await axios.get("http://localhost:5004/api/CicloEscolar/actual");
         const ciclo = resCiclo.data?.id || null;
-        if (!ciclo) console.error("❌ No se encontró un ciclo escolar activo.");
-        console.log("📅 Ciclo escolar actual:", ciclo);
         setCicloActual(ciclo);
 
         const resExistentes = await axios.post(
@@ -63,7 +51,6 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
           alumnoIds
         );
         const califExistentes = resExistentes.data || [];
-        console.log("📄 Calificaciones existentes:", califExistentes);
 
         const initialCalificaciones = {};
         alumnosData.forEach(a => {
@@ -78,8 +65,8 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
         setAlumnos(alumnosData);
         setCalificaciones(initialCalificaciones);
       } catch (err) {
-        console.error("❌ Error cargando alumnos o calificaciones:", err);
-        setError("Error cargando datos, intenta más tarde.");
+        console.error("Error cargando alumnos o calificaciones:", err);
+        setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
       } finally {
         setLoading(false);
       }
@@ -107,7 +94,7 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
 
   const handleGuardar = async () => {
     if (!cicloActual) {
-      alert("No se pudo determinar el ciclo escolar actual.");
+      alert("Los datos ingresados no son válidos"); // ERR1
       return;
     }
 
@@ -125,25 +112,23 @@ const SetGrades = ({ materiaProfesor, horarioId, onBack }) => {
           idCiclo: cicloActual,
         };
 
-        console.log("💾 Enviando payload:", payload);
-
         return calif.id && calif.id > 0
           ? axios.put(`http://localhost:5004/api/calificacion/${calif.id}`, payload)
           : axios.post("http://localhost:5004/api/calificacion", payload);
       }).filter(Boolean);
 
       await Promise.all(requests);
-      alert("✅ Calificaciones guardadas correctamente.");
+      alert("Elemento registrado exitosamente."); // MSG3
       if (onBack) onBack();
     } catch (err) {
-      console.error("❌ Error guardando calificaciones:", err);
-      alert("Error al guardar calificaciones. Intenta nuevamente.");
+      console.error("Error guardando calificaciones:", err);
+      alert("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     }
   };
 
   if (loading) return <p>Cargando alumnos y ciclo escolar...</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (alumnos.length === 0) return <p>No hay alumnos inscritos para esta clase y horario.</p>;
+  if (alumnos.length === 0) return <p>No existen datos para esta sección. Por favor, intente más tarde.</p>; // ERR3
 
   return (
     <div className="users-table-container">

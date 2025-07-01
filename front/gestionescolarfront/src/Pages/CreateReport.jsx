@@ -1,4 +1,3 @@
-// src/components/CreateReport.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CSS/Register.css";
@@ -24,11 +23,11 @@ const CreateReport = ({ onBack, initialData = null }) => {
         if (ciclo) {
           setFormData((prev) => ({ ...prev, cicloEscolar: ciclo }));
         } else {
-          setError("No se encontró un ciclo escolar activo.");
+          setError("No existen datos para esta sección. Por favor, intente más tarde."); // ERR3
         }
       } catch (err) {
-        console.error("❌ Error obteniendo ciclo escolar:", err);
-        setError("Error al obtener el ciclo escolar actual.");
+        console.error("Error obteniendo ciclo escolar:", err);
+        setError("Error de conexión al servidor. Intenta nuevamente."); // ERR6
       }
     };
 
@@ -59,13 +58,11 @@ const CreateReport = ({ onBack, initialData = null }) => {
 
     try {
       if (formData.id && formData.id > 0) {
-        // Modo edición
         await axios.put(`http://localhost:5004/api/reporte/${formData.id}`, payload);
-        setSuccess("✅ Reporte actualizado correctamente.");
+        setSuccess("Elemento actualizado exitosamente."); // MSG2
       } else {
-        // Modo creación
         await axios.post("http://localhost:5004/api/reporte", payload);
-        setSuccess("✅ Reporte creado exitosamente.");
+        setSuccess("Elemento registrado exitosamente."); // MSG3
       }
 
       if (!initialData) {
@@ -79,8 +76,8 @@ const CreateReport = ({ onBack, initialData = null }) => {
         });
       }
     } catch (err) {
-      console.error("❌ Error al guardar el reporte:", err);
-      setError("❌ Ocurrió un error al guardar el reporte.");
+      console.error("Error al guardar el reporte:", err);
+      setError("Los datos ingresados no son válidos"); // ERR1
     }
   };
 

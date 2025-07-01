@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./CSS/Register.css"; 
+import "./CSS/Register.css";
 
 const AddSchedule = () => {
   const [formData, setFormData] = useState({
@@ -29,14 +29,15 @@ const AddSchedule = () => {
       const res = await axios.post("http://localhost:5002/api/Schedule/crearHorario", formData);
 
       if (res.data.flag || res.status === 200) {
-        setMessage("✅ Horario creado exitosamente.");
+        setMessage("Elemento creado exitosamente."); // MSG1
         setFormData({ id: 0, grado: 1, grupo: "" });
       } else {
-        setMessage("❌ " + (res.data.message || "Error al crear horario."));
+        // Usamos un error genérico de validación
+        setMessage("Los datos ingresados no son válidos"); // ERR1
       }
     } catch (err) {
       console.error("Error al crear horario:", err);
-      setMessage("❌ Error de conexión con el servidor.");
+      setMessage("Error de conexión al servidor. Intenta nuevamente."); // ERR6
     } finally {
       setLoading(false);
     }
@@ -72,7 +73,15 @@ const AddSchedule = () => {
           </button>
 
           {message && (
-            <p style={{ marginTop: "1rem", color: message.startsWith("✅") ? "green" : "red" }}>
+            <p
+              style={{
+                marginTop: "1rem",
+                color:
+                  message === "Elemento creado exitosamente."
+                    ? "green"
+                    : "red",
+              }}
+            >
               {message}
             </p>
           )}
