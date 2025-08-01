@@ -1,10 +1,10 @@
-# 📚 Sistema de Gestión Escolar
+# 📚 School Management System
 
-Este proyecto es un sistema de gestión escolar desarrollado con una arquitectura de microservicios. La solución está compuesta por un backend en .NET 8 y un frontend en React. Cada microservicio sigue el patrón de Clean Architecture, y todo el sistema puede ser ejecutado de manera orquestada mediante Docker.
+This project is a school management system developed with a microservices architecture. The solution consists of a .NET 8 backend and a React frontend. Each microservice follows the Clean Architecture pattern, and the entire system can be orchestrated and run using Docker.
 
 ---
 
-## 🧱 Estructura del Proyecto
+## 🧱 Project Structure
 
 ```plaintext
 back/
@@ -19,55 +19,54 @@ back/
 
 ---
 
-## ⚙️ Tecnologías Utilizadas
+## ⚙️ Technologies Used
 
 ### Backend (.NET 8)
-- Microservicios independientes
-- Arquitectura limpia (Clean Architecture):
+- Independent microservices
+- Clean Architecture:
   - Domain
   - Application
   - Infrastructure
   - Presentation
-- Autenticación con JWT
-- Pruebas:
-  - Pruebas unitarias
-  - Pruebas de estrés
-  - Pruebas de humo
+- Authentication with JWT
+- Testing:
+  - Unit tests
+  - Stress tests
+  - Smoke tests
 
 ### Frontend (React)
-- Interfaz de usuario moderna
-- Comunicación con microservicios mediante API REST
+- Modern user interface
+- Communication with microservices via REST API
 
 ### Postman
-- Colección disponible para probar los endpoints de los microservicios
+- Collection available to test the microservices endpoints
 
 ### Docker
-- Todo el sistema está dockerizado
-- Uso de `docker-compose` para levantar todo el entorno de forma sencilla
+- The entire system is dockerized
+- Uses `docker-compose` to easily launch the whole environment
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto
+## 🚀 How to Run the Project
 
-1. Clona este repositorio
-2. En la raíz del proyecto, ejecuta el siguiente comando:
+1. Clone this repository
+2. In the root directory of the project, run the following command:
 
 ```bash
 docker-compose up --build
 ```
 
-3. El frontend estará disponible en: [http://localhost:3000](http://localhost:3000)
-4. Cada microservicio se expone en su propio puerto configurado en el archivo `docker-compose.yml`
+3. The frontend will be available at: [http://localhost:3000](http://localhost:3000)
+4. Each microservice is exposed on its own port configured in the `docker-compose.yml` file
 
 ---
 
-## 🧪 Pruebas
+## 🧪 Testing
 
-Este sistema cuenta con un enfoque integral de pruebas:
+This system features a comprehensive testing approach:
 
-- ✅ Pruebas unitarias para asegurar la lógica interna de los servicios
-- ✅ Pruebas de estrés para medir el rendimiento bajo carga
-- ✅ Pruebas de humo para validación rápida del sistema
-- ✅ Colección de Postman para pruebas manuales y automatizadas
-
+- ✅ Unit tests to ensure the internal logic of the services
+- ✅ Stress tests to measure performance under load
+- ✅ Smoke tests for quick system validation
+- ✅ Postman collection for manual and automated testing
 
